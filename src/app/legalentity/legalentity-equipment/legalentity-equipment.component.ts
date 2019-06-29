@@ -14,6 +14,7 @@ import { LegalentityContactsService, IcontactResponseStruct } from '../services/
 import { IaddContactReqUpdatedStruct } from '../legalentity-reports/legalentity-contacts-rpt/legalentity-contacts-rpt.component';
 import { MatDialog } from '@angular/material';
 import { LegalentityAddContactComponent } from '../legalentity-add-contact/legalentity-add-contact.component';
+import { stringify } from '@angular/compiler/src/util';
 
 
 export interface IalottedQRIDList{
@@ -746,7 +747,15 @@ export class LegalentityEquipmentComponent implements OnInit {
       //qrContactData: this.equptFormFieldBuider.array([
       //  this.getQrIdContactFormGroup()
       //]),
-      qrContactData: this.equptFormFieldBuider.array([])
+      qrContactData: this.equptFormFieldBuider.array([]),
+      specificToQrContact: [
+        {
+          contactPeronName: [''],
+          contactEmailId: [''],
+          contactCountryCallingCode:[''],
+          contactMobileNumber: ['']
+        }
+      ]
   
     });
 
