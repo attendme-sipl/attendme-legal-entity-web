@@ -99,6 +99,7 @@ export class LegalentityEquipmentComponent implements OnInit {
 
   enableContactProgressBar:boolean;
 
+  countryCallingCodeListObj: IcountryCallingCodeResponse[];
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -709,6 +710,10 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.emailSelectAll=false;
   }
 
+  addContactToList():void{
+    console.log(this.equptForm.get('specificToQrContact').value);
+  }
+
   ngOnInit() {
 
     if (localStorage.getItem("legalEntityUserDetails") != null)
@@ -748,20 +753,23 @@ export class LegalentityEquipmentComponent implements OnInit {
       //  this.getQrIdContactFormGroup()
       //]),
       qrContactData: this.equptFormFieldBuider.array([]),
-      specificToQrContact: [
+      specificToQrContact: this.equptFormFieldBuider.group(
         {
-          contactPeronName: [''],
+          contactPersonName: [''],
           contactEmailId: [''],
-          contactCountryCallingCode:[''],
+          contactCountryCallingCode:91,
           contactMobileNumber: ['']
         }
-      ]
+      )
+    
   
     });
 
     this.popCountryCallingCode();
-    this.popNotificationContactList();
 
+    this.popCountryCallingCode();
+    this.popNotificationContactList();
+   
   
 
   }
