@@ -1,0 +1,98 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-sm-12">
+
+      <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+      <!--Heading Panel-->
+
+      <div class="row">
+        <div class="col-sm-12">
+
+          
+          <mat-toolbar style="background-color: transparent;">
+            
+            <mat-toolbar-row>
+              <h3 style="font-size: 1.75rem;">Contacts</h3>
+              <span class="menu-toolbar-spacer"></span>
+
+              <button mat-raised-button color="primary" (click)="openAddContactDialog()">Add Contact</button>
+
+              <button type="button" class="btn btn-default float-right">
+                  <mat-icon svgIcon="refresh-icon" (click)="popLegalEntityContactRpt()"></mat-icon>
+              </button>
+
+            </mat-toolbar-row>
+
+          </mat-toolbar>
+
+          <mat-form-field>
+            <input matInput (keyup) = "applyFilter($event.target.value)" placeholder="filter" autocomplete="OFF" />
+          </mat-form-field>
+
+          <div class="mat-elevation-z8">
+
+              <table mat-table [dataSource]="dataSource" matSort>
+
+                  <ng-container matColumnDef="srNo">
+                      <th mat-header-cell *matHeaderCellDef>Sr. No.</th>
+                      <td mat-cell *matCellDef="let i=index">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
+                  </ng-container>
+    
+                  <ng-container matColumnDef="contactPersonName">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header>Contact Person Name</th>
+                      <td mat-cell *matCellDef="let element">{{ element.contactPersonName }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="contactMobileNumber">
+                      <th mat-header-cell *matHeaderCellDef>Mobile Number</th>
+                      <td mat-cell *matCellDef="let element">{{ element.contactMobileNumber }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="contactEmailId">
+                      <th mat-header-cell *matHeaderCellDef>Email ID</th>
+                      <td mat-cell *matCellDef="let element">{{ element.contactEmailId }}</td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="updateContact">
+                      <th mat-header-cell *matHeaderCellDef>Update Contact</th>
+                      <td mat-cell *matCellDef="let element">
+                        <button type="button" mat-button color="primary" disabled>
+                          <!--<mat-icon svgIcon="edit-icon"></mat-icon>-->
+                          Edit
+                        </button>
+                      </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="deleteContact">
+                      <th mat-header-cell *matHeaderCellDef>Remove Contact</th>
+                      <td mat-cell *matCellDef="let element">
+                        <button type="button" mat-button color="primary" (click)="removeContact(element.contactId)">
+                         <!--<mat-icon svgIcon="delete-icon"></mat-icon>-->
+                         Delete
+                        </button>
+                      </td>
+                  </ng-container>
+    
+                  
+    
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    
+              </table>
+
+              <mat-paginator 
+                [length] = "contactRecordCount" 
+                [pageSize] = "pageSize"
+                [pageSizeOptions] = "pageSizeOption">
+              </mat-paginator>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

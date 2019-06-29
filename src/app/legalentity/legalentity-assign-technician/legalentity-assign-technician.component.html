@@ -1,0 +1,77 @@
+
+ <form #assignTechnicianForm="ngForm" (ngSubmit)="onSubmitClick(assignTechnicianForm)">
+
+    <div class="modal-dialog" >
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Assign {{technicianMenuName}}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="onNoClick()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+        
+          <div class="row">
+            <div class="col-sm-12">
+            
+              
+
+              <div class="form-group">
+
+                  <label>
+                      <b>{{ complaintMenueName }} Number: </b> {{complaintNumber}}
+                  </label>
+
+                  <mat-form-field style="width: 100%;">
+
+                      <mat-label>{{ technicianMenuName }}</mat-label>
+                      <mat-select 
+                      [(ngModel)] = "technicianId" name="technicianId" #technicianData ="ngModel"
+                      
+                      required>
+                        
+                        <mat-option *ngFor="let indivTechnician of technicianNameArr" value={{indivTechnician.technicianId}} >
+                            {{indivTechnician.technicianName}}
+                        </mat-option>    
+                      </mat-select>
+
+                     
+                      <mat-error *ngIf="assignTechnicianForm.submitted && technicianData.invalid" >
+                          Please select technician from the list
+                        </mat-error>
+      
+                    </mat-form-field>
+
+               <!-- <label><b>{{ complaintMenueName }} Number: </b>{{complaintNumber}}</label>
+
+                <select class="form-control" 
+                [(ngModel)] = "technicianId" name="technicianId" #technicianData ="ngModel"
+                [ngClass]="{'is-invalid': assignTechnicianForm.submitted && technicianData.value == 0 }"
+                required>
+                  <option value="0" >- Select {{ technicianMenuName }}</option>
+                  <option *ngFor="let indivTechnician of technicianNameArr" value="{{indivTechnician.technicianId}}">
+                    {{indivTechnician.technicianName}}
+                  </option>
+                </select>
+            
+                <div *ngIf="assignTechnicianForm.submitted && technicianData.value == 0" class="invalid-feedback">
+                  Please select technician from the list
+                </div> -->
+          
+                
+              </div>
+            </div>
+          </div>
+         
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" >Submit</button>
+          <button type="button" class="btn btn-secondary"(click)="onNoClick()">Close</button>
+        </div>
+      </div>
+    </div>
+
+
+
+  </form>

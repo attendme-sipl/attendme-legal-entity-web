@@ -1,0 +1,77 @@
+<div class="container-fluid">
+
+  <div class="row">
+    
+    <div class="col-sm-12">
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Allot QR ID To {{branchMenuName}}</h3>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-3"></div>
+        <div class="col-sm-6">
+          
+          <form #form="ngForm" [formGroup]="allotQrIdBranchFormGroup" (ngSubmit)="onSubmitClick(form)">
+
+            <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+              <mat-card>
+                  <mat-card-content>
+                    
+                    <mat-error *ngIf="dispErrorMessage">
+                      {{errorMessage}}
+                    </mat-error>
+                    
+                    <mat-form-field>
+      
+                        <mat-label>Select {{branchMenuName}}</mat-label>
+                        <mat-select required formControlName="assignBranchId">
+                            <mat-option *ngFor="let indivBranchObj of updatedBranchList" value="{{indivBranchObj.branchId}}">
+                              {{indivBranchObj.branchName}}
+                            </mat-option>
+                        </mat-select>
+
+                        <mat-error *ngIf="(formSubmit || allotQrIdBranchFormGroup.controls['assignBranchId'].touched) && allotQrIdBranchFormGroup.controls['assignBranchId'].invalid">
+                            Select {{branchMenuName}}
+                        </mat-error>
+      
+                    </mat-form-field>
+      
+                    <mat-form-field>
+                      <input type="number" required formControlName="numOfQRId" matInput placeholder="Number of QR IDs" autocomplete="OFF" />
+
+                      <mat-error *ngIf="(formSubmit || allotQrIdBranchFormGroup.controls['numOfQRId'].touched) && allotQrIdBranchFormGroup.controls['numOfQRId'].invalid">
+                        Enter number of QR IDs
+                     </mat-error>
+
+                    </mat-form-field>
+      
+                  </mat-card-content>
+      
+                  <mat-card-actions align="right">
+      
+                    <button type="submit" mat-raised-button color="primary">
+                      Submit
+                    </button>
+      
+                    <button type="button" mat-raised-button (click)="resetForm(form)">
+                        Reset
+                    </button>
+      
+                  </mat-card-actions>
+                </mat-card>
+
+          </form>
+
+
+        </div>
+        <div class="col-sm-3"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

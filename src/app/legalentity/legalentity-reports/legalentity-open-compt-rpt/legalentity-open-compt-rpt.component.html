@@ -1,0 +1,97 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+
+      <div class="row">
+        <div class="col-sm-12">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="openComplaintProgressBar"></mat-progress-bar>
+
+          <div class="clearfix">
+              <h3 class="float-left">{{legalEntityMenuPrefModel.complaintMenuName}}  (Status: Open)</h3>
+              <button type="button" class="btn btn-default float-right" (click)="popOpenComplaintGrid()">
+                <mat-icon svgIcon="refreshIcon"></mat-icon>
+              </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!--Report grid container-->
+
+      <div class="row">
+        <div class="col-sm-12">
+
+            <mat-form-field>
+                <input matInput (keyup) = "applyFilter($event.target.value)" placeholder="filter" autocomplete="OFF" />
+            </mat-form-field>
+
+          <div class="mat-elevation-z8">
+
+              <table mat-table [dataSource]="dataSource" matSort>
+
+                  <ng-container matColumnDef="srNo">
+                      <th mat-header-cell *matHeaderCellDef>Sr. No.</th>
+                      <td mat-cell *matCellDef="let i=index">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
+                  </ng-container>
+    
+                  <ng-container matColumnDef="complaintNumber">
+                      <th mat-header-cell *matHeaderCellDef>{{legalEntityMenuPrefModel.complaintMenuName}} Number</th>
+                      <td mat-cell *matCellDef="let element">
+                        <button type="button" class="btn btn-link" 
+                         (click) = "openComplaintDetailsDialog(element.complaintId)">
+                        {{ element.complaintNumber }}
+                      </button>
+                      </td>
+                  </ng-container>
+    
+                  <ng-container matColumnDef="qrId">
+                      <th mat-header-cell *matHeaderCellDef>QR ID</th>
+                      <td mat-cell *matCellDef="let element">
+                        <button type="button" class="btn btn-link" (click)="opendQrDetailsDialog(element.qrCodeId)">
+                            {{ element.qrId }}
+                        </button>
+                      </td>
+                      <!--<td mat-cell *matCellDef="let element">{{ element.qrId }}</td>-->
+                  </ng-container>
+
+                  <ng-container matColumnDef="registerBy">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header>Registered By</th>
+                    <td mat-cell *matCellDef="let element">{{ element.deviceUserName}} ( {{element.deviceUserMobileNumber}} ) </td>
+                 </ng-container>
+                  
+                  <ng-container matColumnDef="complaintOpenDateTime">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header>Date-Time</th>
+                      <td mat-cell *matCellDef="let element">{{ element.complaintOpenDateTime | date:'medium'}}</td>
+                  </ng-container>
+    
+                  <ng-container matColumnDef="assginTechnician">
+                      <th mat-header-cell *matHeaderCellDef>Assign {{legalEntityMenuPrefModel.technicianMenuName}}</th>
+                      <td mat-cell *matCellDef="let element">
+                        <button type="button" mat-stroked-button color="primary" 
+                         (click)="openAssingTechnicianDialog(element.complaintId)" >
+                            Assign {{ legalEntityMenuPrefModel.technicianMenuName }}
+                        </button>
+                      </td>
+                  </ng-container>
+    
+                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    
+              </table>
+    
+              <mat-paginator 
+                 [length] = "openComplaintRecordCount" 
+                 [pageSize] = "pageSize"
+                 [pageSizeOptions] = "pageSizeOption">
+              </mat-paginator>
+
+          </div>
+        
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

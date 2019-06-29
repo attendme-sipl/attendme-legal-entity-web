@@ -1,0 +1,184 @@
+<div class="container-fluid">
+
+  <div class="row">
+
+    <div class="col-sm-12">
+
+      <div class="row">
+
+        <div class="col-sm-12">
+
+            <mat-toolbar color="primary">
+
+                <mat-toolbar-row style="background-color: #343a40">
+                    <a routerLink="." style="text-decoration: none;"> 
+                        <mat-icon svgIcon="attendme-logo"
+                        style="font-size:30px; height:30px; width:30px;"></mat-icon>
+                        Attendme 
+                    </a>
+                    <span style="flex: 1 1 auto;"></span>
+                    <div class="btn-group">
+              
+                        <button type="button" class="btn btn-secondary dropdown-toggle"
+                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                         {{userNm}}
+                        </button>
+              
+                        <div class="dropdown-menu">
+                            <button class="dropdown-item button-link" style="cursor:pointer;" (click)="logout()">
+                             Logout
+                            </button>
+                        </div>
+                    </div>
+                </mat-toolbar-row>
+                
+              </mat-toolbar>
+
+        
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <form  #leHeadOfficeForm = "ngForm" (ngSubmit)="addBranch(leHeadOfficeForm)"  >
+  
+    <div class="row">
+  
+      <div class="col-sm-12" style="overflow: scroll;">
+        
+        <div class="centered" style="width:50%;  border:1px solid gray; padding: 20px 20px;">
+  
+         <div class="row">
+           <div class="col-sm-12">
+             <h3>Add Head Office Information</h3>
+           </div>
+         </div>
+
+         <div class="row">
+
+          <div class="col-sm-12">
+
+            <div class="form-group">
+              
+              <div *ngIf= "leHeadOfficeForm.submitted && errorBit" class="alert alert-danger" >
+                {{errorMsg}}
+               
+              </div>
+
+            </div>
+
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Head office branch name"
+              data-toggle="tooltip" data-placement="top" title= "Head office branch name"
+               required
+               name="branchOfficeModel.branchName" [(ngModel)]="branchOfficeModel.branchName" #branchName ="ngModel"
+               [ngClass]="{'is-invalid': leHeadOfficeForm.submitted && branchName.invalid }"
+                />
+
+                <div *ngIf="leHeadOfficeForm.submitted && branchName.invalid" class="invalid-feedback">
+                  Please enter head office branch name
+                </div>
+            </div>
+
+            <div class="form-group">
+              <textarea class="form-control" placeholder="Location Address"
+              data-toggle="tooltip" data-placement="top" title= "Location Address"
+               required
+               name="branchOfficeModel.branchAddress" [(ngModel)]="branchOfficeModel.branchAddress" #branchAddress ="ngModel"
+               [ngClass]="{'is-invalid': leHeadOfficeForm.submitted && branchAddress.invalid}"
+               >
+               </textarea>
+
+               <div *ngIf="leHeadOfficeForm.submitted && branchAddress.invalid" class="invalid-feedback">
+                 Please enter location address
+               </div>
+
+
+            </div>
+
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Contact person name"
+               data-toggle="tooltip" data-placement="top" title= "Contact person name"
+               
+               name="branchOfficeModel.contactPersonName" [(ngModel)]="branchOfficeModel.contactPersonName" #branchContactPersonNm ="ngModel" 
+               />
+
+            </div>
+
+           
+
+            <div class="form-group">
+
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                
+                  <select class="form-control" 
+                  data-toggle="tooltip" data-placement="top" title= "Country calling code"
+                  name="countryCode" [(ngModel)]="countryCode" #ContactCountryCodeList="ngModel"
+                  >
+                    
+                  <option *ngFor="let countryCode of countryCodeArr" [value]="countryCode.countryCallingCode">
+                   {{countryCode.countryCallingCode}}
+                  </option>
+                    
+                  </select>
+                  
+                </div>
+                <input type="text" class="form-control" placeholder="Mobile Number"
+                data-toggle="tooltip" data-placement="top" title= "Mobile Number"
+                minlength="10" maxlength="11" 
+                 
+                 name="branchOfficeModel.contactMobile" [(ngModel)] = "branchOfficeModel.contactMobile" #branchMobileNumber = "ngModel" 
+                 />
+
+               
+
+            </div>
+
+          
+
+            </div>
+
+            <div class="form-group">
+              <input type="text" class="form-control" placeholder="Email Id"
+              data-toggle="tooltip" data-placement="top" title= "Email ID"
+               name="branchOfficeModel.contactEmail" [(ngModel)]="branchOfficeModel.contactEmail" #branchEmailIdModel ="ngModel" />
+            </div>
+
+            <div class="form-group">
+
+              <div class="row">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-3">
+                    <button type="submit" class="btn btn-success"style="width:100%;" >
+                      Submit
+                    </button>
+                </div>
+                <div class="col-sm-3">
+                  <button type="button"  class="btn btn-danger"style="width:100%;" (click)="reset(leHeadOfficeForm)"  >Reset</button>
+                </div>
+                <div class="col-sm-3"></div>
+              </div>
+
+              
+
+            </div>
+
+          </div>
+
+         </div>
+         
+        </div>
+      
+      </div>
+  
+      </div>
+  
+      
+    
+  </form>
+
+</div>

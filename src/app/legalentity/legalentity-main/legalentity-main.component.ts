@@ -1,0 +1,137 @@
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { LegalentityUtilService } from '../services/legalentity-util.service';
+import { LegalentityUser } from '../model/legalentity-user';
+import { MatIconRegistry } from '@angular/material/icon';
+import { DomSanitizer } from '@angular/platform-browser';
+import { LegalentityMenuPref } from '../model/legalentity-menu-pref';
+import {OrderByPipe} from 'ngx-pipes'
+import { Router } from '@angular/router';
+import { LegalentityCommons } from '../model/legalentity-commons';
+
+
+
+@Component({
+  selector: 'app-legalentity-main',
+  templateUrl: './legalentity-main.component.html',
+  styleUrls: ['./legalentity-main.component.css'],
+  inputs:['enableProgressObject']
+})
+export class LegalentityMainComponent implements OnInit {
+
+  legalEntityName: string;
+  userFullName: string;
+
+  legalEntityMenuPrefObj:LegalentityMenuPref[];
+
+  updatedLegalEntityMenuPrefObj:LegalentityMenuPref[];
+
+  enableProgressBar: boolean;
+  
+  headOffice: boolean;
+
+  branchName: string;
+
+  constructor(
+    private utilAPI: LegalentityUtilService,
+    private legalEntityUserModel: LegalentityUser,
+    private iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer,
+    private router:Router,
+    public commonModel: LegalentityCommons
+  ) { 
+    iconRegistry.addSvgIcon(
+      "attendme-logo",
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/ic_launcher.svg')
+    );
+
+    iconRegistry.addSvgIcon(
+      'contact-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-perm_contact_calendar-24px.svg')
+    );
+
+    iconRegistry.addSvgIcon(
+      'home-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-home-24px.svg')
+    );
+
+    iconRegistry.addSvgIcon(
+      'input-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-input-24px.svg')
+    );
+
+    this.commonModel.enableProgressbar =false;
+  }
+
+  ngOnInit() {
+
+    if (localStorage.getItem('legalEntityUserDetails') != null)
+    {
+      this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
+
+      this.legalEntityName = this.legalEntityUserModel.legalEntityUserDetails.legalEntityName;
+      this.userFullName = this.legalEntityUserModel.legalEntityUserDetails.userFullName;
+
+      this.headOffice=this.legalEntityUserModel.legalEntityBranchDetails.branchHeadOffice;
+
+      this.branchName=this.legalEntityUserModel.legalEntityBranchDetails.branchName;
+
+      if (localStorage.getItem('legalEntityMenuPref') != null)
+      {
+        this.legalEntityMenuPrefObj = JSON.parse(localStorage.getItem('legalEntityMenuPref'));
+
+        if (this.headOffice){
+         this.updatedLegalEntityMenuPrefObj=this.legalEntityMenuPrefObj;
+        }
+        else{
+          this.updatedLegalEntityMenuPrefObj=this.legalEntityMenuPrefObj.map((value,index) => value? {
+            enableToBranch: value['enableToBranch'],
+            legalEntityId: value['legalEntityId'],
+            legalEntityMenuId: value['legalEntityMenuId'],
+            menuName: value['menuName'],
+            menuParamId: value['menuParamId'],
+            menuParameterName: value['menuParameterName'],
+            menuParameterPath: value['menuParameterPath'],
+            menuPlaceholder: value['menuPlaceholder'],
+            ngModelPropName: value['ngModelPropName'],
+            ngmodelProp: value['ngmodelProp']
+          }:null)
+          .filter(value => value.enableToBranch == true)
+        }
+        
+
+      }
+
+      
+
+       if (this.legalEntityUserModel.legalEntityUserDetails.passwordChange == false){
+          this.router.navigate(['legalentity','reset-password']);
+          return false;
+       }
+
+       if (this.legalEntityUserModel.legalEntityUserDetails.userRole == 'admin'){
+       
+        if (this.legalEntityUserModel.legalEntityBranchDetails.branchId == null || this.legalEntityUserModel.legalEntityBranchDetails.branchId == 0 || this.legalEntityUserModel.legalEntityBranchDetails.branchId == undefined)
+        {
+          this.router.navigate(['legalentity','add-head-office']);
+          return false;
+        }
+
+       }
+
+    }
+    else
+    {
+      this.router.navigate(['legalentity','login']);
+    }
+
+   
+
+  }
+
+  legalEntityLogout():void{
+    localStorage.removeItem('legalEntityUserDetails');
+    localStorage.removeItem('legalEntityMenuPref');
+    this.router.navigate(['legalentity','login']);
+  }
+
+}

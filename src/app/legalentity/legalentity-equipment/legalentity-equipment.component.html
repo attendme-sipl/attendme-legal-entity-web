@@ -1,0 +1,270 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-12">
+
+            <mat-progress-bar mode="indeterminate" *ngIf="addEquptProgressBar"></mat-progress-bar>
+            
+            <!--Form Title-->
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <h3>{{ menuPrefNameModel.equipmentMenuName }} Details</h3>
+                </div>
+            </div>
+
+            <form [formGroup] = "equptForm" (ngSubmit)="onSubmitClick()" >
+
+            <div class="row">
+                <div class="col-sm-12" >
+
+                    <mat-card>
+                        <mat-card-header>
+                            <mat-card-title >QR ID Details</mat-card-title>
+                            <mat-form-field style="width: 30%;">
+                                    <mat-label>- Select QR ID -</mat-label>
+                                    <mat-select formControlName="qrCodeId" >
+                                        <mat-option *ngFor="let qrIdObj of qrIdListObj | orderBy: 'qrCodeId'" [value]="qrIdObj.qrCodeId">
+                                            {{qrIdObj.qrId}}
+                                        </mat-option>
+                                    </mat-select>
+                                    
+                                    <mat-error *ngIf="(equptFormSubmitted || equptForm.controls['qrCodeId'].touched) && equptForm.controls['qrCodeId'].invalid">
+                                      Please select QR ID
+                                    </mat-error>
+                                    
+                            </mat-form-field>
+                        </mat-card-header>
+
+                        <mat-card-content style="font-size: 15px;" >
+
+                        
+                           <mat-grid-list cols="2" rowHeight="60px" >
+
+                                <mat-grid-tile formArrayName="formFieldData" 
+                                *ngFor="let formField of equptForm.get('formFieldData')['controls']; let i=index;">
+
+                                        <mat-form-field  >
+            
+                                        
+                                          <div [formGroupName] ="i">
+                                             
+                                                <input matInput formControlName="formFieldValue" placeholder="{{equptForm.get('formFieldData').value[i]['formFiledTitleName']}}" autocomplete="OFF" />
+                                             
+                                          </div>
+
+                                          <mat-error *ngIf="equptForm.controls['formFieldData'].dirty && equptForm.controls['formFieldData'].invalid">
+                                                Please check character limit.
+                                          </mat-error>
+                                          
+                                           
+                                        </mat-form-field>
+
+                                </mat-grid-tile>
+
+                            </mat-grid-list> 
+
+                           
+                            
+                        </mat-card-content>
+
+                       <!--
+                            <mat-card>
+                          <mat-card-header>
+                            <mat-card-title>Contact details of person receiving notifications</mat-card-title>
+                          </mat-card-header>
+
+                          <mat-card-content>
+
+                            <div formArrayName="qrContactData" *ngFor="let indivContact of qrContactDetailsFormArray.controls; let i=index">
+
+                                <div [formGroupName]="i">
+
+                                    <mat-grid-list cols="12" rowHeight="3:2">
+
+                                        <mat-grid-tile colspan="2">
+                                           <mat-checkbox formControlName="contactToBeDisplayed" [(value)]="checked">
+                                               Make Public
+                                           </mat-checkbox>
+                                        </mat-grid-tile>
+
+                                        <mat-grid-tile colspan="3">
+                                            <mat-form-field>
+                                                <input type="text" matInput formControlName="contactPersonName" placeholder="Contact Person Name" />
+                                            </mat-form-field>
+                                        </mat-grid-tile>
+
+                                        <mat-grid-tile colspan="3">
+
+                                            <mat-form-field style="width: 40%;">
+                                                <mat-select formControlName="countryCallingCode" [(value)]="defaultCountryCode">
+                                                    <mat-option
+                                                     *ngFor="let indivCountryCode of countryCallingCodeResponseObj" 
+                                                     [value]="indivCountryCode.countryCallingCode">
+                                                        {{indivCountryCode.countryShortName}} - {{indivCountryCode.countryCallingCode}}
+                                                    </mat-option>
+                                                </mat-select> 
+                                            </mat-form-field>
+
+                                            <mat-form-field style="width: 60%;">
+                                             <input type="text" matInput formControlName="contactMobileNumber" placeholder="Mobile Number" pattern="[0-9]+" autocomplete="OFF"/>
+                                             <mat-error *ngIf="(equptFormSubmitted || (equptForm.controls['qrContactData'].at(i).controls['contactMobileNumber'].touched) || (equptForm.controls['qrContactData'].at(i).controls['contactMobileNumber'].dirty)) 
+                                              && equptForm.controls['qrContactData'].at(i).controls['contactMobileNumber'].invalid
+                                             ">
+                                               Enter valid mobile number
+                                             </mat-error>
+                                            </mat-form-field>
+                                        </mat-grid-tile>
+
+                                        <mat-grid-tile colspan="3">
+                                            <mat-form-field>
+                                                <input type="email" matInput formControlName="contactEmailId" placeholder="Email ID" autocomplete="OFF" />
+                                                <mat-error *ngIf="(equptFormSubmitted || (equptForm.controls['qrContactData'].at(i).controls['contactEmailId'].touched || (equptForm.controls['qrContactData'].at(i).controls['contactEmailId'].dirty)) 
+                                                && equptForm.controls['qrContactData'].at(i).controls['contactEmailId'].invalid )">
+                                                  Enter valid email ID 
+                                               </mat-error>
+                                            </mat-form-field>
+                                        </mat-grid-tile>
+
+                                        <mat-grid-tile colspan="1">
+                                          
+                                            <button type="button" mat-icon-button *ngIf="i != 0" (click)="removeQrIdContact(i)">
+                                                <mat-icon svgIcon="deleteRecordIcon"></mat-icon>
+                                            </button>
+                                        </mat-grid-tile>
+                                      
+                                    </mat-grid-list>
+            
+                                        
+
+                                </div>
+
+                                    
+                            </div>
+
+                    
+                          </mat-card-content>
+
+                          <mat-card-actions align="left">
+                            
+                            <button type="button" mat-raised-button color="default" (click)="addQrIdContact()">
+                                Add Another Contact
+                            </button>
+                          </mat-card-actions>
+
+                        </mat-card> -->
+
+                        <mat-card>
+
+                            <mat-progress-bar *ngIf="enableContactProgressBar" mode="indeterminate"></mat-progress-bar>
+                            <mat-toolbar>
+                                <span>Select Contact Receiving Notifications</span>
+                                <span style="flex: 1 1 auto;"></span>
+                                <button type="button" mat-raised-button class="float-right" color="primary" (click)="openAddContactdialog()">
+                                    Add Contact
+                                </button>
+                                <button type="button" mat-icon-button class="btn btn-default" (click)="popNotificationContactList()">
+                                    <mat-icon svgIcon="refresh-icon"></mat-icon>
+                                </button>
+                            </mat-toolbar>
+
+                            <!--<mat-card-header>
+                                <mat-card-title>
+                                    Select Contact Receiving Notifications
+                                </mat-card-title>
+                            </mat-card-header>-->
+                           
+                            <mat-card-content>
+
+                                <div class="table-responsive">
+                                    <table class="table" >
+                                        <thead>
+                                            <tr>
+                                                <th>Sr. No.</th>
+                                                <!--<th>
+                                                    <mat-checkbox [checked]="selectAllContacts" (change)="contactSelectAll($event);"></mat-checkbox>
+                                                    Select
+                                                </th>-->
+                                                
+                                                <th>Contact Person Name</th>
+                                                <th>Mobile Number</th>
+                                                <th>Email ID</th>
+                                                <th>
+                                                    <mat-checkbox [checked]="smsSelectall" (change)="smsRequiredAll($event);"></mat-checkbox>
+                                                    SMS
+                                                </th>
+                                                <th>
+                                                        <mat-checkbox [checked]="emailSelectAll" (change)="emailRequiredAll($event);"></mat-checkbox>
+                                                    Email
+                                                </th>
+                                                <th>
+                                                    <mat-checkbox [checked]="makeAllPublic" (change)="contactMakeAllPublic($event);" ></mat-checkbox>
+                                                    Make Public
+                                                </th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody formArrayName="qrContactData" 
+                                        *ngFor="let indivContactObj of equptForm.get('qrContactData')['controls']; let i=index;">
+                                           
+                                            <tr [formGroupName] ='i'>
+
+                                               <td>
+                                                    {{i+1}}
+                                               </td>
+                                             
+                                               <!--<td>
+                                                   <mat-checkbox formControlName="contactSelected" [checked]="indivContactObj.get('contactSelected').value"></mat-checkbox>
+                                               </td>-->
+                                               
+
+                                               <td>
+                                                   {{indivContactObj.get('contactPersonName').value}}
+                                               </td>
+
+                                               <td>
+                                                    {{indivContactObj.get('contactMobileNumber').value}}
+                                               </td>
+
+                                               <td>
+                                                    {{indivContactObj.get('contactEmailId').value}}
+                                               </td>
+                                               
+                                               <td>
+                                                    <mat-checkbox formControlName="smsRequired" [checked]="indivContactObj.get('smsRequired').value" [disabled]="indivContactObj.get('contactMobileNumber').value == ''"></mat-checkbox>
+                                               </td>
+
+                                               <td>
+                                                    <mat-checkbox formControlName="emailRequired" [checked]="indivContactObj.get('emailRequired').value" [disabled]="indivContactObj.get('contactEmailId').value == ''"></mat-checkbox>
+                                               </td>
+
+                                               <td>
+                                                   <mat-checkbox formControlName="contactToBeDisplayed" [checked]="indivContactObj.get('contactToBeDisplayed').value"></mat-checkbox>
+                                               </td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            
+                            </mat-card-content>
+                        </mat-card>
+
+                       
+
+                        <mat-card-actions align="right">
+                            <button type="submit" mat-raised-button color="primary" [disabled]="equptForm.invalid">Submit</button>
+                            <button type="button" mat-raised-button color="default" (click)="onResetClick()">Reset</button>
+                        </mat-card-actions>
+
+                    </mat-card>
+
+                
+
+                </div>
+            </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

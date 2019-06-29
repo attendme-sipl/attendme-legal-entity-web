@@ -1,0 +1,190 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-sm-12">
+      <h3 style="text-align: center;">Add New {{menuName}}</h3>
+    </div>
+  </div>
+
+  <div class="row">
+    
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+
+      <form [formGroup]="addTechnicianForm" (ngSubmit)="updateTechnician()">
+
+       
+     
+        <div class="row">
+
+          <div class="col-sm-12">
+            
+            <div formGroupName="technicianDetails">
+
+              <div class="card">
+                <div class="card-header">
+                  {{menuName}} Information
+                </div>
+
+                <div class="card-body">
+
+                  <div class="form-group">
+                    <input formControlName="technicianName" type="text" class="form-control" placeholder="{{ menuName }} Name" 
+                     data-toggle="tooltip" data-placement="top" title= "{{menuName}} Name"
+                     required
+                     [ngClass]="{
+                        'is-invalid': addTechnicianForm.get('technicianDetails').get('technicianName').invalid
+                        && (addTechnicianForm.get('technicianDetails').get('technicianName').touched || addTechnicianForm.get('technicianDetails').get('technicianName').dirty)
+                      }"            
+                    />
+
+                    <div *ngIf="addTechnicianForm.get('technicianDetails').get('technicianName').invalid
+                    && (addTechnicianForm.get('technicianDetails').get('technicianName').touched || addTechnicianForm.get('technicianDetails').get('technicianName').dirty)"
+                     class="invalid-feedback" >
+                      Enter {{menuName}} Name
+                    </div>
+                    
+                  </div>
+
+                  <div class="form-group">
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+     
+                            <select class="form-control" formControlName="countryCallingCode"
+                            [ngClass]="{
+                              'is-invalid': technicianDetails.get('userMobileNumber').invalid && (technicianDetails.get('userMobileNumber').dirty || technicianDetails.get('userMobileNumber').touched)
+                            }"
+                            >
+                              
+                            <option *ngFor="let countryCode of callingCodeArr | orderBy 'countryCode'" [value]="countryCode.countryCallingCode">
+                              {{countryCode.countryShortName}}-{{countryCode.countryCallingCode}}
+                            </option>
+                              
+                            </select>
+                          
+                        </div>
+                        <input formControlName="userMobileNumber" type="text" class="form-control" placeholder="{{ menuName }} Mobile Number" 
+                         data-toggle="tooltip" data-placement="top" title= "{{menuName}} Mobile Number"
+                         required
+                         [ngClass]="{
+                           'is-invalid': technicianDetails.get('userMobileNumber').invalid && (technicianDetails.get('userMobileNumber').dirty || technicianDetails.get('userMobileNumber').touched)
+                         }"
+                        />
+
+                        <div *ngIf="technicianDetails.get('userMobileNumber').hasError('required') && (technicianDetails.get('userMobileNumber').dirty || technicianDetails.get('userMobileNumber').touched)"
+                         class="invalid-feedback">
+                         Enter {{menuName}} Mobile Number
+                        </div>
+        
+                        <div *ngIf="technicianDetails.get('userMobileNumber').hasError('pattern') && (technicianDetails.get('userMobileNumber').dirty || technicianDetails.get('userMobileNumber').touched)"
+                        class="invalid-feedback">
+                        Enter Valid {{menuName}} Mobile Number
+                       </div>
+                       
+                       <div *ngIf="(technicianDetails.get('userMobileNumber').hasError('minlength') || technicianDetails.get('userMobileNumber').hasError('maxlength')) && (technicianDetails.get('userMobileNumber').dirty || technicianDetails.get('userMobileNumber').touched)"
+                        class="invalid-feedback">
+                        Enter Valid 10 digit {{menuName}} Mobile Number
+                       </div>
+
+        
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <input formControlName="userEmailId" type="text" class="form-control" placeholder="{{ menuName }} Email Id" 
+                    data-toggle="tooltip" data-placement="top" title= "{{menuName}} Email Id"
+                    required
+                    [ngClass]="{
+                      'is-invalid': technicianDetails.get('userEmailId').invalid && (technicianDetails.get('userEmailId').dirty || technicianDetails.get('userEmailId').touched)
+                    }"
+                    />
+
+                    <div *ngIf="technicianDetails.get('userEmailId').hasError('required') && (technicianDetails.get('userEmailId').dirty || technicianDetails.get('userEmailId').touched)"
+                     class="invalid-feedback" >
+                     Enter {{menuName}} Email ID
+                    </div>
+
+                    <div *ngIf="technicianDetails.get('userEmailId').hasError('email') && (technicianDetails.get('userEmailId').dirty || technicianDetails.get('userEmailId').touched)"
+                     class="invalid-feedback" >
+                     Enter Valid {{menuName}} Email ID
+                    </div>
+
+                  </div>
+
+                  <!--<div class="form-group">
+                    <mat-checkbox  formControlName="defaultAssign">
+                      Default assign to {{complaintMenuName}}
+                    </mat-checkbox>
+                  </div>-->
+
+                 
+
+                </div>
+              </div>
+
+            </div>
+
+            <!--<div formGroupName="techicianToBranchMapping">
+
+                <div class="card">
+                    <div class="card-header">
+                      Assign {{branchMenuName}} 
+                    </div>
+    
+                    <div class="card-body"> 
+                      
+                      <div formArrayName="branchIdList">
+                        
+                       <div *ngFor="let indivBranch of branchData.controls; let i=index">
+    
+                        <div class="form-group">
+                          <mat-checkbox [formControlName]="i" [disabled] ="branchListArr[i]['branchHeadOffice']">
+                            {{ branchListArr[i].branchName }}
+                          </mat-checkbox>
+                        </div>
+    
+                       </div>
+                         
+                  
+    
+                      </div>
+    
+                    </div>
+                  </div>
+
+            </div>-->
+
+            <div class="card">
+              <div class="card-body">
+
+                <div class="form-row">
+                  <div class="col">
+                    <button type="submit" [disabled] ="addTechnicianForm.invalid" class="btn btn-success" style="width: 100%">Submit</button>
+                  </div>
+                  <!--<div class="col">
+                   <button type="button" [disabled] ="disableBtn" class="btn btn-danger" style="width: 100%" (click)="resetAll()">Reset</button>
+                  </div>-->
+                  <div class="col">
+                    <mat-spinner [diameter]="60" *ngIf="loadingShow"></mat-spinner>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+       
+        
+
+      </form>
+
+    </div>
+    <div class="col-sm-3"></div>
+
+  </div>
+
+</div>

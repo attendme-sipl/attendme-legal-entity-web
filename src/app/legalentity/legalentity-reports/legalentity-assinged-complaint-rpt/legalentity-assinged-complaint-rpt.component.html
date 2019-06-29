@@ -1,0 +1,102 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-sm-12">
+
+      <!--Assinged complaint report heading-->
+
+      <div class="row">
+        <div class="col-sm-12">
+
+          <div class="clearfix">
+            <h3 class="float-left">{{ complaintMenuName }} Report (Status: Assigned)</h3>
+            <button type="button" class="btn btn-default float-right"
+             (click) = "popComplaintAssingRptGrid()" >
+              <mat-icon svgIcon="refresh-panel"></mat-icon>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!--Assinged complaint report grid-->
+     
+      <div class="row">
+        <div class="col-sm-12">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+
+          <mat-form-field>
+            <input matInput (keyup) = "applyFilter($event.target.value)" placeholder="filter" autocomplete="OFF" />
+          </mat-form-field>
+
+          <div class="mat-elevation-z8">
+
+            <table mat-table [dataSource] = "dataSource" matSort>
+
+              <ng-container matColumnDef="srNo">
+                <th mat-header-cell *matHeaderCellDef>Sr. No.</th>
+                <td mat-cell *matCellDef="let i=index">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="complaintNumber">
+                <th mat-header-cell *matHeaderCellDef>{{ complaintMenuName }} Number</th>
+                <td mat-cell *matCellDef="let element">
+                  <button type="button" class="btn btn-link" 
+                   (click) = "openComplaintDetails(element.complaintId)" >
+                    {{ element.complaintNumber }}
+                  </button>
+                </td>
+              </ng-container>
+
+             <!--<ng-container matColumnDef="equipmentName">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ equptMenuName }} Name</th>
+                  <td mat-cell *matCellDef="let element">{{ element.equipmentName }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="equipmentModel">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ equptMenuName }} Model</th>
+                  <td mat-cell *matCellDef="let element">{{ element.equipmentModel }}</td>
+              </ng-container>
+
+        
+              <ng-container matColumnDef="equipmentSerial">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ equipmentMenuName }} Serial</th>
+                <td mat-cell *matCellDef="let element">{{ element.equipmentSerial }}</td>
+              </ng-container> -->
+
+              <ng-container matColumnDef="complaintOpenDateTime">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ complaintMenuName }} Open Date</th>
+                <td mat-cell *matCellDef="let element">{{ element.complaintOpenDateTime | date:'medium' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="complaintAssignedDateTime">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ complaintMenuName }} Assinged Date</th>
+                <td mat-cell *matCellDef="let element">{{ element.complaintAssignedDateTime | date:'medium' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="assingedToTechncianName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ complaintMenuName }} Assinged {{ technicianMenuName }}</th>
+                <td mat-cell *matCellDef="let element">{{ element.assingedToTechncianName }}</td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumn"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumn"></tr>
+
+            </table>
+
+            <mat-paginator 
+             [length] = "complaintRecordCount" 
+             [pageSize] = "pageSize"
+             [pageSizeOptions] = "pageSizeOption">
+            </mat-paginator>
+
+          </div>
+
+        </div>
+      </div>
+        
+    </div>
+  </div>
+
+</div>

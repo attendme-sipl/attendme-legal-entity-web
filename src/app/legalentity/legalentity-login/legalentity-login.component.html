@@ -1,0 +1,88 @@
+<div class="container-fluid">
+
+    <div class="row">
+
+        <div class="col-sm-12">
+
+<mat-toolbar style="background-color: #343a40">
+    <a routerLink="." style="text-decoration: none;"> 
+        <mat-icon svgIcon="attendme-logo"
+        style="font-size:30px; height:30px; width:30px;"></mat-icon>
+        Attendme 
+          </a>
+</mat-toolbar>
+
+</div>
+</div>
+
+<form #legalEntityLoginForm="ngForm" (ngSubmit)="onLoginSubmit(legalEntityLoginForm)">
+
+<div class="row">
+    <div class="col-sm-12">
+
+        <div class="centered" style="width: 30%;">
+
+            <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>Attendme User Login</mat-card-title>
+                </mat-card-header>
+
+                <mat-error *ngIf="errorOccured">
+                        {{errorText}}
+                    </mat-error>
+        
+                    <mat-card-content style="font-size: 18px;">
+        
+                        <mat-form-field class="inputTxtWidth">
+                            <input type="email" matInput placeholder="Email ID" autocomplete="off" 
+                             required
+                             [(ngModel)]="emailId" name="txtEmailId" #txtEmailIdModel="ngModel"
+                            />
+
+                            <mat-error
+                             *ngIf="(legalEntityLoginForm.submitted || txtEmailIdModel.touched) && txtEmailIdModel.invalid" >
+                              Please enter Email Id 
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field class="inputTxtWidth">
+                            <input type="password" matInput placeholder="Password" 
+                             required
+                             [(ngModel)]="userPassword" name="txtUserPassword" #txtUserPasswordModel="ngModel"
+                            />
+                        </mat-form-field>
+
+                        <mat-error 
+                         *ngIf="(legalEntityLoginForm.submitted || txtUserPasswordModel.touched) && txtUserPasswordModel.invalid" >
+                         Please enter password
+                        </mat-error>
+        
+                    </mat-card-content>
+
+                    <mat-card-actions align="end">
+
+                            <a mat-button routerLink="/legalentity/forgot-password" color="primary">
+                                Forgot Password
+                            </a>
+
+                            <span style="flex: 1 1 auto;"></span>
+
+                            <button  mat-raised-button color="primary" >
+                                Login
+                            </button>
+                      
+                    </mat-card-actions>
+
+                    
+            </mat-card>
+
+        </div>
+
+    </div>
+</div>
+
+</form>
+
+</div>

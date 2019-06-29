@@ -1,0 +1,100 @@
+
+<div >
+
+    <mat-toolbar>
+        <mat-card-title class="float-left">Add Contacts</mat-card-title>
+        <span style="flex: 1 1 auto;"></span>
+        <button type="button" class="btn btn-default float-right" (click)="onCloseButtonClick()">
+          <mat-icon svgIcon="close-window-icon"></mat-icon>
+        </button>
+      </mat-toolbar>
+
+      <form [formGroup] ="addContactForm" (ngSubmit)="onSubmitClick()">
+
+          <mat-card>
+
+              <mat-card-content>
+                 <mat-card>
+             
+                     <mat-card-content>
+
+                     <mat-error *ngIf="showValidationError">
+                       {{validaitonErrorMsg}}
+                     </mat-error>
+
+                      <div formArrayName="contactList" *ngFor="let indivContact of contactFormArray.controls; let i=index">
+                       
+                        <div [formGroupName]="i">
+                            <mat-grid-list cols="12" >
+                 
+                                <mat-grid-tile colspan="3">
+                                  <mat-form-field>
+                                      <input type="text" matInput formControlName="contactPersonName" autocomplete="OFF" placeholder="Contact Person Name" />
+                                  </mat-form-field>
+                                </mat-grid-tile>
+                        
+                                <mat-grid-tile colspan="4">
+                        
+                                  <mat-select style="width: 40%" formControlName="countryCallingCode" >
+                                    <mat-option *ngFor="let indivCallingCode of countryCallingCodeListObj" [value]="indivCallingCode.countryCallingCode" >
+                                      {{indivCallingCode.countryShortName}} - {{indivCallingCode.countryCallingCode}}
+                                    </mat-option>
+                                  </mat-select>
+                                  
+                                  <mat-form-field style="width: 60%">
+                                    <input type="text" matInput formControlName="contactMobileNumber" autocomplete="OFF" placeholder="Mobile Number">
+
+                                    <mat-error *ngIf="(submitted || addContactForm.controls['contactList'].at(i).controls['contactMobileNumber'].touched || addContactForm.controls['contactList'].at(i).controls['contactMobileNumber'].dirty)
+                                     && (addContactForm.controls['contactList'].at(i).controls['contactMobileNumber'].invalid)
+                                    ">
+                                      Enter valid mobile number 
+                                    </mat-error>
+                                  </mat-form-field>
+                        
+                                </mat-grid-tile>
+                        
+                                  <mat-grid-tile colspan="4">
+                                      <mat-form-field >
+                                          <input type="email" formControlName="contactEmailId" autocomplete="OFF" matInput placeholder="Email ID" />
+                                          <mat-error *ngIf="(submitted || addContactForm.controls['contactList'].at(i).controls['contactEmailId'].touched || addContactForm.controls['contactList'].at(i).controls['contactEmailId'].dirty)
+                                           && addContactForm.controls['contactList'].at(i).controls['contactEmailId'].invalid
+                                          ">
+                                             Enter valid Email ID
+                                          </mat-error>
+                                      </mat-form-field>
+                                  </mat-grid-tile>
+                                  
+                                  <mat-grid-tile colspan="1">
+                                    <button type="button"  *ngIf="i != 0" (click)="removeContactFromFormArray(i)" class="btn btn-default">
+                                      <mat-icon svgIcon="delete-icon"></mat-icon>
+                                    </button>
+                                  </mat-grid-tile>
+                        
+                            </mat-grid-list>
+                        </div>
+
+                      </div>
+                
+                 
+                     </mat-card-content>
+                 
+                     <mat-card-actions align="left">
+                         <button type="button" mat-raised-button (click)="addContactToFormArray()">Add Another Contact</button>      
+                     </mat-card-actions>
+                 
+                   </mat-card>
+              </mat-card-content>
+         
+              <mat-card-actions align="right">
+                 
+                 <button type="submit" mat-raised-button color="primary" [disabled]="addContactForm.invalid">Submit</button>
+                 <button type="button" mat-button (click)="onCloseButtonClick()">Cancel</button>
+             </mat-card-actions>
+           </mat-card>
+
+      </form>
+
+ 
+ 
+
+    </div>

@@ -1,0 +1,85 @@
+<mat-progress-bar mode="indeterminate" *ngIf="indivComplaintProgressBar"></mat-progress-bar>
+
+
+<h3 mat-dialog-title>
+  {{legalEntityMenuPrefModel.complaintMenuName}} Details (No:- {{indivComptDetailsModel.complaintNumber}})
+</h3>
+
+<mat-dialog-content class="mat-typography">
+
+  <table class="table">
+    <tr>
+        <th>Number</th>
+        <td>{{indivComptDetailsModel.complaintNumber}}</td>
+    </tr>
+
+    <tr>
+        <th>Open Date and Time</th>
+        <td>{{indivComptDetailsModel.complaintDate | date:'medium'}}</td>
+    </tr>
+
+    <tr>
+        <th>Details</th>
+        <td>{{indivComptDetailsModel.complaintDescription}}</td>
+    </tr>
+
+    <tr>
+        <th>Documents</th>
+        <td>
+          <mat-list role="list">
+              <mat-list-item role="listitem"
+               *ngFor="let indivDocData of indivComplaintDocLinkArr"
+              >
+                <a href="{{indivDocData.imageBase64Data}}" target="_blank">
+                  {{indivDocData.imageName}}
+                </a>
+              
+            </mat-list-item>
+          </mat-list>
+        </td>
+    </tr>
+
+    <tr>
+      <th>Registered By</th>
+      <td>{{indivComptDetailsModel.operatorName}} ({{ indivComptDetailsModel.operatorContactNumber }})</td>
+    </tr>
+
+    <tr>
+      <th>Assigned Date-Time</th>
+      <td>{{indivComptDetailsModel.assignedDate | date:'medium'}}</td>
+    </tr>
+
+    <tr>
+      <th>Assigned To</th>
+      <td>
+        <span *ngIf="indivComptDetailsModel.assignTechnicianName != ''">{{indivComptDetailsModel.assignTechnicianName}} ({{indivComptDetailsModel.assignTechnicianContactNumber}})</span>
+      </td>
+    </tr>
+
+    <tr>
+      <th>Inprogress Date-Time</th>
+      <td>{{indivComptDetailsModel.inprogressDate | date:'medium'}}</td>
+    </tr>
+
+    <tr>
+      <th>Closed Date-Time</th>
+      <td>{{indivComptDetailsModel.closedDate | date:'medium'}}</td>
+    </tr>
+
+    <tr>
+      <th>Failure Reason</th>
+      <td>{{indivComptDetailsModel.failureReason}}</td>
+    </tr>
+
+    <tr>
+      <th>Action Taken</th>
+      <td>{{indivComptDetailsModel.actionTaken}}</td>
+    </tr>
+
+  </table>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close] = "true" cdkFocusInitial>Close</button>
+</mat-dialog-actions>

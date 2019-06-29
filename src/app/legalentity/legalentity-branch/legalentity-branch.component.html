@@ -1,0 +1,247 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-sm-12">
+      <h3 style="text-align: center">
+        {{branchMenuName}}
+      </h3>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-12">
+
+      <div *ngIf="errorBit == true" class="alert alert-danger">
+        There was ane error !!!
+      </div>
+
+    </div>
+  </div>
+
+
+  <div *ngIf="branchRuleBookExceed == true">
+      
+    <div class="jumbotron jumbotron-fluid">
+      <div class="container">
+        <h1 class="display-4">{{branchMenuName}} Exceed !!!</h1>
+        <p class="lead">Total number of {{branchMenuName}} added has exceeded as per your rule book. To uprgade. Please contact administrator.</p>
+
+        <hr class="my-4" />
+
+        <a class="btn btn-success btn-lg" [routerLink]="['/legalentity/portal/dashboard']" role="button">Back To Dashboard</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div *ngIf="branchRuleBookExceed == false">
+
+    <form #addBranch ="ngForm"  (ngSubmit)="addNewBranch(addBranch)">
+      
+
+      <div class="row">
+
+        <div class="col-sm-12">
+
+          <div [className]= "cssClass" *ngIf="dispMessageBit" >
+            {{userMessage}}
+          </div>
+
+            <div class="card">
+
+              <div class="card-header">
+                {{branchMenuName}} Details
+              </div>
+                
+              <div class="card-body">
+
+               <div class="row">
+
+                <div class="form-group col-sm-12">
+                  <input type="text" class="form-control" placeholder="{{branchMenuName}} Name" 
+                   required
+                   data-toggle="tooltip" data-placement="top" title= "{{branchMenuName}} Name"
+                   name ="addBranchModel.branchName" [(ngModel)]="addBranchModel.branchName" #branchNameModel = "ngModel"
+                   [ngClass]="{'is-invalid': addBranch.submitted && branchNameModel.invalid}"
+                  />
+
+                  <div *ngIf="addBranch.submitted && branchNameModel.invalid" class="invalid-feedback">
+                    Enter {{branchMenuName}} Name
+                  </div>
+               
+                </div>
+
+               </div>
+
+               <div class="row">
+
+                <div class="form-group col-sm-4">
+                  <input type="text" class="form-control" placeholder="Contact Person Name" 
+                  data-toggle="tooltip" data-placement="top" title="Contact Person Name"
+                  name="addBranchModel.contactPersonName" [(ngModel)]="addBranchModel.contactPersonName" #contactPersonNm = "ngModel" />
+                 </div>
+
+                <div class="form-group col-sm-4">
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+     
+                            <select class="form-control" 
+                            data-toggle="tooltip" data-placement="top" title= "Country calling code"
+                            name="contactCountryCode" [(ngModel)]="contactCountryCode" #ContactCountryCodeList="ngModel"
+                            >
+                              
+                            <option *ngFor="let countryCode of callingCodeArr | orderBy 'countryCode'" [value]="countryCode.countryCallingCode">
+                             {{countryCode.countryCallingCode}}
+                            </option>
+                              
+                            </select>
+                          
+                        </div>
+                        <input type="text" class="form-control" placeholder="Mobile Number"
+                        data-toggle="tooltip" data-placement="top" title= "Mobile Number"
+                        minlength="10" maxlength="11" 
+                         
+                         name="addBranchModel.branchContactMobileWoCC" [(ngModel)] = "addBranchModel.branchContactMobileWoCC" #branchMobileNumber = "ngModel" 
+                         />
+        
+                       
+        
+                    </div>
+
+                  </div>
+
+                <div class="form-group col-sm-4">
+                    <input type="text" class="form-control" placeholder="Contact Email Id" 
+                    data-toggle="tooltip" data-placement="top" title="Contact Email Id"
+                    name="addBranchModel.contactEmailId" [(ngModel)]="addBranchModel.contactEmailId" #contactEmail = "ngModel" />
+                </div>
+
+               </div>
+
+               <div class="row">
+
+                <div class="form-group col-sm-12">
+                  
+                  <textarea class="form-control" placeholder="Location Address"
+                   date-toggle="tooltip" date-placement="top" title="Location Address"
+                   name="addBranchModel.branchAddress" [(ngModel)]="addBranchModel.branchAddress" #branchAddressModel ="ngModel">
+                  </textarea>
+                </div>
+
+               </div>
+
+              </div>
+      
+          </div>
+
+          <div class="card">
+
+            <div class="card-header">
+              {{branchMenuName}} User Account Details
+            </div>
+
+            <div class="card-body">
+
+              <div class="row">
+
+                <div class="form-group col-sm-4">
+                  <input type="text" class="form-control" placeholder="User Full Name"
+                   required
+                  data-toggle="tooltip" data-placement="top" title= "User Full Name"
+                  name ="addBranchModel.branchUserName" [(ngModel)]="addBranchModel.branchUserName" #userName = "ngModel" 
+                  [ngClass]="{'is-invalid': addBranch.submitted && userName.invalid}"
+                  />
+
+                  <div *ngIf="addBranch.submitted && userName.invalid" class="invalid-feedback">
+                    Please enter user full name
+                  </div>
+                </div>
+
+                <div class="form-group col-sm-4">
+
+                    <div class="input-group mb-3">
+
+                        <div class="input-group-prepend">
+     
+                            <select class="form-control" 
+                            data-toggle="tooltip" data-placement="top" title= "Country calling code"
+                            name="userCountryCode" [(ngModel)]="userCountryCode" #userCountryCodeList="ngModel"
+                            [ngClass]="{'is-invalid': addBranch.submitted && branchUserMobileNo.invalid}"
+                            >
+                              
+                            <option *ngFor="let countryCode of callingCodeArr | orderBy 'countryCode'" [value]="countryCode.countryCallingCode">
+                             {{countryCode.countryCallingCode}}
+                            </option>
+                              
+                            </select>
+                          
+                        </div>
+
+                    <input type="text" class="form-control" placeholder="User Mobile Number"
+                    required
+                    minlength="10" maxlength="11"
+                   data-toggle="tooltip" data-placement="top" title= "User Mobile Number"
+                   name ="addBranchModel.branchUserMobileWoCC" [(ngModel)]="addBranchModel.branchUserMobileWoCC" #branchUserMobileNo = "ngModel" 
+                   [ngClass]="{'is-invalid': addBranch.submitted && branchUserMobileNo.invalid}"
+                   />
+
+                   <div *ngIf="addBranch.submitted && branchUserMobileNo.invalid" class="invalid-feedback">
+                      Please enter user mobile number
+                    </div>
+
+                    </div>
+
+                  
+                </div>
+
+                <div class="form-group col-sm-4">
+                    <input type="text" class="form-control" placeholder="User Email Id"
+                    required
+                   data-toggle="tooltip" data-placement="top" title= "User Email Id"
+                   name ="addBranchModel.branchUserEmail" [(ngModel)]="addBranchModel.branchUserEmail" #branchUserEmail = "ngModel" 
+                   [ngClass]="{'is-invalid': addBranch.submitted && branchUserEmail.invalid}"
+                   />
+
+                   <div *ngIf="addBranch.submitted && branchUserEmail.invalid" class="invalid-feedback">
+                      Please enter user email Id
+                    </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-3 form-group"></div>
+                    <div class="col-sm-3 form-group">
+                      <button type="submit" [disabled]='btnDisabled' class="btn btn-success" style="width: 100%;" >Submit</button>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                      <button type="reset" [disabled]='btnDisabled' class="btn btn-danger" style="width: 100%;"  >Reset</button>
+                    </div>
+                    <div class="col-sm-3 form-group">
+                        <img class="img-responsive"  height=70 width=70 src="/assets/images/Loading_icon.gif" 
+                        *ngIf="loading==true"
+                       /> 
+                    </div>
+        
+                  </div>
+            </div>
+            
+          </div>
+
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+
+
+</div>
