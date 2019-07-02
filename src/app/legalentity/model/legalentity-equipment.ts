@@ -4,6 +4,7 @@ export interface LegalentityEquipment {
   adminApprove: boolean,
   equptActiveStatus: boolean,
   addedByUserId: number,
+  legalEntityId: number,
   formFieldData:
                     { 
                         formFieldId: number, 

@@ -48,7 +48,9 @@ export interface IcontactEquptMappingReqStruct{
   contactEmailId: string,
   contactSelected: boolean,
   smsRequired: boolean,
-  emailRequired: boolean
+  emailRequired: boolean,
+  countryCallingCode: number,
+  specificToQrId: boolean
 };
 
 @Component({
@@ -100,6 +102,9 @@ export class LegalentityEquipmentComponent implements OnInit {
   enableContactProgressBar:boolean;
 
   countryCallingCodeListObj: IcountryCallingCodeResponse[];
+
+  dispContactError: boolean; 
+  contactErrorMessage: string;
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -303,7 +308,19 @@ export class LegalentityEquipmentComponent implements OnInit {
         return false;
       }
 
-      this.contactArr=data.contactList;
+      this.contactArr=data.contactList.map((value,index) => value ? {
+        contactId: value['contactId'],
+        contactPersonName: value['contactPersonName'],
+        contactMobileNumber: value['contactMobileNumber'],
+        contactEmailId: value['contactEmailId'],
+        contactToBeDisplayed: value['contactToBeDisplayed'],
+        countryCallingCode: value['countryCallingCode'],
+        contactSelected: value['contactSelected'],
+        smsRequired: value['smsRequired'],
+        emailRequired: value['emailRequired'],
+        specificToQrId: value['specificToQrId']
+      }: null)
+      .filter(value => value.specificToQrId == false);
 
       this.contactArr.forEach((indivContactObj: IcontactEquptMappingReqStruct) => {
         //indivContactObj.contactSelected=false;
@@ -312,7 +329,7 @@ export class LegalentityEquipmentComponent implements OnInit {
         indivContactObj.emailRequired=false;
         this.addQrIdContactDetailsToFormArray(indivContactObj);
       });
-  
+
       this.enableContactProgressBar=false;
 
     }, error => {
@@ -429,7 +446,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     dialogRef.afterClosed()
     .subscribe((result:IaddContactReqUpdatedStruct) => {
 
-      console.log(addContatReqDataObj);
+      //console.log(addContatReqDataObj);
       
       if (!addContatReqDataObj.cancelClick){
 
@@ -526,6 +543,7 @@ export class LegalentityEquipmentComponent implements OnInit {
       this.addEquipmentFormObj = {
         addedByUserId: this.equptForm.value['addedByUserId'],
         adminApprove: true,
+        legalEntityId: this.legalEntityId,
         branchId: this.branchId,
         equptActiveStatus: true,
         formFieldData: newQrIdFormFieldDataObj,
@@ -533,10 +551,11 @@ export class LegalentityEquipmentComponent implements OnInit {
         qrContactData: qrIdContactArrUpdated
       };
 
-     // console.log(this.addEquipmentFormObj);
-
+      console.log(this.addEquipmentFormObj);
+      
       this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
       .subscribe((data:IaddQrIdResponseStruct) => {
+        
         if (data.errorOccured){
           this.addEquptProgressBar=false;
           this.toastService.error("Something went wrong while add QR ID details");
@@ -681,12 +700,20 @@ export class LegalentityEquipmentComponent implements OnInit {
 
      this.equptForm.patchValue({
       branchId: this.branchId,
+      legalEntityId: this.legalEntityId,
       adminApprove: true,
       equptActiveStatus: true,
       addedByUserId: this.userId
      });
 
      this.getEquptFormfieldPref();
+
+     this.equptForm.get('specificToQrContact').patchValue({
+      contactPersonName: [''],
+      contactEmailId: [''],
+      contactCountryCallingCode:91,
+      contactMobileNumber: ['']
+    })
 
     // while (this.qrContactDetailsFormArray.length !== 0){
       // this.qrContactDetailsFormArray.removeAt(0);
@@ -710,8 +737,58 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.emailSelectAll=false;
   }
 
-  addContactToList():void{
-    console.log(this.equptForm.get('specificToQrContact').value);
+  addContactToList(){
+    //console.log(this.equptForm.get('specificToQrContact').value);
+
+    let addedContactObj:IcontactEquptMappingReqStruct = this.equptForm.get('specificToQrContact').value;
+    let mobileNumber: string = addedContactObj.contactMobileNumber;
+    let updatedMobileNumber: string;
+
+    this.dispContactError=false;
+
+    if (addedContactObj.contactPersonName == '' && addedContactObj.contactMobileNumber == '' && addedContactObj.contactEmailId == ''){
+      this.dispContactError=true;
+      this.contactErrorMessage="Enter value in atleast one contact field";
+      return false;
+    }
+
+    if (mobileNumber != ''){
+      updatedMobileNumber = this.equptForm.get('specificToQrContact').value['contactCountryCallingCode'] + "-" + mobileNumber;
+    }
+    else{
+      updatedMobileNumber='';
+    }
+
+    let updatedAddedContactObj: IcontactEquptMappingReqStruct = {
+      contactEmailId: addedContactObj.contactEmailId,
+      contactId: 0,
+      contactMobileNumber: updatedMobileNumber,
+      contactPersonName: addedContactObj.contactPersonName,
+      contactSelected: true,
+      contactToBeDisplayed: false,
+      countryCallingCode: addedContactObj.countryCallingCode,
+      emailRequired: false,
+      smsRequired: false,
+      specificToQrId:true
+    }
+
+    //this.addQrIdContactDetailsToFormArray(updatedAddedContactObj);
+  
+    this.qrIdContactFormArray.insert(0,this.equptFormFieldBuider.group(updatedAddedContactObj));
+
+    this.equptForm.get('specificToQrContact').patchValue({
+      contactPersonName: [''],
+      contactEmailId: [''],
+      contactCountryCallingCode:91,
+      contactMobileNumber: ['']
+    })
+
+    this.toastService.success("Contact added to list");
+
+  }
+
+  deleteAddedContact(contactIndex: number){
+    this.qrContactDetailsFormArray.removeAt(contactIndex);
   }
 
   ngOnInit() {
@@ -745,6 +822,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.equptForm = this.equptFormFieldBuider.group({
       qrCodeId: ['', Validators.required],
       branchId: this.branchId,
+      legalEntityId: this.legalEntityId,
       adminApprove: true,
       equptActiveStatus: true,
       addedByUserId: this.userId,
@@ -756,9 +834,12 @@ export class LegalentityEquipmentComponent implements OnInit {
       specificToQrContact: this.equptFormFieldBuider.group(
         {
           contactPersonName: [''],
-          contactEmailId: [''],
+          contactEmailId: ['', Validators.email],
           contactCountryCallingCode:91,
-          contactMobileNumber: ['']
+          contactMobileNumber: ['',Validators.compose([
+            Validators.minLength(10),
+            Validators.maxLength(10)
+          ])]
         }
       )
     

@@ -39,7 +39,7 @@
 
                           
 
-                         <mat-grid-list cols="2" rowHeight="100px" >
+                         <mat-grid-list cols="2" rowHeight="60px" >
 
                               <mat-grid-tile formArrayName="formFieldData" 
                               *ngFor="let formField of equptForm.get('formFieldData')['controls']; let i=index;">
@@ -48,11 +48,11 @@
           
                                       
                                         <div [formGroupName] ="i">
-                                              <textarea matInput formControlName="formFieldValue" placeholder="{{equptForm.get('formFieldData').value[i]['formFiledTitleName']}}"></textarea>
+                                            <input type="text" matInput formControlName="formFieldValue" placeholder="{{equptForm.get('formFieldData').value[i]['formFiledTitleName']}}" />
                                         </div>
 
                                         <mat-error *ngIf="equptForm.controls['formFieldData'].dirty && equptForm.controls['formFieldData'].invalid">
-                                                Please check character limit.
+                                            Please check character limit.
                                         </mat-error>
                                          
                                       </mat-form-field>
@@ -151,6 +151,58 @@
 
                       </mat-card> -->
 
+                      <mat-card >
+                            <mat-card-header>
+                                <mat-card-title>Add Contact</mat-card-title>
+                            </mat-card-header>
+                               
+                            <mat-card-content>
+                                <mat-grid-list formArrayName="specificToQrContact" cols="12">
+
+                                     <mat-grid-tile colspan="3">
+                                         <mat-form-field>
+                                            <input type="text" formControlName="contactPersonName" matInput autocomplete="OFF" placeholder="Contact Person Name" autocomplete="OFF" />
+                                         </mat-form-field>
+                                     </mat-grid-tile>
+    
+                                     <mat-grid-tile colspan="1">
+                                        <mat-select  formControlName="contactCountryCallingCode">
+                                            <mat-option *ngFor="let indivCallingCode of countryCallingCodeResponseObj" [value]="indivCallingCode.countryCallingCode" >
+                                                {{indivCallingCode.countryShortName}} - {{indivCallingCode.countryCallingCode}}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-grid-tile>
+    
+                                    <mat-grid-tile colspan="3">
+                                      <mat-form-field>
+                                          <input type="text" formControlName="contactMobileNumber" matInput placeholder="Mobile Number" autocomplete="OFF" />
+                                          <mat-error *ngIf="equptForm.get('specificToQrContact').get('contactMobileNumber').invalid">
+                                            Enter valid mobile number
+                                          </mat-error>
+                                      </mat-form-field>
+                                    </mat-grid-tile>
+    
+                                    <mat-grid-tile colspan="3">
+                                        <mat-form-field>
+                                            <input type="text" formControlName="contactEmailId" matInput placeholder="Email ID" autocomplete="OFF" />
+                                            <mat-error *ngIf="equptForm.get('specificToQrContact').get('contactEmailId').invalid">
+                                                Enter valid email id
+                                            </mat-error>
+                                        </mat-form-field>
+                                        
+                                    </mat-grid-tile>
+    
+                                    <mat-grid-tile colspan="2">
+                                        <button type="button" mat-raised-button color="primary" (click)="addContactToList()">Add To List</button>                             
+                                    </mat-grid-tile>
+    
+                                </mat-grid-list>
+                            </mat-card-content>
+                            
+                            <mat-error *ngIf="dispContactError">{{contactErrorMessage}}</mat-error>
+
+                    </mat-card>
+
                       <mat-card>
                           <!--<mat-card-header>
                               <mat-card-title>
@@ -160,11 +212,11 @@
 
                           <mat-progress-bar *ngIf="enableContactProgressBar" mode="indeterminate"></mat-progress-bar>
                             <mat-toolbar>
-                                <span>Select Contact Receiving Notifications</span>
+                                <span>Contact Receiving Notifications</span>
                                 <span style="flex: 1 1 auto;"></span>
-                                <button type="button" mat-raised-button class="float-right" color="primary" (click)="openAddContactdialog()">
+                                <!--<button type="button" mat-raised-button class="float-right" color="primary" (click)="openAddContactdialog()">
                                     Add Contact
-                                </button>
+                                </button>-->
                                 <button type="button" mat-icon-button class="btn btn-default" (click)="popNotificationContactList()">
                                     <mat-icon svgIcon="refresh-icon"></mat-icon>
                                 </button>
@@ -197,6 +249,7 @@
                                                   <mat-checkbox [checked]="makeAllPublic" (change)="contactMakeAllPublic($event);" ></mat-checkbox>
                                                   Make Public
                                               </th>
+                                              <th>Remove</th>
                                           </tr>
                                       </thead>
 
@@ -236,6 +289,10 @@
 
                                              <td>
                                                  <mat-checkbox formControlName="contactToBeDisplayed" [checked]="indivContactObj.get('contactToBeDisplayed').value"></mat-checkbox>
+                                             </td>
+
+                                             <td>     
+                                                <button type="button" mat-button color="primary" (click)="deleteAddedContact(i)" [disabled]="indivContactObj.get('contactId').value != 0">Remove</button>  
                                              </td>
 
                                           </tr>
