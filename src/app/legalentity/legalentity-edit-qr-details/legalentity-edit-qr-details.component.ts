@@ -671,7 +671,8 @@ get qrContactDetailsFormArray()
     equptFormReqObj.qrContactData.pop();
 
     updatedContactListObj.forEach(indivContactObj => {
-      
+    
+
       equptFormReqObj.qrContactData.push({
         contactId: indivContactObj.contactId,
         contactToBeDisplayed: indivContactObj.contactToBeDisplayed,
@@ -686,9 +687,9 @@ get qrContactDetailsFormArray()
     equptFormReqObj.equptActiveStatus=true;
     equptFormReqObj.qrCodeId=this.qrCodeId;
 
-  //  console.log(equptFormReqObj);
+    console.log(equptFormReqObj);
 
-    this.equptService.updateQrIdDetails(equptFormReqObj)
+    /*this.equptService.updateQrIdDetails(equptFormReqObj)
     .subscribe(data => {
       if (data['errorOccurred']){
         this.toastService.error("Something went wrong while updating QR ID details");
@@ -703,7 +704,7 @@ get qrContactDetailsFormArray()
     }, error => {
       this.toastService.error("Something went wrong while updating QR ID details");
       this.addEquptProgressBar=false;
-    })
+    })*/
     
     //console.log(equptFormReqObj);
   }

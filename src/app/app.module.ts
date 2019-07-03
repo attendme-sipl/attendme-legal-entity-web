@@ -56,7 +56,7 @@ import {LegalentityHeadofficeComponent} from './legalentity/legalentity-headoffi
 import {LegalentityBranch}  from './legalentity/model/legalentity-branch';
 import {LegalentityBranchService} from './legalentity/services/legalentity-branch.service';
 import { LegalentityTechnicianRptComponent } from './legalentity/legalentity-reports/legalentity-technician-rpt/legalentity-technician-rpt.component';
-import { LegalentityAssignedQrRptComponent } from './legalentity/legalentity-reports/legalentity-assigned-qr-rpt/legalentity-assigned-qr-rpt.component';
+
 import {LegalentityQrService} from './legalentity/services/legalentity-qr.service';
 import { LegalentityEditQrDetailsComponent } from './legalentity/legalentity-edit-qr-details/legalentity-edit-qr-details.component';
 import {LegalentityBranchComponent} from './legalentity/legalentity-branch/legalentity-branch.component';
@@ -71,6 +71,7 @@ import { LegalentityComplaintRptComponent } from './legalentity/legalentity-repo
 import { LegalentityQrDetailsComponent } from './legalentity/legalentity-qr-details/legalentity-qr-details.component';
 import {LegalentityIndivComptDetails} from './legalentity/model/legalentity-indiv-compt-details';
 import { LegalentityBranchListRptComponent } from './legalentity/legalentity-reports/legalentity-branch-list-rpt/legalentity-branch-list-rpt.component';
+import { LegalentityAssignedQrRptComponent } from './legalentity/legalentity-reports/legalentity-assigned-qr-rpt/legalentity-assigned-qr-rpt.component';
 
 @NgModule({
   declarations: [
@@ -90,7 +91,6 @@ import { LegalentityBranchListRptComponent } from './legalentity/legalentity-rep
     LegalentityResetPasswordComponent,
     LegalentityHeadofficeComponent,
     LegalentityTechnicianRptComponent,
-    LegalentityAssignedQrRptComponent,
     LegalentityEditQrDetailsComponent,
     LegalentityBranchComponent,
     LegalentityAssingedComplaintRptComponent,
@@ -100,7 +100,8 @@ import { LegalentityBranchListRptComponent } from './legalentity/legalentity-rep
     LegalentityClosedComptRptComponent,
     LegalentityComplaintRptComponent,
     LegalentityQrDetailsComponent,
-    LegalentityBranchListRptComponent
+    LegalentityBranchListRptComponent,
+    LegalentityAssignedQrRptComponent
   ],
   imports: [
     BrowserModule,
