@@ -7,7 +7,7 @@ import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityUserService, IuserLoginReqStruct, IbranchReqStruct } from '../services/legalentity-user.service';
 import *as md5 from "md5";
 import { LegalentityUser } from '../model/legalentity-user';
-import { stringify } from '@angular/core/src/util';
+//import { stringify } from '@angular/core/src/util';
 import { LegalentityMenuPref } from '../model/legalentity-menu-pref';
 
 @Component({

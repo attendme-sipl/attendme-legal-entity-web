@@ -80,9 +80,6 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
 
   enableContactProgressBar:boolean;
 
-  dispContactError: boolean; 
-  contactErrorMessage: string;
-
   constructor(
     private utilService: LegalentityUtilService,
     private userModel: LegalentityUser,
@@ -253,8 +250,7 @@ get qrContactDetailsFormArray()
       contactToBeDisplayed: this.checked,
       contactId:[''],
       smsRequired: this.defaultSMSEnable ,
-      emailRequired: this.defaultEmailEnable,
-      specificToQrId:['']
+      emailRequired: this.defaultEmailEnable
     })
   }
 
@@ -285,31 +281,14 @@ get qrContactDetailsFormArray()
       }
 
       this.contactArr=data.contactList;
-    
 
-      let updateContactArr: IcontactEquptMappingReqStruct[] = data.contactList.map((value,index) => value?{
-        contactId: value['contactId'],
-        contactToBeDisplayed: value['contactToBeDisplayed'],
-        contactPersonName: value['contactPersonName'],
-        contactMobileNumber: value['contactMobileNumber'],
-        contactEmailId: value['contactEmailId'],
-        contactSelected: value['contactSelected'],
-        smsRequired: value['smsRequired'],
-        emailRequired: value['emailRequired'],
-        countryCallingCode: value['countryCallingCode'],
-        specificToQrId: value['specificToQrId']
-      }:null)
-      .filter(value => value.specificToQrId == false);
-
-      updateContactArr.forEach((indivContactObj: IcontactEquptMappingReqStruct) => {
+      this.contactArr.forEach((indivContactObj: IcontactEquptMappingReqStruct) => {
         //indivContactObj.contactSelected=false;
         indivContactObj.contactToBeDisplayed=false;
         indivContactObj.smsRequired=false;
         indivContactObj.emailRequired=false;
         this.addQrIdContactDetailsToFormArray(indivContactObj);
       });
-
-      
 
       this.popQrIdContactDetails();
   
@@ -474,26 +453,6 @@ get qrContactDetailsFormArray()
       contactDetailsObj.forEach(indivContactObj => {
 
         let contactId:number = indivContactObj.contactId;
-        this.contactArr.forEach(indivContact => {
-        
-          if (indivContact.contactId == contactId && indivContact.specificToQrId == true){
-           
-             indivContact.emailRequired=false;
-             indivContact.smsRequired=false;
-             indivContact.contactToBeDisplayed=false;
-             console.log(indivContact);
-
-             this.qrIdContactFormArray.insert(0,this.equptFormFieldBuider.group(indivContact))
-
-            //console.log(indivContact);
-           
-          }
-
-         // if (indivContact.contactId == contactId && indivContact.specificToQrId == true){
-            
-         //   this.qrIdContactFormArray.insert(0,this.equptFormFieldBuider.group(indivContact))
-         // }  
-        });
 
         for(let i:number=0; i < this.qrIdContactFormArray.controls.length; i++){
           
@@ -671,8 +630,7 @@ get qrContactDetailsFormArray()
     equptFormReqObj.qrContactData.pop();
 
     updatedContactListObj.forEach(indivContactObj => {
-    
-
+      
       equptFormReqObj.qrContactData.push({
         contactId: indivContactObj.contactId,
         contactToBeDisplayed: indivContactObj.contactToBeDisplayed,
@@ -687,9 +645,9 @@ get qrContactDetailsFormArray()
     equptFormReqObj.equptActiveStatus=true;
     equptFormReqObj.qrCodeId=this.qrCodeId;
 
-    console.log(equptFormReqObj);
+  //  console.log(equptFormReqObj);
 
-    /*this.equptService.updateQrIdDetails(equptFormReqObj)
+    this.equptService.updateQrIdDetails(equptFormReqObj)
     .subscribe(data => {
       if (data['errorOccurred']){
         this.toastService.error("Something went wrong while updating QR ID details");
@@ -704,7 +662,7 @@ get qrContactDetailsFormArray()
     }, error => {
       this.toastService.error("Something went wrong while updating QR ID details");
       this.addEquptProgressBar=false;
-    })*/
+    })
     
     //console.log(equptFormReqObj);
   }
@@ -763,60 +721,6 @@ get qrContactDetailsFormArray()
     });
   }
 
-  addContactToList(){
-    //console.log(this.equptForm.get('specificToQrContact').value);
-
-    let addedContactObj:IcontactEquptMappingReqStruct = this.equptForm.get('specificToQrContact').value;
-    let mobileNumber: string = addedContactObj.contactMobileNumber;
-    let updatedMobileNumber: string;
-
-    this.dispContactError=false;
-
-    if (addedContactObj.contactPersonName == '' && addedContactObj.contactMobileNumber == '' && addedContactObj.contactEmailId == ''){
-      this.dispContactError=true;
-      this.contactErrorMessage="Enter value in atleast one contact field";
-      return false;
-    }
-
-    if (mobileNumber != ''){
-      updatedMobileNumber = this.equptForm.get('specificToQrContact').value['contactCountryCallingCode'] + "-" + mobileNumber;
-    }
-    else{
-      updatedMobileNumber='';
-    }
-
-    let updatedAddedContactObj: IcontactEquptMappingReqStruct = {
-      contactEmailId: addedContactObj.contactEmailId,
-      contactId: 0,
-      contactMobileNumber: updatedMobileNumber,
-      contactPersonName: addedContactObj.contactPersonName,
-      contactSelected: true,
-      contactToBeDisplayed: false,
-      countryCallingCode: addedContactObj.countryCallingCode,
-      emailRequired: false,
-      smsRequired: false,
-      specificToQrId:true
-    }
-
-    //this.addQrIdContactDetailsToFormArray(updatedAddedContactObj);
-  
-    this.qrIdContactFormArray.insert(0,this.equptFormFieldBuider.group(updatedAddedContactObj));
-
-    this.equptForm.get('specificToQrContact').patchValue({
-      contactPersonName: [''],
-      contactEmailId: [''],
-      contactCountryCallingCode:91,
-      contactMobileNumber: ['']
-    })
-
-    this.toastService.success("Contact added to list");
-
-  }
-
-  deleteAddedContact(contactIndex: number){
-    this.qrContactDetailsFormArray.removeAt(contactIndex);
-  }
-
   ngOnInit() {     
 
     if (localStorage.getItem("legalEntityUserDetails") != null)
@@ -857,17 +761,7 @@ get qrContactDetailsFormArray()
       //qrContactData: this.equptFormFieldBuider.array([
       //  this.getQrIdContactFormGroup()
       //]),
-      qrContactData: this.equptFormFieldBuider.array([]),
-      specificToQrContact: this.equptFormFieldBuider.group(
-        {
-          contactPersonName: [''],
-          contactEmailId: ['', Validators.email],
-          contactCountryCallingCode:91,
-          contactMobileNumber: ['',Validators.compose([
-            Validators.minLength(10),
-            Validators.maxLength(10)
-          ])]
-        })
+      qrContactData: this.equptFormFieldBuider.array([])
   
     });
 

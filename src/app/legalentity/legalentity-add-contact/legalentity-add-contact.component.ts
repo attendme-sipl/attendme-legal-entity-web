@@ -91,8 +91,7 @@ export class LegalentityAddContactComponent implements OnInit {
       ])
     ],
       contactEmailId: ['', Validators.email],
-      contactActiveStatus: true,
-      specificToQrId: false
+      contactActiveStatus: true
      })
    }
 

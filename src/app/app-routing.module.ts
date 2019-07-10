@@ -22,6 +22,7 @@ import { LegalentityClosedComptRptComponent } from './legalentity/legalentity-re
 import { LegalentityComplaintRptComponent } from './legalentity/legalentity-reports/legalentity-complaint-rpt/legalentity-complaint-rpt.component';
 import { LegalentityQrDetailsComponent } from './legalentity/legalentity-qr-details/legalentity-qr-details.component';
 import { LegalentityBranchListRptComponent } from './legalentity/legalentity-reports/legalentity-branch-list-rpt/legalentity-branch-list-rpt.component';
+import { LegalentityAddBranch } from './legalentity/model/legalentity-add-branch';
 
 const routes: Routes = [
   {
@@ -47,7 +48,8 @@ const routes: Routes = [
         {path:"edit/qr-details/:id", component: LegalentityEditQrDetailsComponent},
         {path:"edit/technician/:id", component: LegalentityEditTechnicianComponent},
         {path:"assign/qr-branch", component: LegalentityAllotQrBranchComponent},
-        {path:"info/qr", component: LegalentityQrDetailsComponent}
+        {path:"info/qr", component: LegalentityQrDetailsComponent},
+        {path:'add-branch', component:LegalentityBranchComponent}
       ]}
     ]
   },

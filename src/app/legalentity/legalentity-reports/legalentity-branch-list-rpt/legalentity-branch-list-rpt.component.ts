@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { LegalentityUtilService } from '../../services/legalentity-util.service';
 import { ToastrService } from 'ngx-toastr';
 import { LegalentityUser } from '../../model/legalentity-user';
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry, MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
-import { Router } from '@angular/router';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
+import { Router } from '@angular/router';
+import { LegalentityBranchService, IbranchListDetailsResponse, IbranchListReportResponse } from '../../services/legalentity-branch.service';
+//import { IbranchListReportResponse, IbranchListDetailsResponse } from 'attendme-legal-entity-web/src/app/legalentity/services/legalentity-branch.service';
 
 @Component({
   selector: 'app-legalentity-branch-list-rpt',
@@ -14,31 +16,103 @@ import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-name
 })
 export class LegalentityBranchListRptComponent implements OnInit {
 
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
+  
   legalEntityId: number;
-  branchId: number;
-
   branchMenuName: string;
+
+  branchDetailsArray: IbranchListDetailsResponse[];
+
+  dataSource;
+  branchRecordCount: number;
+  pageSize: number = 10;
+  pageSizeOption: number[] = [5,10,25,50,100];
+
+  enableProgressBar: boolean;
+
+  displayedColumns: string[]=[
+    "srNo",
+    "branchName",
+    "branchAddress",
+    "branchContactPersonName",
+    "branchContactMobile",
+    "branchEmail"
+  ];
 
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private toastService: ToastrService,
     private userModel: LegalentityUser,
     private iconRegistry: MatIconRegistry,
-    private router: Router,
+    sanitizer: DomSanitizer,
     private menuModel: LegalentityMenuPrefNames,
-    sanitizer: DomSanitizer
-  ) { }
+    private router: Router,
+    private branchServiceAPI: LegalentityBranchService
+  ) { 
+    iconRegistry.addSvgIcon(
+      'edit-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-edit-24px.svg')
+    );
+
+    iconRegistry.addSvgIcon(
+      'delete-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-delete-24px.svg')
+    );
+
+    iconRegistry.addSvgIcon(
+      'refresh-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
+    )
+  }
+
+  popBranchList():void{
+    this.enableProgressBar=true;
+    this.branchServiceAPI.getBranchListReport(this.legalEntityId)
+    .subscribe((data:IbranchListReportResponse) => {
+
+      if (data.errorOccured){
+        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details");
+        this.enableProgressBar=false;
+        return false;
+      }
+
+      this.branchDetailsArray=data.branchDetailsList.map((value,index) => value?{
+        branchId: value['branchId'],
+        branchHeadOffice: value['branchHeadOffice'],
+        branchName: value['branchName'],
+        branchContactPersonName: value['branchContactPersonName'],
+        branchContactMobile: value['branchContactMobile'],
+        branchEmail: value['branchEmail'],
+        branchAddress: value['branchAddress'],
+        allotedQRIdCount: value['allotedQRIdCount'],
+        branchActiveStatus: value['branchActiveStatus']
+      }:null)
+      .filter(value => value.branchHeadOffice == false);
+
+      this.branchRecordCount = this.branchDetailsArray.length;
+      this.dataSource=new MatTableDataSource(this.branchDetailsArray);
+      this.dataSource.paginator=this.paginator;
+      this.dataSource.sort=this.sort;
+
+      this.enableProgressBar=false;
+
+    }, error => {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details");
+      this.enableProgressBar=false;
+    });
+  }
+
+  addBranchClick():void{
+    this.router.navigate(['legalentity','portal','add-branch']);
+  }
 
   ngOnInit() {
-
     if (localStorage.getItem('legalEntityUserDetails') != null){
-
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
-
-      this.legalEntityId=this.userModel.legalEntityUserDetails.userId;
-      this.branchId=this.userModel.legalEntityBranchDetails.branchId;
-
-
+      
+      this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
+       
     }
     else{
       this.router.navigate(['legalentity','login']);
@@ -49,6 +123,13 @@ export class LegalentityBranchListRptComponent implements OnInit {
 
     this.branchMenuName=this.menuModel.branchMenuName;
 
+    this.utilServiceAPI.setTitle("Legalentity - " + this.branchMenuName + " List | Attendme");
+
+    this.popBranchList();
+  }
+
+  applyFilter(filterValue: string){
+    this.dataSource.filter = filterValue.trim().toLocaleLowerCase();
   }
 
 }

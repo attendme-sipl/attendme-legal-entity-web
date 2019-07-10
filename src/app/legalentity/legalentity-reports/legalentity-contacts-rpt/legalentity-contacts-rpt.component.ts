@@ -112,23 +112,11 @@ export class LegalentityContactsRptComponent implements OnInit {
         return false;
       }
 
-      this.contactListObj=data.contactList.map((value,index) => value? {
-        contactId: value['contactId'],
-        contactToBeDisplayed: value['contactToBeDisplayed'],
-        contactPersonName: value['contactPersonName'],
-        contactMobileNumber: value['contactMobileNumber'],
-        contactEmailId: value['contactEmailId'],
-        contactSelected: value['contactSelected'],
-        smsRequired: value['smsRequired'],
-        emailRequired: value['emailRequired'],
-        countryCallingCode: value['countryCallingCode'],
-        specificToQrId: value['specificToQrId']
-      }:null)
-      .filter(value => value.specificToQrId == false);
+      this.contactListObj=data.contactList;
       
-     
-      this.contactRecordCount =  this.contactListObj.length//data.contactList.length;
-      this.dataSource = new MatTableDataSource(this.contactListObj);
+
+      this.contactRecordCount = data.contactList.length;
+      this.dataSource = new MatTableDataSource(data.contactList);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
 

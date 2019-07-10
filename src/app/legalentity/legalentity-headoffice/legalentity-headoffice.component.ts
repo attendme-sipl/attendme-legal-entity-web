@@ -13,7 +13,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityBranch } from '../model/legalentity-branch';
 import { LegalentityBranchService } from '../services/legalentity-branch.service';
-import { stringify } from '@angular/core/src/render3/util';
+//import { stringify } from '@angular/core/src/render3/util';
 //import { LegalentityBranchService } from '../services/legalentity-branch.service';
 //import { first } from './node_modules/rxjs/operators';
 
