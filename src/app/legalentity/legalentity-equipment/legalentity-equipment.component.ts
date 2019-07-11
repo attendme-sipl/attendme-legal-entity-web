@@ -15,6 +15,7 @@ import { IaddContactReqUpdatedStruct } from '../legalentity-reports/legalentity-
 import { MatDialog } from '@angular/material';
 import { LegalentityAddContactComponent } from '../legalentity-add-contact/legalentity-add-contact.component';
 import { stringify } from '@angular/compiler/src/util';
+import { LegalentityQrService } from '../services/legalentity-qr.service';
 
 
 export interface IalottedQRIDList{
@@ -114,7 +115,8 @@ export class LegalentityEquipmentComponent implements OnInit {
     public commonModel: LegalentityCommons,
     private contatServiceAPI: LegalentityContactsService,
     private dialog:MatDialog,
-    private contactServiceAPI: LegalentityContactsService
+    private contactServiceAPI: LegalentityContactsService,
+    private qrIdServiceAPI: LegalentityQrService
   ) { 
     iconRegistry.addSvgIcon(
       "addRecordIcon",
@@ -671,6 +673,7 @@ export class LegalentityEquipmentComponent implements OnInit {
 
   }
 
+
   onResetClick(){
     this.equptForm.reset();
    
@@ -685,6 +688,8 @@ export class LegalentityEquipmentComponent implements OnInit {
       equptActiveStatus: true,
       addedByUserId: this.userId
      });
+
+
 
      this.getEquptFormfieldPref();
 

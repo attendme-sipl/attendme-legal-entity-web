@@ -114,7 +114,7 @@
 
                 <mat-progress-bar *ngIf="enableQrIdUsageRptProgressBar" mode="indeterminate"></mat-progress-bar>
                 <mat-toolbar>
-                  <span>QR ID Details</span>
+                  <span>QR ID Distribution Details</span>
                   <span style="flex: 1 1 auto;"></span>
                   <button mat-icon-button class="float-right" style="line-height: 0px;" (click)="popQrIdConciseUsageRpt()">
                       <mat-icon svgIcon="refreshIcon"></mat-icon>
@@ -129,16 +129,16 @@
                       <tr>
                         <th>QR ID Received</th>
                         <th>Allotted to {{branchMenuName}}</th>
-                        <th>Assigned</th>
-                        <th>Unassigned</th>
+                        <!--<th>Assigned</th>
+                        <th>Unassigned</th>-->
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
                         <td>{{qrIdUsageModel.totalQRIdAlloted}}</td>
                         <td>{{qrIdUsageModel.totalQRIdAllottedToBranch}}</td>
-                        <td><a routerLink="/legalentity/portal/qr-assinged/rpt">{{qrIdUsageModel.totalQRIdAssigned == null ? 0 : qrIdUsageModel.totalQRIdAssigned}}</a></td>
-                        <td>{{qrIdUsageModel.totalPendingQRId}}</td>
+                        <!--<td><a routerLink="/legalentity/portal/qr-assinged/rpt">{{qrIdUsageModel.totalQRIdAssigned == null ? 0 : qrIdUsageModel.totalQRIdAssigned}}</a></td>
+                        <td>{{qrIdUsageModel.totalPendingQRId}}</td>-->
                       </tr>
                     </tbody>
                   </table>
@@ -198,16 +198,16 @@
                 <mat-card-content *ngIf="headOffice">
                    <mat-progress-bar *ngIf="enableBranchQrIdRtpProgressBar" mode="indeterminate"></mat-progress-bar>
 
-                   <mat-toolbar>
+                   <!--<mat-toolbar>
                       <span>QR ID Distribution Details</span>
                       <span style="flex: 1 1 auto;"></span>
                       <button mat-icon-button class="float-right" style="line-height: 0px;" (click)="popBranchWiseAllottedQrIdRpt()">
                           <mat-icon svgIcon="refreshIcon"></mat-icon>
                         </button>
-                  </mat-toolbar>
+                  </mat-toolbar>-->
 
                   <mat-form-field>
-                      <input matInput (keyup) = "applyFilter($event.target.value)" placeholder="filter" autocomplete="OFF" />
+                      <input matInput (keyup) = "applyFilter($event.target.value)" placeholder="Search {{legalEntityMenuPrefModel.branchMenuName}}" autocomplete="OFF" />
                   </mat-form-field>
                   <div class="mat-elevation-z8">
                       <table mat-table [dataSource]="dataSource" matSort>

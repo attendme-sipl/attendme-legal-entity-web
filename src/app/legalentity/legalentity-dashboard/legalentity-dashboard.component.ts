@@ -91,8 +91,10 @@ export class LegalentityDashboardComponent implements OnInit {
       this.dashboardServiceAPI.getQrIdUsageRpt(this.legalEntityId)
     .subscribe((data:LegalentityQridUsage) => {
       this.qrIdUsageModel = data; 
-      
       this.enableQrIdUsageRptProgressBar=false;
+
+      this.popBranchWiseAllottedQrIdRpt();
+
     }, error => {
       this.toastService.error("Something went wrong while loading QR ID usage details");
       this.enableQrIdUsageRptProgressBar=false;
@@ -251,7 +253,7 @@ export class LegalentityDashboardComponent implements OnInit {
     this.popComplaintConciseRtp();
     this.popBranchConciseRpt();
 
-    this.popBranchWiseAllottedQrIdRpt();
+    //this.popBranchWiseAllottedQrIdRpt();
 
     this.unreslovedComptDayLimit=8;
 

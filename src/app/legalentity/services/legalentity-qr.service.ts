@@ -35,6 +35,15 @@ export interface IallotQrIdToBranchResponseStruct{
    errorOccured: boolean
 };
 
+export interface IavailbleQrIdCountReqStruct{
+   legalEntityId: number,
+   branchId: number,
+   qrActiveStatus: boolean,
+   qrAssignStatus: boolean
+};
+
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -51,5 +60,13 @@ export class LegalentityQrService {
 
   allotQrIdToBranch(allotQrIdReqObj: IallotQrIdToBranchReqStruct):Observable<IallotQrIdToBranchResponseStruct>{
     return this.httpClient.post<IallotQrIdToBranchResponseStruct>(this.utilServiceAPI.legalEntityRestApuURL + "/allotQrIdToBranch", allotQrIdReqObj);
+  }
+
+  getNumOfQrIdAvailableHeadOffice(availbleQrIdCountReqObj:IavailbleQrIdCountReqStruct):Observable<any>{
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/checkAvailableQrId", availbleQrIdCountReqObj);
+  }
+
+  getNumOfQrIdAvailableBranchOffice(availbleQrIdCountReqObj:IavailbleQrIdCountReqStruct):Observable<any>{
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/checkAvailableQrIdBranch", availbleQrIdCountReqObj);
   }
 }
