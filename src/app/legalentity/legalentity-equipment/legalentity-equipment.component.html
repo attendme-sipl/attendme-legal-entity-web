@@ -31,8 +31,20 @@
                                     <mat-error *ngIf="(equptFormSubmitted || equptForm.controls['qrCodeId'].touched) && equptForm.controls['qrCodeId'].invalid">
                                       Please select QR ID
                                     </mat-error>
+
+
                                     
                             </mat-form-field>
+
+                            <mat-form-field>
+                                <input type="text" matInput placeholder="Enter QR ID" formControlName="qrIdData" [matAutocomplete]="auto" />
+                                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+                                    <mat-option *ngFor="let option of filterOptions | async" [value]="option">
+                                        {{option.qrId}}
+                                      </mat-option>
+                                </mat-autocomplete>
+                            </mat-form-field>
+
                         </mat-card-header>
 
                         <mat-card-content style="font-size: 15px;" >

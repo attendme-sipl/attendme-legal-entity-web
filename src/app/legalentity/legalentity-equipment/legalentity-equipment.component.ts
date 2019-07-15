@@ -16,6 +16,8 @@ import { MatDialog } from '@angular/material';
 import { LegalentityAddContactComponent } from '../legalentity-add-contact/legalentity-add-contact.component';
 import { stringify } from '@angular/compiler/src/util';
 import { LegalentityQrService } from '../services/legalentity-qr.service';
+import { Observable } from 'rxjs';
+import { startWith, map, filter } from 'rxjs/operators';
 
 
 export interface IalottedQRIDList{
@@ -101,6 +103,11 @@ export class LegalentityEquipmentComponent implements OnInit {
   enableContactProgressBar:boolean;
 
   countryCallingCodeListObj: IcountryCallingCodeResponse[];
+
+  myControl = new FormControl();
+  filterOptions: Observable<IalottedQRIDList[]>;
+
+  //options: string[] = ['One', 'Two', 'Three'];
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -719,6 +726,17 @@ export class LegalentityEquipmentComponent implements OnInit {
     console.log(this.equptForm.get('specificToQrContact').value);
   }
 
+  private _filter(value: string): IalottedQRIDList[] {
+    const filterValue = value.toLowerCase();
+    
+    if (this.qrIdListObj != undefined){
+      return this.qrIdListObj.filter(option => option.qrId.toLocaleLowerCase().includes(filterValue));
+   }
+
+   
+    //return this.options.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
   ngOnInit() {
 
     if (localStorage.getItem("legalEntityUserDetails") != null)
@@ -747,6 +765,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.defaultCountryCode = 91;
 
 
+
     this.equptForm = this.equptFormFieldBuider.group({
       qrCodeId: ['', Validators.required],
       branchId: this.branchId,
@@ -765,7 +784,8 @@ export class LegalentityEquipmentComponent implements OnInit {
           contactCountryCallingCode:91,
           contactMobileNumber: ['']
         }
-      )
+      ),
+      qrIdData: ['']
     
   
     });
@@ -774,9 +794,19 @@ export class LegalentityEquipmentComponent implements OnInit {
 
     this.popCountryCallingCode();
     this.popNotificationContactList();
+
    
+    this.filterOptions = this.equptForm.get('qrIdData').valueChanges
+    .pipe(
+      startWith(''),
+      map(value => value.length > 0 ? this._filter(value): [])
+    );
   
 
+  }
+
+  displayFn(qrIdData: IalottedQRIDList) {
+    if (qrIdData) { return qrIdData.qrId; }
   }
 
 }
