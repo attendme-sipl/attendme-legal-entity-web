@@ -538,11 +538,11 @@ export class LegalentityEquipmentComponent implements OnInit {
         branchId: this.branchId,
         equptActiveStatus: true,
         formFieldData: newQrIdFormFieldDataObj,
-        qrCodeId: this.equptForm.value['qrCodeId'],
+        qrCodeId: this.equptForm.value['qrCodeId']['qrCodeId'],
         qrContactData: qrIdContactArrUpdated
       };
 
-     // console.log(this.addEquipmentFormObj);
+    //console.log(this.addEquipmentFormObj);
 
       this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
       .subscribe((data:IaddQrIdResponseStruct) => {
@@ -730,7 +730,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     const filterValue = value.toLowerCase();
     
     if (this.qrIdListObj != undefined){
-      return this.qrIdListObj.filter(option => option.qrId.toLocaleLowerCase().includes(filterValue));
+      return this.qrIdListObj.filter(option => option.qrId.toLocaleLowerCase().search(filterValue));
    }
 
    
@@ -767,7 +767,7 @@ export class LegalentityEquipmentComponent implements OnInit {
 
 
     this.equptForm = this.equptFormFieldBuider.group({
-      qrCodeId: ['', Validators.required],
+      //qrCodeId: ['', Validators.required],
       branchId: this.branchId,
       adminApprove: true,
       equptActiveStatus: true,
@@ -785,7 +785,7 @@ export class LegalentityEquipmentComponent implements OnInit {
           contactMobileNumber: ['']
         }
       ),
-      qrIdData: ['']
+      qrCodeId: ['']
     
   
     });
@@ -796,10 +796,10 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.popNotificationContactList();
 
    
-    this.filterOptions = this.equptForm.get('qrIdData').valueChanges
+    this.filterOptions = this.equptForm.get('qrCodeId').valueChanges
     .pipe(
       startWith(''),
-      map(value => value.length > 0 ? this._filter(value): [])
+      map(value => value ? this._filter(value): [])
     );
   
 

@@ -6,7 +6,7 @@
 
       <div class="row">
         <div class="col-sm-12">
-          <h3>Allot QR ID To {{branchMenuName}}</h3>
+          <h3>Allot QR IDs To {{branchMenuName}}</h3>
         </div>
       </div>
 
@@ -23,6 +23,8 @@
                     <mat-error *ngIf="dispErrorMessage">
                       {{errorMessage}}
                     </mat-error>
+
+                    <mat-card-title><b>Available QR IDs:</b> {{availableQrIdAllotCount}} </mat-card-title>
                     
                     <mat-form-field>
       

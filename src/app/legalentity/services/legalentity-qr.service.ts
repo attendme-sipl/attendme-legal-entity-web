@@ -42,6 +42,14 @@ export interface IavailbleQrIdCountReqStruct{
    qrAssignStatus: boolean
 };
 
+export interface IallotQrIdToBranchNewReq{
+   legalEntityId: number,
+   branchId: number,
+   qrActiveStatus: boolean,
+   qrAssignStatus: boolean,
+   totalQrAssignCount: number,
+   qrAllotStatus: boolean
+};
 
 
 @Injectable({
@@ -68,5 +76,9 @@ export class LegalentityQrService {
 
   getNumOfQrIdAvailableBranchOffice(availbleQrIdCountReqObj:IavailbleQrIdCountReqStruct):Observable<any>{
     return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/checkAvailableQrIdBranch", availbleQrIdCountReqObj);
+  }
+
+  allotQrIdtoBrachNew(allotQrIdToBranchReqObj: IallotQrIdToBranchNewReq): Observable<any>{
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/allotQrId", allotQrIdToBranchReqObj);
   }
 }

@@ -7,7 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { IbranchListDetailsResponse, LegalentityBranchService, IbranchListReportResponse } from '../services/legalentity-branch.service';
-import { LegalentityQrService, IallotQrIdToBranchResponseStruct } from '../services/legalentity-qr.service';
+import { LegalentityQrService, IallotQrIdToBranchResponseStruct, IavailbleQrIdCountReqStruct, IallotQrIdToBranchNewReq } from '../services/legalentity-qr.service';
 
 export interface IupdatedBranchDetailsResponse{
   branchId: number,
@@ -35,7 +35,11 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
   dispErrorMessage: boolean;
   errorMessage: string;
 
+  branchId: number;
+
   updatedBranchList:IupdatedBranchDetailsResponse[];
+
+  availableQrIdAllotCount: number;
 
   constructor(
     private utilServiceAPI:LegalentityUtilService,
@@ -69,6 +73,28 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     });
   }
 
+  getAvailableQrToAllot():void{
+    const availableQrToAllotReqObj: IavailbleQrIdCountReqStruct = {
+      branchId: this.branchId,
+      legalEntityId: this.legalEntityId,
+      qrActiveStatus: true,
+      qrAssignStatus: true
+    };
+
+    this.qrIdServiceAPI.getNumOfQrIdAvailableHeadOffice(availableQrToAllotReqObj)
+    .subscribe(data => {
+      if (data['errorOccurred']){
+        this.toastService.error("Something went wrong while loading number of available QR IDs to allot");
+        return false;
+      }
+
+      this.availableQrIdAllotCount = data['availabledQrIdAllotCount'];
+
+    }, error => {
+      this.toastService.error("Something went wrong while loading number of available QR IDs to allot");
+    });
+  }
+
   onSubmitClick(form:NgForm){
 
     this.formSubmit=true;
@@ -76,7 +102,51 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     if (this.allotQrIdBranchFormGroup.valid){
       this.enableProgressBar=true;
 
-      this.qrIdServiceAPI.allotQrIdToBranch(this.allotQrIdBranchFormGroup.value)
+      const allotQrIdToBranchObj: IallotQrIdToBranchNewReq = {
+        branchId: parseInt(this.allotQrIdBranchFormGroup.get('assignBranchId').value),
+        legalEntityId: this.legalEntityId,
+        qrActiveStatus: true,
+        qrAllotStatus: true,
+        qrAssignStatus: false,
+        totalQrAssignCount: parseInt(this.allotQrIdBranchFormGroup.get('numOfQRId').value)
+      };
+
+      console.log(allotQrIdToBranchObj);
+
+      this.qrIdServiceAPI.allotQrIdtoBrachNew(allotQrIdToBranchObj)
+      .subscribe(data => {
+
+        console.log(data);
+        if (data['errorOccurred']){
+          this.toastService.error("Something went wrong while alloting QR IDs");
+          this.enableProgressBar=false;
+          return false;
+        }
+
+        if (data['qrCountExceed']){
+          this.toastService.error("Entered number of QR IDs are not available. Please enter number of QR IDs lesser or equal to available QR ID");
+          this.enableProgressBar=false;
+          return false;
+        }
+
+        if (data['qrAssingned']) {
+          this.toastService.success("QR Ids allotted to " + this.branchMenuName + " successfully.");
+          this.enableProgressBar=false;
+        }
+        else {
+          this.toastService.error("Something went wrong while alloting QR IDs");
+          this.enableProgressBar=false;
+          return false;
+        }
+
+        this.resetForm(form);
+
+      }, error => {
+        this.toastService.error("Something went wrong while alloting QR IDs");
+        this.enableProgressBar=false;
+      });
+
+      /*this.qrIdServiceAPI.allotQrIdToBranch(this.allotQrIdBranchFormGroup.value)
       .subscribe((data: IallotQrIdToBranchResponseStruct) => {
 
         if (data.errorOccured){
@@ -108,7 +178,7 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
       }, error => {
         this.toastService.error("Something went wrong while alloting QR IDs");
         this.enableProgressBar=false;
-      });
+      }); */
 
     }
    
@@ -123,6 +193,8 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     this.dispErrorMessage=false;
 
     this.form.resetForm();
+
+    this.getAvailableQrToAllot();
 
     this.setFormGroup();
 
@@ -148,6 +220,8 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
 
+      this.branchId=this.userModel.legalEntityBranchDetails.branchId;
+
       if (this.userModel.legalEntityBranchDetails.branchHeadOffice==false){
         this.router.navigate(['legalentity','login']);
         return false;   
@@ -165,6 +239,8 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     
 
     this.popBranchList();
+
+    this.getAvailableQrToAllot();
   }
   
 }

@@ -20,7 +20,7 @@
                     <mat-card>
                         <mat-card-header>
                             <mat-card-title >QR ID Details</mat-card-title>
-                            <mat-form-field style="width: 30%;">
+                            <!--<mat-form-field style="width: 30%;">
                                     <mat-label>- Select QR ID -</mat-label>
                                     <mat-select formControlName="qrCodeId" >
                                         <mat-option *ngFor="let qrIdObj of qrIdListObj | orderBy: 'qrCodeId'" [value]="qrIdObj.qrCodeId">
@@ -34,10 +34,10 @@
 
 
                                     
-                            </mat-form-field>
+                            </mat-form-field>-->
 
-                            <mat-form-field>
-                                <input type="text" matInput placeholder="Enter QR ID" formControlName="qrIdData" [matAutocomplete]="auto" />
+                            <mat-form-field style="width: 30%;">
+                                <input type="text" matInput placeholder="Enter QR ID" formControlName="qrCodeId" [matAutocomplete]="auto" />
                                 <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
                                     <mat-option *ngFor="let option of filterOptions | async" [value]="option">
                                         {{option.qrId}}
