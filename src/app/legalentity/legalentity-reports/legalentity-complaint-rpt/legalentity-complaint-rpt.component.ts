@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, MatSort, MatIconRegistry, MatDialog, MatTableDataSource } from '@angular/material';
+import { MatPaginator, MatSort, MatIconRegistry, MatDialog, MatTableDataSource, Sort } from '@angular/material';
 import { LegalentityUser } from '../../model/legalentity-user';
 import { LegalentityUtilService } from '../../services/legalentity-util.service';
 import { Router } from '@angular/router';
@@ -91,6 +91,11 @@ export class LegalentityComplaintRptComponent implements OnInit {
         this.dataSource=new MatTableDataSource(data.complaintList);
         this.dataSource.paginator=this.paginator;
         this.dataSource.sort=this.sort
+
+        const sortState: Sort = {active: 'openDateTime', direction: 'desc'};
+        this.sort.active = sortState.active;
+        this.sort.direction = sortState.direction;
+        this.sort.sortChange.emit(sortState);
         
         this.enableProgressBar=false;
     }, error => {

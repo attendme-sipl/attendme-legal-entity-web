@@ -5,9 +5,11 @@
 export const environment = {
   production: false,
 
-         //superAdminAPIURL: "http://192.168.0.7:4202/api",
-         //legalEntityAPIURL: 'http://http://attendme-legalentity.ap-south-1.elasticbeanstalk.com/api/api',
-         //mobileServiceAPIURL: "http://192.168.0.7:5000/api"
+  //development server
+
+         //superAdminAPIURL: "http://192.168.0.99:4202/api",
+         //legalEntityAPIURL: 'http://192.168.0.99:4201/api',
+         //mobileServiceAPIURL: "http://192.168.0.99:5000/api"
 
       // Local instance
 

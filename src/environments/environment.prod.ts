@@ -5,6 +5,12 @@ export const environment = {
     //legalEntityAPIURL: 'http://attendme-legalentity.ap-south-1.elasticbeanstalk.com/api',
     //mobileServiceAPIURL: "http://attendme-android.ap-south-1.elasticbeanstalk.com/api"
 
+    //Sparkonix development server
+
+         //superAdminAPIURL: "http://192.168.0.99:4202/api",
+         //legalEntityAPIURL: 'http://192.168.0.99:4201/api',
+         //mobileServiceAPIURL: "http://192.168.0.99:5000/api"
+
     // This is Local host
 
           superAdminAPIURL: "http://192.168.0.7:4202/api",

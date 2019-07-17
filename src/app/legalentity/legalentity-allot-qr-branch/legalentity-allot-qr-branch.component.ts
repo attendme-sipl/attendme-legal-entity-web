@@ -107,7 +107,7 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
         legalEntityId: this.legalEntityId,
         qrActiveStatus: true,
         qrAllotStatus: true,
-        qrAssignStatus: false,
+        qrAssignStatus: true,
         totalQrAssignCount: parseInt(this.allotQrIdBranchFormGroup.get('numOfQRId').value)
       };
 
@@ -130,7 +130,7 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
         }
 
         if (data['qrAssingned']) {
-          this.toastService.success("QR Ids allotted to " + this.branchMenuName + " successfully.");
+          this.toastService.success("QR Ids alloted to " + this.branchMenuName + " successfully.");
           this.enableProgressBar=false;
         }
         else {
@@ -162,7 +162,7 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
         }
 
         if (data.branchQRAttloted){
-          this.toastService.success("QR Ids allotted to " + this.branchMenuName + " successfully.");
+          this.toastService.success("QR Ids alloted to " + this.branchMenuName + " successfully.");
           this.enableProgressBar=false;
           
         }

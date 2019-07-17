@@ -255,7 +255,7 @@ export class LegalentityDashboardComponent implements OnInit {
 
     //this.popBranchWiseAllottedQrIdRpt();
 
-    this.unreslovedComptDayLimit=8;
+    this.unreslovedComptDayLimit=7;
 
     this.popUnreslovedComptRpt();
 

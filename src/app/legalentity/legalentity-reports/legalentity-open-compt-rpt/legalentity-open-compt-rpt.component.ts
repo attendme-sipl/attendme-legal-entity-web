@@ -10,7 +10,7 @@ import { LegalentityComplaintRptService, IopenComplaintRptResponseStruct, Icompl
 import { LegalentityCommons } from '../../model/legalentity-commons';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 import { LegalentityAssignTechnicianComponent } from '../../legalentity-assign-technician/legalentity-assign-technician.component';
@@ -128,6 +128,11 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       this.dataSource = new MatTableDataSource(data.complaintList);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+
+      const sortState: Sort = {active: 'complaintOpenDateTime', direction: 'desc'};
+      this.sort.active = sortState.active;
+      this.sort.direction = sortState.direction;
+      this.sort.sortChange.emit(sortState);
 
       this.openComplaintResponseArray = data.complaintList;
 
