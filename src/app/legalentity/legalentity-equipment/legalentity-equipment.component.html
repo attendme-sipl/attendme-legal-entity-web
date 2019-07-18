@@ -18,24 +18,32 @@
                 <div class="col-sm-12" >
 
                     <mat-card>
+                            <mat-error *ngIf="errorMessageEnable">{{errorMessageTxt}}</mat-error>
                         <mat-card-header>
                             <mat-card-title >QR ID Details</mat-card-title>
+                            
 
                             <mat-form-field style="width: 30%;">
-                                <input type="text" matInput placeholder="Enter QR ID" formControlName="qrCodeId" [matAutocomplete]="auto" />
-                                <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-                                    <mat-option *ngFor="let option of filterOptions | async" [value]="option">
+                                <input type="text" matInput placeholder="Enter QR ID" formControlName="qrCodeData" [matAutocomplete]="auto" />
+
+                                <mat-autocomplete autoActiveFirstOption  #auto="matAutocomplete" [displayWith]="displayFn">
+                                    <mat-option *ngFor="let option of filterOptions | async"  [value]="option">
                                         {{option.qrId}}
                                     </mat-option>  
-                                    {{option | json}}
+                                    
                                 </mat-autocomplete>
-
-                                <mat-error *ngIf="(equptFormSubmitted || equptForm.controls['qrCodeId'].touched) && equptForm.get('qrCodeId').value['qrCodeId'] = ''">
-                                    Select QR ID
+                            
+                                <mat-error *ngIf="(equptFormSubmitted || equptForm.controls['qrCodeData'].touched) && equptForm.controls['qrCodeData'].hasError('required')">
+                                    Enter QR ID
                                 </mat-error>
 
+                                <mat-error *ngIf="(equptFormSubmitted || equptForm.controls['qrCodeData'].touched) && equptForm.controls['qrCodeData'].hasError('incorrect')">
+                                    Select valid QR ID
+                                </mat-error>
+
+
                             </mat-form-field>
-{{equptForm.get('qrCodeId').value | json }}
+
                         </mat-card-header>
 
                         <mat-card-content style="font-size: 15px;" >
@@ -83,7 +91,7 @@
                                             <div [formGroupName]="i">
                                                     <mat-grid-list cols="12" rowHeight="60px">
         
-                                                            <mat-grid-tile colspan="4">
+                                                            <mat-grid-tile colspan="3">
                                                                 <mat-form-field>
                                                                    <input type="text" formControlName="contactPersonName" matInput autocomplete="OFF" placeholder="Contact Person Name" autocomplete="OFF" />
                                                                 </mat-form-field>
@@ -100,6 +108,9 @@
                                                            <mat-grid-tile colspan="3">
                                                              <mat-form-field>
                                                                  <input type="text" formControlName="contactMobileNumber" matInput placeholder="Mobile Number" autocomplete="OFF" />
+
+                                                                
+
                                                              </mat-form-field>
                                                            </mat-grid-tile>
                            
@@ -113,11 +124,14 @@
                                                                 <button type="button" class="btn btn-default" *ngIf="spcificQrIdContactCount == i+1" >
                                                                     <mat-icon svgIcon="addRecordIcon"  mat-mini-fab (click)="addSpecificQrIdContactToFormArray()"></mat-icon>
                                                                 </button> 
-                                                                <button type="button"  class="btn btn-default" *ngIf="i != 0">
-                                                                    <mat-icon svgIcon="deleteRecordIcon" mat-mini-fab (click)="removeSpecificQrIdContactFromFormArray(i)"></mat-icon>
-                                                                </button>                         
+                                                                                      
                                                            </mat-grid-tile>
 
+                                                           <mat-grid-tile colspan="1">
+                                                                <button type="button"  class="btn btn-default" *ngIf="i != 0">
+                                                                    <mat-icon svgIcon="deleteRecordIcon" mat-mini-fab (click)="removeSpecificQrIdContactFromFormArray(i)"></mat-icon>
+                                                                </button>  
+                                                           </mat-grid-tile>
                                                     
                            
                                                     </mat-grid-list>

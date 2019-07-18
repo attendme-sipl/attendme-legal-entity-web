@@ -38,7 +38,8 @@ export interface IaddQrIdDetailsStruct{
 
 export interface IaddQrIdResponseStruct{
   errorOccured: boolean,
-  qrCodeAlreadyAssigned: boolean
+  qrCodeAlreadyAssigned: boolean,
+  qrAllotedLimitOver: boolean
 };
 
 export interface IbranchWiseQrIdListResStruct{

@@ -15,9 +15,10 @@ import { IaddContactReqUpdatedStruct } from '../legalentity-reports/legalentity-
 import { MatDialog } from '@angular/material';
 import { LegalentityAddContactComponent } from '../legalentity-add-contact/legalentity-add-contact.component';
 import { stringify } from '@angular/compiler/src/util';
-import { LegalentityQrService } from '../services/legalentity-qr.service';
+import { LegalentityQrService, IavailbleQrIdCountReqStruct } from '../services/legalentity-qr.service';
 import { Observable } from 'rxjs';
 import { startWith, map, filter } from 'rxjs/operators';
+import {RequireMatch as RequireMatch} from '../requireMatch';
 
 
 export interface IalottedQRIDList{
@@ -125,6 +126,9 @@ export class LegalentityEquipmentComponent implements OnInit {
   //options: string[] = ['One', 'Two', 'Three'];
 
   spcificQrIdContactCount: number;
+
+  errorMessageEnable: boolean;
+  errorMessageTxt: string;
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -234,15 +238,106 @@ export class LegalentityEquipmentComponent implements OnInit {
 
   popQrIdDrp():void{
     
-    if(this.headOffice){
-      this.utilService.getLegalEntityAlottedQRIdList(this.legalEntityId,false,true,false)
+    //if(this.headOffice){
+
+    if (this.headOffice){
+
+      this.addEquptProgressBar=true;
+
+      const availableQrIdCountReqObj: IavailbleQrIdCountReqStruct = {
+        branchId: this.branchId,
+        legalEntityId: this.legalEntityId,
+        qrActiveStatus: true,
+        qrAssignStatus: false
+      }
+
+      this.qrIdServiceAPI.getNumOfQrIdAvailableHeadOffice(availableQrIdCountReqObj)
+      .subscribe(data => {
+
+        if (data['errorOccurred']){
+           this.addEquptProgressBar=false;
+           this.toastService.error("Something went wrong while loading QR IDs");
+           return false;
+        }
+
+        let availableQrIdCount: number = parseInt(data['availabledQrIdAllotCount']);
+
+        if (availableQrIdCount == 0){
+          this.addEquptProgressBar=false;
+          this.errorMessageEnable=true;
+          this.errorMessageTxt="QR IDs not availabled. Please contact administrator";
+          return false
+        }
+
+        this.utilService.getLegalEntityAlottedQRIdList(this.legalEntityId,false,true,false)
       .subscribe(data => {
         this.qrIdListObj = data;
+
+        this.addEquptProgressBar=false;
+        
       }, error => {
         this.toastService.error("Something went wrong while load QR ID list");
       })
+
+      }, error => {
+        this.addEquptProgressBar=false;
+        this.toastService.error("Something went wrong while loading QR IDs");
+      });
+
+    
+
     }
-    else{
+    else {
+
+      this.addEquptProgressBar=true;
+
+      const availableQrIdCountReqObj: IavailbleQrIdCountReqStruct = {
+        branchId: this.branchId,
+        legalEntityId: this.legalEntityId,
+        qrActiveStatus: true,
+        qrAssignStatus: false
+      }
+
+      this.qrIdServiceAPI.getNumOfQrIdAvailableBranchOffice(availableQrIdCountReqObj)
+      .subscribe(data => {
+
+        if (data['errorOccurred']){
+          this.addEquptProgressBar=false;
+          this.toastService.error("Something went wrong while loading QR IDs");
+          return false;
+       }
+
+       let availableQrIdCount: number = parseInt(data['availabledQrIdAllotCount']);
+
+       if (availableQrIdCount == 0){
+         this.addEquptProgressBar=false;
+         this.errorMessageEnable=true;
+         this.errorMessageTxt="QR IDs not availabled. Please contact administrator";
+         return false
+       }
+
+       this.utilService.getLegalEntityAlottedQRIdList(this.legalEntityId,false,true,false)
+       .subscribe(data => {
+         this.qrIdListObj = data;
+ 
+         this.addEquptProgressBar=false;
+         
+       }, error => {
+         this.toastService.error("Something went wrong while load QR ID list");
+       })
+
+      }, error => {
+        this.addEquptProgressBar=false;
+        this.toastService.error("Something went wrong while loading QR IDs");
+      });
+
+    }
+
+      
+
+
+   // }
+    /*else{
 
       const branchWiseQrIdListReqObj: IbranchWiseQrIdListReqStruct = {
         branchId: this.branchId,
@@ -266,7 +361,7 @@ export class LegalentityEquipmentComponent implements OnInit {
       }, error =>{
         this.toastService.error("Something went wrong while load QR ID list");
       });
-    }
+    } */
   }
 
   popCountryCallingCode():void{
@@ -475,9 +570,13 @@ export class LegalentityEquipmentComponent implements OnInit {
     return this.equptFormFieldBuider.group({
       contactId: 0,
       contactPersonName: [''],
-      contactEmailId: [''],
+      contactEmailId: ['', Validators.email],
       contactCountryCallingCode:91,
-      contactMobileNumber: [''],
+      contactMobileNumber: ['', Validators.compose([
+        Validators.minLength(10),
+        Validators.maxLength(10)
+      ])
+    ],
       contactToBeDisplayed: true,
       smsRequired:true,
       emailRequired: true,
@@ -567,15 +666,20 @@ export class LegalentityEquipmentComponent implements OnInit {
         branchId: this.branchId,
         equptActiveStatus: true,
         formFieldData: newQrIdFormFieldDataObj,
-        qrCodeId: this.equptForm.value['qrCodeId']['qrCodeId'],
-        qrContactData: qrIdContactArrUpdated
+        qrCodeId: this.equptForm.get('qrCodeData').value['qrCodeId'],
+        qrContactData: qrIdContactArrUpdated,
+        headOffice: this.headOffice,
+        legalEntityId: this.legalEntityId
       };
 
 
-    console.log(qrIdContactArrUpdated);
+    console.log(this.addEquipmentFormObj);
 
-     /* this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
+     this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
       .subscribe((data:IaddQrIdResponseStruct) => {
+
+        console.log(data);
+
         if (data.errorOccured){
           this.addEquptProgressBar=false;
           this.toastService.error("Something went wrong while add QR ID details");
@@ -588,6 +692,12 @@ export class LegalentityEquipmentComponent implements OnInit {
           return false;
         }
 
+        if (data.qrAllotedLimitOver){
+          this.addEquptProgressBar=false;
+          this.toastService.error("Selected QR ID cannot cannot be assinged as the QR Id is already assinged or QR Ids not available");
+          return false;
+        }
+
         this.addEquptProgressBar=false;
         this.toastService.success("QR ID details added successfully");
 
@@ -595,7 +705,7 @@ export class LegalentityEquipmentComponent implements OnInit {
         
       }, error => {
         this.toastService.error("Something went wrong while add QR ID details");
-      });*/
+      });
       
         
     }   
@@ -610,12 +720,21 @@ export class LegalentityEquipmentComponent implements OnInit {
 
   onResetClick(){
     this.equptForm.reset();
+
+    this.errorMessageTxt="";
+    this.errorMessageEnable=false;
    
     this.equptFormSubmitted = false;
      while (this.equptFormFieldArray.length !== 0){
        this.equptFormFieldArray.removeAt(0);
      }
 
+     while(this.specificQrIdContactFormArray.controls.length){
+       this.removeSpecificQrIdContactFromFormArray(0)
+     }
+
+     this.addSpecificQrIdContactToFormArray();
+     
      this.equptForm.patchValue({
       branchId: this.branchId,
       adminApprove: true,
@@ -645,6 +764,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     const filterValue = value.toLowerCase();
     
     if (this.qrIdListObj != undefined){
+      
       return this.qrIdListObj.filter(option => option.qrId.toLocaleLowerCase().includes(filterValue));
    }
 
@@ -684,6 +804,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.equptForm = this.equptFormFieldBuider.group({
       //qrCodeId: ['', Validators.required],
       branchId: this.branchId,
+      legalEntityId: this.legalEntityId,
       adminApprove: true,
       equptActiveStatus: true,
       addedByUserId: this.userId,
@@ -695,8 +816,8 @@ export class LegalentityEquipmentComponent implements OnInit {
       specificToQrContact: this.equptFormFieldBuider.array([
         this.getSpcificQrIdContactFromGroup()
       ]),
-      qrCodeId: ['']
-    
+      qrCodeId: [''],
+      qrCodeData: ['', [Validators.required, RequireMatch]]
   
     });
 
@@ -708,17 +829,22 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.popNotificationContactList();
 
    
-    this.filterOptions = this.equptForm.get('qrCodeId').valueChanges
+    this.filterOptions = this.equptForm.get('qrCodeData').valueChanges
     .pipe(
       startWith(''),
-      map(value => value.length > 0 ? this._filter(value): [])
+      map(value => value != null ?  ((value.length) > 0 ? this._filter(value): []):[])
     );
   
 
   }
 
   displayFn(qrIdData: IalottedQRIDList) {
-    if (qrIdData) { return qrIdData.qrId; }
+    //console.log(qrIdData.qrCodeId);
+    
+    if (qrIdData) {
+      
+      return qrIdData.qrId; 
+    }
   }
 
 }
