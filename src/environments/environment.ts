@@ -13,9 +13,9 @@ export const environment = {
 
       // Local instance
 
-            //superAdminAPIURL: "http://192.168.0.7:4202/api",
-            //legalEntityAPIURL: 'http://192.168.0.7:4201/api',
-            //mobileServiceAPIURL: "http://192.168.0.7:5000/api"
+            superAdminAPIURL: "http://192.168.0.7:4202/api",
+            legalEntityAPIURL: 'http://192.168.0.7:4201/api',
+            mobileServiceAPIURL: "http://192.168.0.7:5000/api"
 
        //superAdminAPIURL: "http://192.168.0.99:4202/api",
        //legalEntityAPIURL: 'http://192.168.0.99:4201/api',
@@ -23,9 +23,9 @@ export const environment = {
 
        // AWS Demo instance
 
-              superAdminAPIURL: "http://ec2-13-235-108-50.ap-south-1.compute.amazonaws.com:4202/api",
-              legalEntityAPIURL: 'http://ec2-13-235-108-50.ap-south-1.compute.amazonaws.com:4201/api',
-              mobileServiceAPIURL: "http://ec2-13-235-108-50.ap-south-1.compute.amazonaws.com:5000/api"
+              //superAdminAPIURL: "http://ec2-13-235-108-50.ap-south-1.compute.amazonaws.com:4202/api",
+              //legalEntityAPIURL: 'http://ec2-13-235-108-50.ap-south-1.compute.amazonaws.com:4201/api',
+              //mobileServiceAPIURL: "http://ec2-13-235-108-50.ap-south-1.compute.amazonaws.com:5000/api"
 };
 
 /*

@@ -33,9 +33,9 @@
                                     
                                 </mat-autocomplete>
                             
-                                <mat-error *ngIf="(equptFormSubmitted || equptForm.controls['qrCodeData'].touched) && equptForm.controls['qrCodeData'].hasError('required')">
+                                <!--<mat-error *ngIf="(equptFormSubmitted || equptForm.controls['qrCodeData'].touched) && equptForm.controls['qrCodeData'].hasError('required')">
                                     Enter QR ID
-                                </mat-error>
+                                </mat-error>-->
 
                                 <mat-error *ngIf="(equptFormSubmitted || equptForm.controls['qrCodeData'].touched) && equptForm.controls['qrCodeData'].hasError('incorrect')">
                                     Select valid QR ID
@@ -81,7 +81,7 @@
 
                         <mat-card>
                                 <mat-card-header>
-                                    <mat-card-title>Contact Receiving Notifications</mat-card-title>
+                                    <mat-card-title style="margin-left:-8px;">Contact Receiving Notifications</mat-card-title>
                                 </mat-card-header>
                                    
                                 <mat-card-content>
@@ -140,7 +140,7 @@
                                     </div>
 
                                 </mat-card-content>
-                               </mat-card>
+                        </mat-card>
 
                         <mat-card>
 

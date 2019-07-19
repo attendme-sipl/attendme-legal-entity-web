@@ -6,7 +6,7 @@ import { IaddContactReqUpdatedStruct } from '../legalentity-reports/legalentity-
 
 export interface IcontactResponseStruct{
   errorOccurred: boolean,
-  contactList: {
+  contactList: [{
     contactId: number,
     contactPersonName: string,
     contactMobileNumber: string,
@@ -17,7 +17,7 @@ export interface IcontactResponseStruct{
     smsRequired: boolean,
     emailRequired: boolean,
     specificToQrId: boolean
-  }[]
+  }]
 };
 
 export interface IdeactivateContactReqStruct{

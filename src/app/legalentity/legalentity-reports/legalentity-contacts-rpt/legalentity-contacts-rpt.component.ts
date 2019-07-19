@@ -18,7 +18,8 @@ export interface IcontactListDetailsStruct{
    contactId: number,
    contactPersonName: string,
    contactMobileNumber: string,
-   contactEmailId: string
+   contactEmailId: string,
+   specificToQrId: boolean
 };
 
 export interface IaddContactReqUpdatedStruct{
@@ -47,6 +48,8 @@ export class LegalentityContactsRptComponent implements OnInit {
   branchId: number;
   userId: number;
   headOffice: boolean;
+
+  contactSearch: string;
 
   enableProgressBar: boolean;
 
@@ -103,6 +106,8 @@ export class LegalentityContactsRptComponent implements OnInit {
 
     this.enableProgressBar=true;
 
+    this.contactSearch='';
+
     this.contactServiceAPI.getLegalEntityContactListRpt(this.legalEntityId,true)
     .subscribe((data:IcontactResponseStruct) => {
 
@@ -112,8 +117,7 @@ export class LegalentityContactsRptComponent implements OnInit {
         return false;
       }
 
-      this.contactListObj=data.contactList;
-      
+  
 
       this.contactRecordCount = data.contactList.length;
       this.dataSource = new MatTableDataSource(data.contactList);
@@ -252,7 +256,7 @@ export class LegalentityContactsRptComponent implements OnInit {
 
     this.popLegalEntityContactRpt();
 
-    console.log(this.displayedColumns[5]);
+   // console.log(this.displayedColumns[5]);
   }
 
   applyFilter(filterValue: string):void{

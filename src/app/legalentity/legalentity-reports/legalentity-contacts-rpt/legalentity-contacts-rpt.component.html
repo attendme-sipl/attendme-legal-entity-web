@@ -6,6 +6,8 @@
       <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
       <!--Heading Panel-->
 
+      <form #contactReportForm="ngForm"></form>
+
       <div class="row">
         <div class="col-sm-12">
 
@@ -27,7 +29,7 @@
           </mat-toolbar>
 
           <mat-form-field>
-            <input matInput (keyup) = "applyFilter($event.target.value)" placeholder="filter" autocomplete="OFF" />
+            <input matInput (keyup) = "applyFilter($event.target.value)" [(ngModel)]="contactSearch" name="contactSearch" placeholder="Search Contact" autocomplete="OFF" />
           </mat-form-field>
 
           <div class="mat-elevation-z8">
