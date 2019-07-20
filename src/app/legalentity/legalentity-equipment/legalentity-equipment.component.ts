@@ -424,7 +424,18 @@ export class LegalentityEquipmentComponent implements OnInit {
         return false;
       }
 
-      this.contactArr=data.contactList;
+      this.contactArr=data.contactList.map((value,index) => value ? {
+        contactId: value['contactId'],
+        contactToBeDisplayed: value['contactToBeDisplayed'],
+        contactPersonName: value['contactPersonName'],
+        contactMobileNumber: value['contactMobileNumber'],
+        contactEmailId: value['contactEmailId'],
+        contactSelected: value['contactSelected'],
+        smsRequired: value['smsRequired'],
+        emailRequired: value['emailRequired'],
+        specificToQrId: value['specificToQrId']
+      } : null)
+      .filter(value => value.specificToQrId == false);
 
       this.contactArr.forEach((indivContactObj: IcontactEquptMappingReqStruct) => {
         //indivContactObj.contactSelected=false;
@@ -433,7 +444,7 @@ export class LegalentityEquipmentComponent implements OnInit {
         indivContactObj.emailRequired=false;
         this.addQrIdContactDetailsToFormArray(indivContactObj);
       });
-  
+
       this.enableContactProgressBar=false;
 
     }, error => {
@@ -643,6 +654,14 @@ export class LegalentityEquipmentComponent implements OnInit {
         if (spcificQrIdIndivContact.contactMobileNumber != ''){
           spcificQrIdIndivContact.contactMobileNumber = spcificQrIdIndivContact.contactCountryCallingCode + "-" + spcificQrIdIndivContact.contactMobileNumber;
         }
+        else
+        {
+          spcificQrIdIndivContact.smsRequired=false;
+        }
+
+        if (spcificQrIdIndivContact.contactEmailId == ''){
+          spcificQrIdIndivContact.emailRequired=false;
+        }
 
         qrIdContactArrUpdated.push({
           contactEmailId: spcificQrIdIndivContact.contactEmailId,
@@ -678,8 +697,7 @@ export class LegalentityEquipmentComponent implements OnInit {
      this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
       .subscribe((data:IaddQrIdResponseStruct) => {
 
-        console.log(data);
-
+      
         if (data.errorOccured){
           this.addEquptProgressBar=false;
           this.toastService.error("Something went wrong while add QR ID details");

@@ -51,6 +51,36 @@ export interface IallotQrIdToBranchNewReq{
    qrAllotStatus: boolean
 };
 
+export interface IqrIdRptReqStruct{
+   legalEntityId: number,
+   branchId: number,
+   allBranch: boolean,
+   qrActiveStatus: boolean,
+   startDateTime: string,
+   endDateTime: string,
+   lastRecordCount: number
+};
+
+export interface IqrIdRptResponseStruct{
+  errorOccured: boolean,
+  formHeads:[{
+     formFieldId: number,
+     formFiledTitleName: string
+  }],
+  qrIdDetailsList:[{
+     qrCodeId: string,
+     qrId: string,
+     qrCodeFileLink: string, 
+     branchId: string,
+     branchName: string,
+     qrAssignDateTime:string,
+     formFieldDetails:[{
+       formFieldId: number,
+       formFieldValue: string
+     }]
+  }]
+};
+
 
 @Injectable({
   providedIn: 'root'
@@ -80,5 +110,9 @@ export class LegalentityQrService {
 
   allotQrIdtoBrachNew(allotQrIdToBranchReqObj: IallotQrIdToBranchNewReq): Observable<any>{
     return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/allotQrId", allotQrIdToBranchReqObj);
+  }
+
+  getQrIdDetailsRpt(qrIdDetailsRtpReqObj: IqrIdRptReqStruct):Observable<IqrIdRptResponseStruct>{
+    return this.httpClient.post<IqrIdRptResponseStruct>(this.utilServiceAPI.legalEntityRestApuURL + "/qrIdDetailsListReport", qrIdDetailsRtpReqObj);
   }
 }
