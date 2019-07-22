@@ -37,7 +37,7 @@ import { LegalentityOpenComptRptComponent } from './legalentity/legalentity-repo
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSortModule} from '@angular/material/sort';
 import {MatTableModule} from '@angular/material/table';
-import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { HashLocationStrategy, LocationStrategy, DatePipe } from '@angular/common';
 import {LegalentityComplaintRptService} from './legalentity/services/legalentity-complaint-rpt.service';
 import { LegalentityIndivComplaintRptComponent } from './legalentity/legalentity-reports/legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 import {MatDialogModule} from '@angular/material/dialog';
@@ -157,7 +157,8 @@ import { LegalentityQrDetailsRptComponent } from './legalentity/legalentity-repo
     LegalentityQrService,
     LegalentityAddBranch,
     LegalentityBranchRulebook,
-    LegalentityIndivComptDetails
+    LegalentityIndivComptDetails,
+    DatePipe
   ],
   bootstrap: [AppComponent],
   entryComponents:[
