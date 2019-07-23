@@ -31,16 +31,18 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
   equipmentMenuName: string;
   branchMenuName: string;
 
-  displayedColumns: string[] = [
-    "Sr No.",
-    "QR ID",
-    "Assigned Date"
-  ];
+  displayedColumns: string[] = [];
+
+  contactSearch: string;
 
   dataSource;
   qrRecordCount: number;
   pageSize: number = 10;
   pageSizeOption: number[] = [5,10,25,50,100];
+
+  updatedColumnDef: string[] = [];
+
+  columnsTobeExcluded: string[] = ['srNo','QR ID'];
 
   constructor(
     private utileServiceAPI: LegalentityUtilService,
@@ -61,8 +63,8 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
    popQrIdDetailsRpt(lastRecordCount: number):void{
   
-    this.enableProgressBar=true;
-
+     this.enableProgressBar=true;
+     this.contactSearch='';
      const qrIdDetailsRptReqObj: IqrIdRptReqStruct = {
        allBranch: false,
        branchId: this.branchId,
@@ -81,12 +83,31 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
         this.toastService.error("Something went wrong while loading QR ID details list");
         return false;
       }
+
+       this.displayedColumns = [];
+
+       this.displayedColumns = [
+         "srNo",
+         "QR ID",
+         "Assigned Date"
+        ];
        
        let dynamicFormHeadsArr: any[] = data.formHeads;
-console.log(dynamicFormHeadsArr);
+
        dynamicFormHeadsArr.forEach(indivFormField => {
          this.displayedColumns.push(indivFormField['formFiledTitleName'])
+
        });
+
+       this.updatedColumnDef = this.displayedColumns;
+
+       this.displayedColumns.forEach(indivColumn => {
+         if (indivColumn == 'srNo'){}
+       })
+
+  
+       this.updatedColumnDef=[];
+
 
        let myMap: IHashMap = {};
        
@@ -103,10 +124,10 @@ console.log(dynamicFormHeadsArr);
         
          myMap = {};
 
-          myMap['Sr No.']= srNo.toString();
+         // myMap['Sr No.']= srNo.toString();
           myMap['QR ID'] = indivQrDetails.qrId;
           myMap[this.branchMenuName] = indivQrDetails.branchName;
-
+          myMap['qrCodeFileLink']=indivQrDetails.qrCodeFileLink;
           let assignDate:string = this.datePipe.transform(indivQrDetails.qrAssignDateTime, 'yyyy-MM-dd hh:mm:ss');
 
           myMap['Assigned Date'] = assignDate;
@@ -133,19 +154,27 @@ console.log(dynamicFormHeadsArr);
           qrRptUpdatedObj.push(myMap);
 
           srNo=srNo+1;
+          
+  
+          
+  
 
-          this.qrRecordCount = qrRptUpdatedObj.length; //data.contactList.length;
+       });
+
+     
+
+       this.qrRecordCount = qrRptUpdatedObj.length; //data.contactList.length;
           this.dataSource = new MatTableDataSource(qrRptUpdatedObj);
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
+
+
 
           const sortState: Sort = {active: 'Assigned Date', direction: 'desc'};
           this.sort.active = sortState.active;
           this.sort.direction = sortState.direction;
           this.sort.sortChange.emit(sortState);
-  
 
-       })
 
        this.enableProgressBar=false;
 
@@ -177,6 +206,8 @@ console.log(dynamicFormHeadsArr);
     this.branchMenuName=this.menuModel.branchMenuName;
 
     this.displayedColumns.push(this.branchMenuName);
+
+    this.utileServiceAPI.setTitle("Legalentity - " + this.equipmentMenuName + " | Attendme" );
 
     this.popQrIdDetailsRpt(5);
   }

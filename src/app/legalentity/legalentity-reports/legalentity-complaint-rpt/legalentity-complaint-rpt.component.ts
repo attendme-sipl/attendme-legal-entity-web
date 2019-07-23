@@ -38,7 +38,7 @@ export class LegalentityComplaintRptComponent implements OnInit {
     "regsiteredByName",
     "openDateTime",
     "assignedDateTime",
-    "inprogressDateTime",
+    "inProgressDateTime",
     "closedDateTime",
     "assignedTechnicianName",
     "actionTaken",
@@ -77,8 +77,11 @@ export class LegalentityComplaintRptComponent implements OnInit {
       toDate: null
     };
 
+    console.log(qrIdComplaintArrRptReqObj);
+
     this.complaintRtpServiceAPI.getQrIdAllComplaintsRpt(qrIdComplaintArrRptReqObj)
     .subscribe((data: IqrIdAllcomplaintRptResponse) => {
+      console.log(data);
         if (data.errorOccurred){
           this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details report");
           this.enableProgressBar=false;

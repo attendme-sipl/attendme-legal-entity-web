@@ -33,17 +33,26 @@
 
               <table mat-table [dataSource]="dataSource" matSort style="min-width: 2000px; width: 100%;">
 
-                  <!--<ng-container matColumnDef="srNo">
+                  <ng-container matColumnDef="srNo"> 
                       <th mat-header-cell *matHeaderCellDef>Sr. No.</th>
                       <td mat-cell *matCellDef="let i=index">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
-                  </ng-container>-->
+                  </ng-container>
   
                   <div *ngFor="let indivColumnHeader of displayedColumns">
 
-                    <ng-container matColumnDef="{{indivColumnHeader}}" >
+                    <ng-container *ngIf="!columnsTobeExcluded.includes(indivColumnHeader)" matColumnDef="{{indivColumnHeader}}" >
                       <th mat-header-cell *matHeaderCellDef mat-sort-header>{{indivColumnHeader}}</th>
                       <td mat-cell *matCellDef="let element">{{ element[indivColumnHeader] }}</td>
-                   </ng-container>
+                    </ng-container>
+
+                    <ng-container *ngIf="indivColumnHeader=='QR ID'" matColumnDef="{{indivColumnHeader}}" >
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header>{{indivColumnHeader}}</th>
+                      <td mat-cell *matCellDef="let element">
+                        <a  mat-button color="primary" href="{{element['qrCodeFileLink']}}" target="_blank">
+                        {{ element[indivColumnHeader]  }}
+                        </a>
+                      </td>
+                    </ng-container>
 
                   </div>
                   

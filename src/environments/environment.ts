@@ -7,15 +7,15 @@ export const environment = {
 
   //development server
 
-         superAdminAPIURL: "http://192.168.0.99:4202/api",
-         legalEntityAPIURL: 'http://192.168.0.99:4201/api',
-         mobileServiceAPIURL: "http://192.168.0.99:5000/api"
+         //superAdminAPIURL: "http://192.168.0.99:4202/api",
+         //legalEntityAPIURL: 'http://192.168.0.99:4201/api',
+         //mobileServiceAPIURL: "http://192.168.0.99:5000/api"
 
       // Local instance
 
-            //superAdminAPIURL: "http://192.168.0.7:4202/api",
-            //legalEntityAPIURL: 'http://192.168.0.7:4201/api',
-            //mobileServiceAPIURL: "http://192.168.0.7:5000/api"
+            superAdminAPIURL: "http://192.168.0.7:4202/api",
+            legalEntityAPIURL: 'http://192.168.0.7:4201/api',
+            mobileServiceAPIURL: "http://192.168.0.7:5000/api"
 
        //superAdminAPIURL: "http://192.168.0.99:4202/api",
        //legalEntityAPIURL: 'http://192.168.0.99:4201/api',

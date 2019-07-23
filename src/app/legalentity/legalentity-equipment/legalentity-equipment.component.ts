@@ -209,11 +209,11 @@ export class LegalentityEquipmentComponent implements OnInit {
        this.equptFormFiledDataObj.forEach(result => {
 
         if (recordCount == 1 || recordCount == 2){
-          let updatedFormFieldTitle: string = result.formFiledTitleName + " (Allowed upto 256 character)";
+          let updatedFormFieldTitle: string = result.formFiledTitleName;
           this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',256);
         }
         else{
-          let updatedFormFieldTitle: string = result.formFiledTitleName + " (Allowed upto 40 character)";
+          let updatedFormFieldTitle: string = result.formFiledTitleName;
           this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',40);
         }
 
