@@ -22,6 +22,7 @@ export class LegalentityUtilService {
   legalEntityRestApuURL = environment.legalEntityAPIURL;
   mobileRestApiURL = environment.mobileServiceAPIURL;
 
+  
   constructor(
   private titleService: Title,
   private httpClient: HttpClient,

@@ -9,6 +9,7 @@ import *as md5 from "md5";
 import { LegalentityUser } from '../model/legalentity-user';
 //import { stringify } from '@angular/core/src/util';
 import { LegalentityMenuPref } from '../model/legalentity-menu-pref';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-legalentity-login',
@@ -24,13 +25,16 @@ export class LegalentityLoginComponent implements OnInit {
   emailId: string;
   userPassword: string;
 
+  ipAddress: string;
+
   constructor(
     private router: Router,
     private icontRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
     private utilServiceAPI: LegalentityUtilService,
     private userLoginServiceAPI: LegalentityUserService,
-    private userLoginModel: LegalentityUser
+    private userLoginModel: LegalentityUser,
+    private httpClient: HttpClient
   ) {
     icontRegistry.addSvgIcon(
       "attendme-logo",
@@ -163,6 +167,10 @@ export class LegalentityLoginComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    
+
+    this.ipAddress="111111";
 
     this.utilServiceAPI.setTitle("Legalentity - Login | Attendme");
 

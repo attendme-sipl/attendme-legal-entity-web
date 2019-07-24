@@ -176,6 +176,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.equptFormFieldArray.push(this.equptFormFieldBuider.group({
       formFieldId: formFieldId,
       formFiledTitleName: formFieldTitleName,
+      characterLimit: characterLength,
       formFieldValue:['', Validators.maxLength(characterLength)]  //formFieldValue
     }))
   }
@@ -580,7 +581,7 @@ export class LegalentityEquipmentComponent implements OnInit {
   getSpcificQrIdContactFromGroup(): FormGroup{
     return this.equptFormFieldBuider.group({
       contactId: 0,
-      contactPersonName: [''],
+      contactPersonName: ['', Validators.required],
       contactEmailId: ['', Validators.email],
       contactCountryCallingCode:91,
       contactMobileNumber: ['', Validators.compose([
@@ -588,9 +589,9 @@ export class LegalentityEquipmentComponent implements OnInit {
         Validators.maxLength(10)
       ])
     ],
-      contactToBeDisplayed: true,
-      smsRequired:true,
-      emailRequired: true,
+      contactToBeDisplayed: false,
+      smsRequired:false,
+      emailRequired: false,
       specificToQrId: true
     });
   }
@@ -692,7 +693,7 @@ export class LegalentityEquipmentComponent implements OnInit {
       };
 
 
-    console.log(this.addEquipmentFormObj);
+    //console.log(this.addEquipmentFormObj);
 
      this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
       .subscribe((data:IaddQrIdResponseStruct) => {
