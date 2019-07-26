@@ -249,12 +249,12 @@ export class LegalentityEquipmentComponent implements OnInit {
         branchId: this.branchId,
         legalEntityId: this.legalEntityId,
         qrActiveStatus: true,
-        qrAssignStatus: false
+        qrAssignStatus: true
       }
 
       this.qrIdServiceAPI.getNumOfQrIdAvailableHeadOffice(availableQrIdCountReqObj)
       .subscribe(data => {
-
+console.log(data);
         if (data['errorOccurred']){
            this.addEquptProgressBar=false;
            this.toastService.error("Something went wrong while loading QR IDs");
@@ -296,7 +296,7 @@ export class LegalentityEquipmentComponent implements OnInit {
         branchId: this.branchId,
         legalEntityId: this.legalEntityId,
         qrActiveStatus: true,
-        qrAssignStatus: false
+        qrAssignStatus: true
       }
 
       this.qrIdServiceAPI.getNumOfQrIdAvailableBranchOffice(availableQrIdCountReqObj)
