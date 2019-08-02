@@ -78,7 +78,7 @@ export interface IassignComplaintStructure {
 };
 
 export interface IAssingnComplaintResponse {
-  errorOccured: boolean,
+  errorOccurred: boolean,
   complaintList: [{
      complaintId: number,
      complaintNumber: string,
@@ -216,6 +216,7 @@ export class LegalentityComplaintRptService {
     }
 
     getAssingedComplaintsListRpt(reportReqBodyObj: IComplaintBodyStruct):Observable<IAssingnComplaintResponse> {
+      console.log(reportReqBodyObj)
       return this.httpClient.post<IAssingnComplaintResponse>(this.util.legalEntityRestApuURL + "/assignComplaintReport", reportReqBodyObj);
     }
 

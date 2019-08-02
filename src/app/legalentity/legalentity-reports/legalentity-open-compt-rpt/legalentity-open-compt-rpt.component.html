@@ -48,9 +48,10 @@
                   <ng-container matColumnDef="qrId">
                       <th mat-header-cell *matHeaderCellDef>QR ID</th>
                       <td mat-cell *matCellDef="let element">
-                        <button type="button" class="btn btn-link" (click)="opendQrDetailsDialog(element.qrCodeId)">
+                        <!--<button type="button" class="btn btn-link" (click)="opendQrDetailsDialog(element.qrCodeId)">
                             {{ element.qrId }}
-                        </button>
+                        </button>-->
+                        {{ element.qrId }}
                       </td>
                       <!--<td mat-cell *matCellDef="let element">{{ element.qrId }}</td>-->
                   </ng-container>

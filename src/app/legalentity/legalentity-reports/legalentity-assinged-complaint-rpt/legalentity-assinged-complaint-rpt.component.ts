@@ -123,8 +123,8 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
    this.complaintServiceAPI.getAssingedComplaintsListRpt(assignComplaintReqObj)
    .subscribe((data: IAssingnComplaintResponse) => {
-    console.log(data);
-    if (data.errorOccured)
+  
+    if (data.errorOccurred)
     {
       this.toastService.error("Something went wrong while loading assinged " + this.complaintMenuName + " reprot");
       this.enableProgressBar = false;
