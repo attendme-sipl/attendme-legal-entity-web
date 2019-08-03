@@ -73,6 +73,7 @@ import {LegalentityIndivComptDetails} from './legalentity/model/legalentity-indi
 import { LegalentityBranchListRptComponent } from './legalentity/legalentity-reports/legalentity-branch-list-rpt/legalentity-branch-list-rpt.component';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { LegalentityQrDetailsRptComponent } from './legalentity/legalentity-reports/legalentity-qr-details-rpt/legalentity-qr-details-rpt.component';
+import { LegalentityAddBranchNewComponent } from './legalentity/legalentity-add-branch-new/legalentity-add-branch-new.component';
 
 @NgModule({
   declarations: [
@@ -103,7 +104,8 @@ import { LegalentityQrDetailsRptComponent } from './legalentity/legalentity-repo
     LegalentityComplaintRptComponent,
     LegalentityQrDetailsComponent,
     LegalentityBranchListRptComponent,
-    LegalentityQrDetailsRptComponent
+    LegalentityQrDetailsRptComponent,
+    LegalentityAddBranchNewComponent
   ],
   imports: [
     BrowserModule,
