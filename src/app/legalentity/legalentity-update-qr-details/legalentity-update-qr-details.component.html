@@ -1,0 +1,65 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+
+       <mat-progress-bar mode="indeterminate" *ngIf="editEquptProgressBar"></mat-progress-bar>
+
+       <div class="row">
+         <div class="col-sm-12">
+           <h3>Edit {{equptMenuName}}</h3>
+         </div>
+       </div>
+
+       <form [formGroup]="editEquptForm" >
+
+        <div class="row">
+          <div class="col-sm-12">
+
+            <mat-card>
+
+              <mat-card-header>
+                <mat-card-title>QR ID Details</mat-card-title>
+                <mat-form-field style="width: 30%; margin-left: 15px;">
+                  <input type="text" matInput formControlName="qrCodeData" />
+                </mat-form-field>
+              </mat-card-header>
+
+              <mat-card-content style="font-size: 15px;">
+
+                  <mat-grid-list cols="2" rowHeight="60px" >
+
+                      <mat-grid-tile formArrayName="formFieldData" 
+                      *ngFor="let formField of editEquptForm.get('formFieldData')['controls']; let i=index;">
+
+                              <mat-form-field  >
+  
+                              
+                                <div [formGroupName] ="i">
+                                   
+                                      <input matInput formControlName="formFieldValue" placeholder="{{editEquptForm.get('formFieldData').value[i]['formFiledTitleName']}}" autocomplete="OFF" />
+                                   
+                                </div>
+
+                                <mat-error *ngIf="editEquptForm.controls['formFieldData'].dirty && editEquptForm.controls['formFieldData'].invalid">
+                                      Character limit is {{equptForm.get('formFieldData').value[i]['characterLimit']}}.
+                                </mat-error>
+                                
+                                 
+                              </mat-form-field>
+
+                      </mat-grid-tile>
+
+                  </mat-grid-list> 
+
+              </mat-card-content>
+
+            </mat-card>
+
+          </div>
+        </div>
+
+       </form>
+
+    </div>
+  </div>
+</div>

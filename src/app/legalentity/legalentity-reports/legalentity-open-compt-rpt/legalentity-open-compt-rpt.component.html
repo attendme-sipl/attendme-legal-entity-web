@@ -67,7 +67,8 @@
                   </ng-container>
     
                   <ng-container matColumnDef="assginTechnician">
-                      <th mat-header-cell *matHeaderCellDef>Assign {{legalEntityMenuPrefModel.technicianMenuName}}</th>
+                      <!--<th mat-header-cell *matHeaderCellDef>Assign {{legalEntityMenuPrefModel.technicianMenuName}}</th>-->
+                      <th mat-header-cell *matHeaderCellDef>Action</th>
                       <td mat-cell *matCellDef="let element">
                         <button type="button" mat-stroked-button color="primary" 
                          (click)="openAssingTechnicianDialog(element.complaintId)" >

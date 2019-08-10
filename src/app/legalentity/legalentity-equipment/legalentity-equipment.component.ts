@@ -254,7 +254,7 @@ export class LegalentityEquipmentComponent implements OnInit {
 
       this.qrIdServiceAPI.getNumOfQrIdAvailableHeadOffice(availableQrIdCountReqObj)
       .subscribe(data => {
-console.log(data);
+//console.log(data);
         if (data['errorOccurred']){
            this.addEquptProgressBar=false;
            this.toastService.error("Something went wrong while loading QR IDs");

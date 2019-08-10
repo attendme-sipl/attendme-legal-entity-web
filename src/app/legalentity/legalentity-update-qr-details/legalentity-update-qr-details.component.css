@@ -1,0 +1,14 @@
+/*.mat-form-field{
+    width: 45%;
+    margin-left: 10px;
+    margin-right: 10px;
+} */
+
+.mat-form-field{
+    width: 95%;
+}
+
+::ng-deep .mat-card-header-text {
+    /* CSS styles go here */
+    margin: 0px; 
+  }

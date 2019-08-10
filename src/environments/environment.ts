@@ -35,9 +35,9 @@ export const environment = {
 
         // AWS New Production Instance (https)
 
-        //superAdminAPIURL: "http://attendme-sa.attendme.in/api",
-        //legalEntityAPIURL: "http://attendme-le.attendme.in/api",
-        //mobileServiceAPIURL: "http://attendme-android.attendme.in/api"
+        //superAdminAPIURL: "https://attendme-sa.attendme.in/api",
+        //legalEntityAPIURL: "https://attendme-le.attendme.in/api",
+        //mobileServiceAPIURL: "https://attendme-android.attendme.in/api"
 };
 
 /*

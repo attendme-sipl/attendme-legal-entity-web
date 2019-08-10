@@ -42,7 +42,7 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
   updatedColumnDef: string[] = [];
 
-  columnsTobeExcluded: string[] = ['srNo','QR ID'];
+  columnsTobeExcluded: string[] = ['srNo','QR ID','Edit'];
 
   constructor(
     private utileServiceAPI: LegalentityUtilService,
@@ -89,7 +89,9 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
        this.displayedColumns = [
          "srNo",
          "QR ID",
-         "Assigned Date"
+         "Edit",
+         "Assigned Date",
+         "qrCodeId"
         ];
        
        let dynamicFormHeadsArr: any[] = data.formHeads;
@@ -128,6 +130,7 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
           myMap['QR ID'] = indivQrDetails.qrId;
           myMap[this.branchMenuName] = indivQrDetails.branchName;
           myMap['qrCodeFileLink']=indivQrDetails.qrCodeFileLink;
+          myMap['qrCodeId']=indivQrDetails.qrCodeId;
           let assignDate:string = this.datePipe.transform(indivQrDetails.qrAssignDateTime, 'yyyy-MM-dd hh:mm:ss');
 
           myMap['Assigned Date'] = assignDate;
@@ -154,18 +157,20 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
           qrRptUpdatedObj.push(myMap);
 
           srNo=srNo+1;
-          
-  
+        
           
   
 
        });
 
      
+       
 
        this.qrRecordCount = qrRptUpdatedObj.length; //data.contactList.length;
           this.dataSource = new MatTableDataSource(qrRptUpdatedObj);
+          
           this.dataSource.paginator = this.paginator;
+        //console.log(qrRptUpdatedObj);
           this.dataSource.sort = this.sort;
 
 
@@ -175,6 +180,8 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
           this.sort.direction = sortState.direction;
           this.sort.sortChange.emit(sortState);
 
+          
+         
 
        this.enableProgressBar=false;
 
@@ -218,6 +225,11 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
   applyFilter(filterValue: string):void{
     this.dataSource.filter = filterValue.trim().toLocaleLowerCase();
+  }
+
+  editLinkClick(qrCodeId: number){
+
+    this.router.navigate(['legalentity','portal','edit','qr-details',qrCodeId]);
   }
 
 

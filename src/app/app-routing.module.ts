@@ -25,6 +25,7 @@ import { LegalentityBranchListRptComponent } from './legalentity/legalentity-rep
 import { LegalentityAddBranch } from './legalentity/model/legalentity-add-branch';
 import { LegalentityQrDetailsRptComponent } from './legalentity/legalentity-reports/legalentity-qr-details-rpt/legalentity-qr-details-rpt.component';
 import { LegalentityAddBranchNewComponent } from './legalentity/legalentity-add-branch-new/legalentity-add-branch-new.component';
+import {LegalentityUpdateQrDetailsComponent} from './legalentity/legalentity-update-qr-details/legalentity-update-qr-details.component';
 
 const routes: Routes = [
   {
@@ -35,7 +36,7 @@ const routes: Routes = [
       {path:"add-head-office", component: LegalentityHeadofficeComponent},
       {path:"portal",component:LegalentityMainComponent, children:[
         {path:"dashboard",component:LegalentityDashboardComponent},
-        {path:"branch", component: LegalentityAddBranchNewComponent},
+        {path:"branch", component: LegalentityBranchListRptComponent},
         //{path:"branch", component: LegalentityBranchComponent},
         {path:"complaints", component: LegalentityComplaintRptComponent},
         {path:"equipment", component:LegalentityQrDetailsRptComponent},
@@ -47,7 +48,7 @@ const routes: Routes = [
         {path:"rpt/contacts", component: LegalentityContactsRptComponent},
         {path:"technician-add", component:LegalentityAddTechnicianNewComponent},
         {path:"qr-assinged/rpt", component: LegalentityAssignedQrRptComponent },
-        {path:"edit/qr-details/:id", component: LegalentityEditQrDetailsComponent},
+        {path:"edit/qr-details/:id", component: LegalentityUpdateQrDetailsComponent},
         {path:"edit/technician/:id", component: LegalentityEditTechnicianComponent},
         {path:"assign/qr-branch", component: LegalentityAllotQrBranchComponent},
         {path:"info/qr", component: LegalentityQrDetailsComponent},
