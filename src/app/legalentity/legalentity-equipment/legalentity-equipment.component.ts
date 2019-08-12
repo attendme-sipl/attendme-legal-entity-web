@@ -842,7 +842,7 @@ export class LegalentityEquipmentComponent implements OnInit {
 
     this.spcificQrIdContactCount=1;
 
-    this.popCountryCallingCode();
+    //this.popCountryCallingCode();
 
     this.popCountryCallingCode();
     this.popNotificationContactList();

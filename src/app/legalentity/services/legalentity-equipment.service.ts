@@ -133,5 +133,9 @@ export class LegalentityEquipmentService {
     
     return this.httpclient.patch(this.util.legalEntityRestApuURL + "/updateEquptDetails", qrIdRequestObj);
   }
+
+  updateQrIdDetailsNew(qrIdRequestObj: LegalentityEquipment):Observable<any>{
+    return this.httpclient.patch(this.util.legalEntityRestApuURL + "/updateEquptDetails", qrIdRequestObj);
+  }
   
 }

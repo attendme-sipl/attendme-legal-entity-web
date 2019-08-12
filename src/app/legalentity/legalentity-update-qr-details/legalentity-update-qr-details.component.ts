@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { LegalentityUtilService } from '../services/legalentity-util.service';
+import { LegalentityUtilService, IcountryCallingCodeResponse } from '../services/legalentity-util.service';
 import { LegalentityUser } from '../model/legalentity-user';
 import { ToastrService } from 'ngx-toastr';
 import { Route } from '@angular/compiler/src/core';
@@ -8,8 +8,10 @@ import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { IalottedQRIDList, equptFormfieldTitleDataStruct } from '../legalentity-equipment/legalentity-equipment.component';
-import { LegalentityEquipmentService, IequptFormFieldPrefResponse } from '../services/legalentity-equipment.service';
+import { IalottedQRIDList, equptFormfieldTitleDataStruct, IcontactEquptMappingReqStruct, IqrIdFormFieldObjStruct, ISpecQrIdcontactEquptMappingReqStruct } from '../legalentity-equipment/legalentity-equipment.component';
+import { LegalentityEquipmentService, IequptFormFieldPrefResponse, IqrIdIndivDetailsResponse } from '../services/legalentity-equipment.service';
+import { LegalentityContactsService, IcontactResponseStruct } from '../services/legalentity-contacts.service';
+import { LegalentityEquipment } from '../model/legalentity-equipment';
 
 @Component({
   selector: 'app-legalentity-update-qr-details',
@@ -22,7 +24,7 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
   userId: number;
   branchId: number;
 
-  qrCodeId: string;
+  qrCodeId: number;
 
   equptMenuName: string;
 
@@ -32,7 +34,24 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
 
   editEquptForm: FormGroup;
 
+  defaultCountryCode:number;
+  defaultSMSEnable: boolean;
+  defaultEmailEnable: boolean;
+  defaultDispToPublic: boolean;
+
   equptFormFiledDataObj: equptFormfieldTitleDataStruct[];
+
+  spcificQrIdContactCount: number;
+
+  equptFormSubmitted: boolean;
+
+  countryCallingCodeResponseObj: IcountryCallingCodeResponse;
+
+  contactArr: IcontactEquptMappingReqStruct[];
+
+  addEquipmentFormObj: LegalentityEquipment;
+
+  headOffice: boolean;
 
   constructor(
     private router: Router,
@@ -44,7 +63,8 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     sanitizer: DomSanitizer,
     private menuModel: LegalentityMenuPrefNames,
     private equptEditFb: FormBuilder,
-    private equptService: LegalentityEquipmentService
+    private equptService: LegalentityEquipmentService,
+    private contatServiceAPI: LegalentityContactsService
   ) { 
     iconRegistry.addSvgIcon(
       "addRecordIcon",
@@ -93,6 +113,16 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
      })
   }
 
+  popCountryCallingCode():void{
+    this.utilServiceAPI.countryCallingCode()
+    .subscribe((data:IcountryCallingCodeResponse) =>{
+      this.countryCallingCodeResponseObj = data;
+      
+    }, error => {
+      this.toastService.error("Something went wrong while loading country calling code");
+    });
+  }
+
   get equptFormFieldArray(){
     return this.editEquptForm.get('formFieldData') as FormArray;
   }
@@ -103,13 +133,59 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
       formFieldId: formFieldId,
       formFiledTitleName: formFieldTitleName,
       characterLimit: characterLength,
-      formFieldValue:['', Validators.maxLength(characterLength)]  //formFieldValue
+      formFieldValue:[formFieldValue, Validators.maxLength(characterLength)]  //formFieldValue
     }))
   }
 
   removeEqutpFormFiledArray(indexValue: number){
     this.equptFormFieldArray.removeAt(indexValue);
   }
+
+
+  get qrContactDetailsFormArray()
+  {
+    return this.editEquptForm.get('qrContactData') as FormArray 
+  } 
+
+  getQrIdContactFormGroup(): FormGroup{
+    return this.equptEditFb.group({
+      contactPersonName: [''],
+      countryCallingCode: this.defaultCountryCode,
+      contactMobileNumber: ['',Validators.compose([
+        Validators.minLength(10),
+        Validators.maxLength(10)
+      ])],
+      contactEmailId: ['', Validators.email],
+      contactToBeDisplayed: this.defaultDispToPublic,
+      contactId:[''],
+      smsRequired: this.defaultSMSEnable ,
+      emailRequired: this.defaultEmailEnable
+    })
+  }
+
+  
+  get qrIdContactFormArray()
+  {
+    return this.editEquptForm.get('qrContactData') as FormArray;
+  }
+
+  addQrIdContactDetailsToFormArray(qrIdContactObj: IcontactEquptMappingReqStruct){
+   
+    this.qrIdContactFormArray.push(this.equptEditFb.group(qrIdContactObj));
+    
+  }
+
+  addQrIdContact()
+  {
+    this.qrContactDetailsFormArray.push(this.getQrIdContactFormGroup())
+  }
+
+  removeQrIdContact(indexId: number){
+    this.qrContactDetailsFormArray.removeAt(indexId);
+  }
+
+
+ 
 
 
   getEquptFormfieldPref():void{
@@ -156,6 +232,7 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
      {
        
      }
+    
 
      this.editEquptProgressBar=false;
    }, error =>{
@@ -163,6 +240,330 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
      this.toastService.error("Something whent wrong while loading form details");
    });
  }
+
+ getQrIdDetails(){
+   this.editEquptProgressBar = true;
+
+   this.equptService.getQrIdIndivDetails(this.qrCodeId)
+   .subscribe((data:IqrIdIndivDetailsResponse) => {
+     if (data.errorOccurred){
+       this.editEquptProgressBar=false;
+       this.toastService.error("Something went wrong while loading " + this.equptMenuName + " details");
+       return false;
+     }
+
+     let qrIdFormFieldDataObj: any[] = data.qrIdData;
+
+     this.equptService.getEquptFormFieldPref(this.legalEntityId,true)
+   .subscribe((data:IequptFormFieldPrefResponse) => {
+     if (data.errorOccured)
+     {
+       this.editEquptProgressBar=false;
+       this.toastService.error("Something whent wrong while loading form details");
+       return false;
+     }
+     
+     //let formFieldArray: FormArray;
+
+     if (data.equptFormFieldTitles.length > 0){
+      this.equptFormFiledDataObj = data.equptFormFieldTitles
+
+      let recordCount: number = 1;
+    
+      this.equptFormFiledDataObj.forEach(result => {
+
+        let formFieldData: string = '';
+
+        let formFieldDataObj = qrIdFormFieldDataObj.map((value,index) => value ? {
+          formFieldId: value['formFieldId'],
+          formFieldValue: value['formFieldValue']
+        } : null)
+        .filter(value => value.formFieldId == result.formFieldId);
+
+        if(formFieldDataObj.length > 0){
+          formFieldData = formFieldDataObj[0]['formFieldValue'];
+          //console.log(formFieldData);
+        }
+
+       if (recordCount == 1 || recordCount == 2){
+         let updatedFormFieldTitle: string = result.formFiledTitleName;
+         this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,formFieldData,256);
+       }
+       else{
+         let updatedFormFieldTitle: string = result.formFiledTitleName;
+         this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,formFieldData,40);
+       }
+
+       recordCount = recordCount+1;
+
+       });
+
+      // this.commonModel.enableProgressbar=false;
+      
+     }
+     
+    
+
+     this.editEquptProgressBar=false;
+   }, error =>{
+     this.editEquptProgressBar=false;
+     this.toastService.error("Something whent wrong while loading form details");
+   });
+
+   let qrIdPrimaryContactObj: any[] = data.qrContactData;
+ 
+   while(this.qrIdContactFormArray.length){
+    this.qrIdContactFormArray.removeAt(0);
+  }
+  
+  this.contatServiceAPI.getLegalEntityContactListRpt(this.legalEntityId,true)
+  .subscribe((data:IcontactResponseStruct) => {
+    if (data.errorOccurred){
+      this.toastService.error("Something went wrong while loading contacts list");
+      this.editEquptProgressBar=false;
+      return false;
+    }
+
+    this.contactArr=data.contactList.map((value,index) => value ? {
+      contactId: value['contactId'],
+      contactToBeDisplayed: value['contactToBeDisplayed'],
+      contactPersonName: value['contactPersonName'],
+      contactMobileNumber: value['contactMobileNumber'],
+      contactEmailId: value['contactEmailId'],
+      contactSelected: value['contactSelected'],
+      smsRequired: value['smsRequired'],
+      emailRequired: value['emailRequired'],
+      specificToQrId: value['specificToQrId']
+    } : null)
+    .filter(value => value.specificToQrId == false);
+
+    this.contactArr.forEach((indivContactObj: IcontactEquptMappingReqStruct) => {
+
+      let existingSMSReq:boolean = false;
+      let existingEmailReq: boolean = false;
+      let existingMakePublic: boolean = false;
+
+      let qrIdPrimaryContactFiltered = qrIdPrimaryContactObj.map((value,index) => value ? {
+        contactId: value['contactId'],
+        contactToBeDisplayed: value['contactToBeDisplayed'],
+        emailRequired: value['emailRequired'],
+        smsRequired: value['cosmsRequiredntactId']
+      } : null)
+      .filter(value => value.contactId == indivContactObj.contactId);
+
+      if (qrIdPrimaryContactFiltered.length > 0){
+        existingSMSReq = qrIdPrimaryContactFiltered[0]['smsRequired'];
+        existingEmailReq = qrIdPrimaryContactFiltered[0]['emailRequired'];
+        existingMakePublic = qrIdPrimaryContactFiltered[0]['contactToBeDisplayed'];
+      }
+
+     
+      //indivContactObj.contactSelected=false;
+      indivContactObj.contactToBeDisplayed=existingMakePublic;
+      indivContactObj.smsRequired=existingSMSReq;
+      indivContactObj.emailRequired=existingEmailReq;
+      this.addQrIdContactDetailsToFormArray(indivContactObj);
+    });
+
+    
+
+    this.editEquptProgressBar=false;
+
+  }, error => {
+    this.toastService.error("Something went wrong while loading contacts list");
+    this.editEquptProgressBar=false;
+  });
+
+   console.log(data.qrContactData);
+    
+
+   }, error => {
+    this.editEquptProgressBar=false;
+    this.toastService.error("Something went wrong while loading " + this.equptMenuName + " details");
+   });
+ }
+
+
+ getSpcificQrIdContactFromGroup(): FormGroup{
+  return this.equptEditFb.group({
+    contactId: 0,
+    contactPersonName: ['', Validators.required],
+    contactEmailId: ['', Validators.email],
+    contactCountryCallingCode:91,
+    contactMobileNumber: ['', Validators.compose([
+      Validators.minLength(10),
+      Validators.maxLength(10)
+    ])
+  ],
+    contactToBeDisplayed: false,
+    smsRequired:false,
+    emailRequired: false,
+    specificToQrId: true
+  });
+}
+
+get specificQrIdContactFormArray(){
+  return this.editEquptForm.get('specificToQrContact') as FormArray;
+}
+
+addSpecificQrIdContactToFormArray(){
+  this.specificQrIdContactFormArray.push(this.getSpcificQrIdContactFromGroup());
+  this.spcificQrIdContactCount=this.spcificQrIdContactCount+1;
+}
+
+removeSpecificQrIdContactFromFormArray(index: number){
+  this.specificQrIdContactFormArray.removeAt(index);
+  this.spcificQrIdContactCount=this.spcificQrIdContactCount-1;
+}
+
+
+smsRequiredAll(event):void{
+  let contactListObj: IcontactEquptMappingReqStruct[] = this.editEquptForm.get('qrContactData').value;
+  let contactListObjNew: IcontactEquptMappingReqStruct[] = [];
+
+  let selectAllSMSRequired: boolean = event.checked;
+
+  contactListObj.forEach((indivContact: IcontactEquptMappingReqStruct) => {
+    if (indivContact.contactMobileNumber != ''){
+      indivContact.smsRequired= selectAllSMSRequired;
+      contactListObjNew.push(indivContact);
+    } 
+  });
+
+  this.editEquptForm.patchValue({
+    qrContactData: contactListObj
+  });
+}
+
+emailRequiredAll(event):void{
+  let contactListObj: IcontactEquptMappingReqStruct[] = this.editEquptForm.get('qrContactData').value;
+  let contactListObjNew: IcontactEquptMappingReqStruct[] = [];
+
+  let selectAllSMSRequired: boolean = event.checked;
+
+  contactListObj.forEach((indivContact: IcontactEquptMappingReqStruct) => {
+    if (indivContact.contactEmailId != ''){
+      indivContact.emailRequired= selectAllSMSRequired;
+      contactListObjNew.push(indivContact); 
+    }
+    
+  });
+
+  this.editEquptForm.patchValue({
+    qrContactData: contactListObj
+  });
+}
+
+contactMakeAllPublic(event):void{
+
+  let contactListObj: IcontactEquptMappingReqStruct[] = this.editEquptForm.get('qrContactData').value;
+  let contactListObjNew: IcontactEquptMappingReqStruct[] = [];
+
+  let makeAllPublicChecked: boolean = event.checked;
+
+  contactListObj.forEach((indivContact: IcontactEquptMappingReqStruct) => {
+    indivContact.contactToBeDisplayed= makeAllPublicChecked;
+    contactListObjNew.push(indivContact); 
+  });
+
+  this.editEquptForm.patchValue({
+    qrContactData: contactListObj
+  });
+
+}
+
+
+onSubmit(){
+  this.equptFormSubmitted = true;
+
+  this.editEquptProgressBar=true;
+
+  if (this.editEquptForm.valid){
+
+
+    let qrIdFormFieldDataObj: IqrIdFormFieldObjStruct[] = this.editEquptForm.value['formFieldData'];
+
+      let newQrIdFormFieldDataObj: IqrIdFormFieldObjStruct[] = [];
+
+    qrIdFormFieldDataObj.forEach(indivFormField => {
+      if (indivFormField.formFieldValue != ''){
+          newQrIdFormFieldDataObj.push({
+            formFieldId: indivFormField.formFieldId,
+            formFieldValue: indivFormField.formFieldValue
+          });
+          }
+      
+    });
+
+    const qrIdContactArr: IcontactEquptMappingReqStruct[] = this.editEquptForm.get('qrContactData').value;
+
+    let qrIdContactArrUpdated: IcontactEquptMappingReqStruct[] = [];
+
+
+    qrIdContactArr.forEach((indivConatactObj: IcontactEquptMappingReqStruct) => {
+      if (indivConatactObj.smsRequired || indivConatactObj.emailRequired || indivConatactObj.contactToBeDisplayed){
+        qrIdContactArrUpdated.push(indivConatactObj);
+      }
+    });
+
+
+    let specificQrIdContactArray: ISpecQrIdcontactEquptMappingReqStruct[] = this.editEquptForm.get('specificToQrContact').value;
+
+    specificQrIdContactArray.forEach(spcificQrIdIndivContact => {
+      if (spcificQrIdIndivContact.contactPersonName != '' ||
+      spcificQrIdIndivContact.contactEmailId != '' ||
+      spcificQrIdIndivContact.contactMobileNumber != ''){
+
+        if (spcificQrIdIndivContact.contactMobileNumber != ''){
+          spcificQrIdIndivContact.contactMobileNumber = spcificQrIdIndivContact.contactCountryCallingCode + "-" + spcificQrIdIndivContact.contactMobileNumber;
+        }
+        else
+        {
+          spcificQrIdIndivContact.smsRequired=false;
+        }
+
+        if (spcificQrIdIndivContact.contactEmailId == ''){
+          spcificQrIdIndivContact.emailRequired=false;
+        }
+
+        qrIdContactArrUpdated.push({
+          contactEmailId: spcificQrIdIndivContact.contactEmailId,
+          contactId: spcificQrIdIndivContact.contactId,
+          contactMobileNumber: spcificQrIdIndivContact.contactMobileNumber,
+          contactPersonName: spcificQrIdIndivContact.contactPersonName,
+          contactSelected: true,
+          contactToBeDisplayed: spcificQrIdIndivContact.contactToBeDisplayed,
+          emailRequired: spcificQrIdIndivContact.emailRequired,
+          smsRequired: spcificQrIdIndivContact.smsRequired,
+          specificToQrId: spcificQrIdIndivContact.specificToQrId
+        });
+
+      }
+    });
+      
+    
+      this.addEquipmentFormObj = {
+        addedByUserId: this.editEquptForm.value['addedByUserId'],
+        adminApprove: true,
+        branchId: this.branchId,
+        equptActiveStatus: true,
+        formFieldData: newQrIdFormFieldDataObj,
+        qrCodeId: this.qrCodeId, //this.editEquptForm.get('qrCodeData').value['qrCodeId'],
+        qrContactData: qrIdContactArrUpdated,
+        headOffice: this.headOffice,
+        legalEntityId: this.legalEntityId
+      };
+
+      console.log(this.addEquipmentFormObj);
+
+      this.equptService.updateQrIdDetailsNew(this.addEquipmentFormObj)
+      .subscribe(data => {
+        console.log(data);
+      });
+
+  }
+}
+
 
   ngOnInit() {
 
@@ -173,14 +574,18 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
       this.branchId = this.userModel.legalEntityBranchDetails.branchId;
       this.userId = this.userModel.legalEntityUserDetails.userId;
       
-      
+      this.headOffice=this.userModel.legalEntityBranchDetails.branchHeadOffice;
     }
     else{
       this.router.navigate(['legalentity','login']);
       return false;
     }
 
-    this.qrCodeId = this.route.snapshot.paramMap.get('id');
+    this.qrCodeId = parseInt(this.route.snapshot.paramMap.get('id'));
+
+    this.defaultCountryCode = 91;
+    this.defaultSMSEnable =  true;
+    this.defaultEmailEnable = true;
   
     this.menuModel = this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.equptMenuName = this.menuModel.equipmentMenuName;
@@ -194,19 +599,27 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
       equptActiveStatus: true,
       addedByUserId: this.userId,
       formFieldData: this.equptEditFb.array([]),
-      //qrContactData: this.equptFormFieldBuider.array([]),
-      //specificToQrContact: this.equptFormFieldBuider.array([
-        //this.getSpcificQrIdContactFromGroup()
-      //]),
-      qrCodeId: [''],
+      qrContactData: this.equptEditFb.array([]),
+      specificToQrContact: this.equptEditFb.array([
+        this.getSpcificQrIdContactFromGroup()
+      ]),
+      qrCodeId: this.qrCodeId,
       qrCodeData: ['']
     })
 
     this.editEquptForm.controls['qrCodeData'].disable();
 
+    this.getQrIdDetails();
+
     this.popQrIdList();
 
-    this.getEquptFormfieldPref();
+    this.spcificQrIdContactCount=1;
+
+    this.popCountryCallingCode();
+
+    //this.popNotificationContactList();
+
+   // this.getEquptFormfieldPref();
 
   }
 
