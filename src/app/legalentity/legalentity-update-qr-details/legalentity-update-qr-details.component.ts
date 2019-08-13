@@ -53,6 +53,11 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
 
   headOffice: boolean;
 
+  makeAllPublic: boolean;
+  selectAllContacts: boolean;
+  smsSelectall: boolean;
+  emailSelectAll: boolean;
+
   constructor(
     private router: Router,
     private utilServiceAPI: LegalentityUtilService,
@@ -315,6 +320,66 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
    while(this.qrIdContactFormArray.length){
     this.qrIdContactFormArray.removeAt(0);
   }
+
+  while (this.specificQrIdContactFormArray.length){
+    this.specificQrIdContactFormArray.removeAt(0);
+  }
+
+  this.spcificQrIdContactCount=0;
+
+
+  let specificToQrIdContactObj: any[] = data.qrContactData;
+  
+  specificToQrIdContactObj.forEach(indivSpecificToQrContact => {
+
+
+    if (indivSpecificToQrContact.specificToQrId){
+
+      this.spcificQrIdContactCount=this.spcificQrIdContactCount+1;
+
+      let contactCountrycallingCode: number;
+      let contactMobile: string;
+
+      let completeMobileNumberObj: string[];
+
+
+      if (indivSpecificToQrContact.contactMobileNumber !=''){
+        completeMobileNumberObj = indivSpecificToQrContact.contactMobileNumber.split('-');
+
+        contactCountrycallingCode = parseInt(completeMobileNumberObj[0]);
+        contactMobile = completeMobileNumberObj[1];
+      }
+      else{
+        contactCountrycallingCode = this.defaultCountryCode;
+        contactMobile = ''
+      }
+
+      let updatedContactFormGroup: FormGroup = this.equptEditFb.group({
+        contactId: 0,
+        contactPersonName: [indivSpecificToQrContact.contactPersonName, Validators.required],
+        contactEmailId: [indivSpecificToQrContact.contactEmailId, Validators.email],
+        contactCountryCallingCode:contactCountrycallingCode,
+        contactMobileNumber: [contactMobile, Validators.compose([
+          Validators.minLength(10),
+          Validators.maxLength(10)
+        ])
+      ],
+      contactToBeDisplayed: indivSpecificToQrContact.contactToBeDisplayed,
+      smsRequired: indivSpecificToQrContact.smsRequired,
+      emailRequired: indivSpecificToQrContact.emailRequired,
+      specificToQrId: true
+    });
+    this.specificQrIdContactFormArray.push(updatedContactFormGroup);
+  }
+
+  
+
+  });
+
+  if (this.specificQrIdContactFormArray.length == 0){
+    this.addSpecificQrIdContactToFormArray();
+  }
+  
   
   this.contatServiceAPI.getLegalEntityContactListRpt(this.legalEntityId,true)
   .subscribe((data:IcontactResponseStruct) => {
@@ -347,7 +412,7 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
         contactId: value['contactId'],
         contactToBeDisplayed: value['contactToBeDisplayed'],
         emailRequired: value['emailRequired'],
-        smsRequired: value['cosmsRequiredntactId']
+        smsRequired: value['smsRequired']
       } : null)
       .filter(value => value.contactId == indivContactObj.contactId);
 
@@ -374,8 +439,13 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     this.editEquptProgressBar=false;
   });
 
-   console.log(data.qrContactData);
-    
+
+  //this.removeSpecificQrIdContactFromFormArray(0);
+  
+
+  //console.log(this.specificQrIdContactFormArray.controls.);
+  
+   
 
    }, error => {
     this.editEquptProgressBar=false;
@@ -472,6 +542,10 @@ contactMakeAllPublic(event):void{
 
 }
 
+cancelClick(){
+  this.router.navigate(['legalentity','portal','equipment']);
+}
+
 
 onSubmit(){
   this.equptFormSubmitted = true;
@@ -554,11 +628,22 @@ onSubmit(){
         legalEntityId: this.legalEntityId
       };
 
-      console.log(this.addEquipmentFormObj);
+      //console.log(this.addEquipmentFormObj);
 
       this.equptService.updateQrIdDetailsNew(this.addEquipmentFormObj)
       .subscribe(data => {
-        console.log(data);
+        if (data['errorOccurred']){
+          this.editEquptProgressBar=false;
+          this.toastService.error("Something went wrong while updating "+ this.equptMenuName + " details.");
+          return false;
+        }
+
+        this.editEquptProgressBar=false;
+        this.toastService.success(this.equptMenuName + " details updated successfully");
+        this.router.navigate(['legalentity','portal','equipment']);
+      }, error => {
+        this.toastService.error("Something went wrong while updating "+ this.equptMenuName + " details.");
+        return false;
       });
 
   }

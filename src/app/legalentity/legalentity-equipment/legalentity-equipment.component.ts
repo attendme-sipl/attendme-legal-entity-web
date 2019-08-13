@@ -581,7 +581,7 @@ export class LegalentityEquipmentComponent implements OnInit {
   getSpcificQrIdContactFromGroup(): FormGroup{
     return this.equptFormFieldBuider.group({
       contactId: 0,
-      contactPersonName: ['', Validators.required],
+      contactPersonName: [''],
       contactEmailId: ['', Validators.email],
       contactCountryCallingCode:91,
       contactMobileNumber: ['', Validators.compose([
@@ -731,11 +731,28 @@ export class LegalentityEquipmentComponent implements OnInit {
 
 
 
-
+  
 
 
   }
 
+  setCustomValidators(){
+
+    this.specificQrIdContactFormArray.controls.forEach((indivControl) => {
+      indivControl['controls']['contactPersonName'].valueChanges
+      .subscribe(contactPersonNameTxt => {
+        if (contactPersonNameTxt != ''){
+          
+          if (indivControl['controls']['contactMobileNumber'].value == '' && indivControl['controls']['contactEmailId'].value == ''){
+            
+          }
+
+        }
+      });
+
+    });
+    
+  }
 
   onResetClick(){
     this.equptForm.reset();
@@ -847,6 +864,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.popCountryCallingCode();
     this.popNotificationContactList();
 
+    this.setCustomValidators();
    
     this.filterOptions = this.equptForm.get('qrCodeData').valueChanges
     .pipe(
