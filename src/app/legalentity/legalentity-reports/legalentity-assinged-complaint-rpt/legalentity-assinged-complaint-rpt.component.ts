@@ -111,7 +111,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
   popComplaintAssingRptGrid(): void{
 
    let assignComplaintReqObj: IComplaintBodyStruct = {
-     allBranch: true,
+     allBranch: false,
      branchId: this.branchId,
      complaintStatus: 'assigned',
      fromDate: null,

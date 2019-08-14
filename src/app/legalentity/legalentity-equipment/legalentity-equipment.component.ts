@@ -584,11 +584,11 @@ export class LegalentityEquipmentComponent implements OnInit {
       contactPersonName: [''],
       contactEmailId: ['', Validators.email],
       contactCountryCallingCode:91,
-      contactMobileNumber: ['', Validators.compose([
-        Validators.minLength(10),
-        Validators.maxLength(10)
-      ])
-    ],
+      //contactMobileNumber: ['', Validators.compose([
+        //Validators.minLength(10),
+        //Validators.maxLength(10)
+      //])
+      contactMobileNumber: [''],
       contactToBeDisplayed: false,
       smsRequired:false,
       emailRequired: false,
@@ -731,9 +731,6 @@ export class LegalentityEquipmentComponent implements OnInit {
 
 
 
-  
-
-
   }
 
   setCustomValidators(){
@@ -745,6 +742,19 @@ export class LegalentityEquipmentComponent implements OnInit {
           
           if (indivControl['controls']['contactMobileNumber'].value == '' && indivControl['controls']['contactEmailId'].value == ''){
             
+            //indivControl['controls']['contactMobileNumber'].setValidators([Validators.required]);
+
+            //const indivMobileFormControl: FormControl = indivControl['controls']['contactMobileNumber'];
+
+            //indivMobileFormControl.setValidators([Validators.required]);
+
+            //indivControl.get('contactMobileNumber').setValidators([Validators.required]);
+            
+
+            console.log(indivControl.get('contactMobileNumber'));
+
+            //indivControl['controls']['contactMobileNumber'].clearValidators();
+
           }
 
         }
@@ -861,10 +871,16 @@ export class LegalentityEquipmentComponent implements OnInit {
 
     //this.popCountryCallingCode();
 
+     //this.equptForm.controls['specificToQrContact']['controls'][0].controls['contactMobileNumber'].setValidators([Validators.required]);
+
+     //console.log(this.equptForm.controls['specificToQrContact']['controls'][0].controls['contactMobileNumber']);
+
+   // this.equptForm.controls['specificToQrContact'][0].controls['contactMobileNumber'].setValidators([Validators.required]);
+
     this.popCountryCallingCode();
     this.popNotificationContactList();
 
-    this.setCustomValidators();
+    //this.setCustomValidators();
    
     this.filterOptions = this.equptForm.get('qrCodeData').valueChanges
     .pipe(

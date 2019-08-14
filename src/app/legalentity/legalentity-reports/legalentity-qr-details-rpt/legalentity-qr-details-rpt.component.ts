@@ -90,8 +90,7 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
          "srNo",
          "QR ID",
          "Edit",
-         "Assigned Date",
-         "qrCodeId"
+         "Assigned Date"
         ];
        
        let dynamicFormHeadsArr: any[] = data.formHeads;
