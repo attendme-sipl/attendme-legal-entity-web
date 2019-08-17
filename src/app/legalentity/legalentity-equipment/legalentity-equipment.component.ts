@@ -603,6 +603,7 @@ export class LegalentityEquipmentComponent implements OnInit {
   addSpecificQrIdContactToFormArray(){
     this.specificQrIdContactFormArray.push(this.getSpcificQrIdContactFromGroup());
     this.spcificQrIdContactCount=this.spcificQrIdContactCount+1;
+    this.setCustomValidators();
   }
 
   removeSpecificQrIdContactFromFormArray(index: number){
@@ -695,7 +696,7 @@ export class LegalentityEquipmentComponent implements OnInit {
 
     //console.log(this.addEquipmentFormObj);
 
-     this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
+    /* this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
       .subscribe((data:IaddQrIdResponseStruct) => {
 
       
@@ -724,7 +725,7 @@ export class LegalentityEquipmentComponent implements OnInit {
         
       }, error => {
         this.toastService.error("Something went wrong while add QR ID details");
-      });
+      }); */
       
         
     }   
@@ -733,34 +734,103 @@ export class LegalentityEquipmentComponent implements OnInit {
 
   }
 
+
+
+
   setCustomValidators(){
 
-    this.specificQrIdContactFormArray.controls.forEach((indivControl) => {
-      indivControl['controls']['contactPersonName'].valueChanges
-      .subscribe(contactPersonNameTxt => {
+    this.specificQrIdContactFormArray.controls.forEach(indivFormControl => {
+
+      const contactPersonControlChange$ = indivFormControl['controls']['contactPersonName'].valueChanges;
+
+      contactPersonControlChange$.subscribe(contactPersonNameTxt => {
         if (contactPersonNameTxt != ''){
-          
-          if (indivControl['controls']['contactMobileNumber'].value == '' && indivControl['controls']['contactEmailId'].value == ''){
-            
-            //indivControl['controls']['contactMobileNumber'].setValidators([Validators.required]);
 
-            //const indivMobileFormControl: FormControl = indivControl['controls']['contactMobileNumber'];
+          let contactMobileNumber: string = indivFormControl['controls']['contactMobileNumber'].value;
 
-            //indivMobileFormControl.setValidators([Validators.required]);
-
-            //indivControl.get('contactMobileNumber').setValidators([Validators.required]);
-            
-
-            console.log(indivControl.get('contactMobileNumber'));
-
-            //indivControl['controls']['contactMobileNumber'].clearValidators();
-
+          if (contactMobileNumber == ''){
+            indivFormControl['controls']['contactMobileNumber'].setValidators([Validators.required]);
+            indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity();
           }
 
+          let contactEmailId: string = indivFormControl['controls']['contactEmailId'].value;
+
+          if (contactEmailId == ''){
+            indivFormControl['controls']['contactEmailId'].setValidators([Validators.required]);
+            indivFormControl['controls']['contactEmailId'].updateValueAndValidity();
+          }
+
+           
+        }
+        else {
+          indivFormControl['controls']['contactMobileNumber'].clearValidators();
+          indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity();
+
+          indivFormControl['controls']['contactEmailId'].clearValidators();
+          indivFormControl['controls']['contactEmailId'].updateValueAndValidity();
+        }
+      });
+
+      
+      const contactMobileNumberChange$ = indivFormControl['controls']['contactMobileNumber'].valueChanges;
+
+      contactMobileNumberChange$.subscribe(mobileTxt => {
+        if (mobileTxt != ''){
+
+          let contactPersonName: string = indivFormControl['controls']['contactPersonName'].value;
+
+          if (contactPersonName == ''){
+            indivFormControl['controls']['contactPersonName'].setValidators([Validators.required]);
+            indivFormControl['controls']['contactPersonName'].updateValueAndValidity({emitEvent: false});
+          }
+
+          let contactEmailId: string = indivFormControl['controls']['contactEmailId'].value;
+
+          if (contactEmailId == ''){
+            indivFormControl['controls']['contactEmailId'].clearValidators();
+            indivFormControl['controls']['contactEmailId'].updateValueAndValidity({emitEvent: false});
+          }
+
+        }
+        else{
+          indivFormControl['controls']['contactPersonName'].clearValidators();
+          indivFormControl['controls']['contactPersonName'].updateValueAndValidity({emitEvent: false});
+
+          //indivFormControl['controls']['contactMobileNumber'].clearValidators();
+          //indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity({emitEvent: false});
+        }
+      });
+      
+      const contactEmailId$ = indivFormControl['controls']['contactEmailId'].valueChanges;
+
+      contactEmailId$.subscribe(emailTxt => {
+        if (emailTxt != ''){
+
+          let contactPersonName: string = indivFormControl['controls']['contactPersonName'].value;
+
+          if (contactPersonName == ''){
+            indivFormControl['controls']['contactPersonName'].setValidators([Validators.required]);
+            indivFormControl['controls']['contactPersonName'].updateValueAndValidity({emitEvent: false});
+          }
+
+          //let contactMobileNumber: string = indivFormControl['controls']['contactMobileNumber'].value;
+
+          //if (contactMobileNumber == ''){
+            //indivFormControl['controls']['contactMobileNumber'].clearValidators();
+            //indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity({emitEvent: false});
+          //}
+
+
+        }
+        else{
+          indivFormControl['controls']['contactPersonName'].clearValidators();
+          indivFormControl['controls']['contactPersonName'].updateValueAndValidity({emitEvent: false});
         }
       });
 
     });
+
+    
     
   }
 
@@ -880,7 +950,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.popCountryCallingCode();
     this.popNotificationContactList();
 
-    //this.setCustomValidators();
+    this.setCustomValidators();
    
     this.filterOptions = this.equptForm.get('qrCodeData').valueChanges
     .pipe(
