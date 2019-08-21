@@ -582,7 +582,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     return this.equptFormFieldBuider.group({
       contactId: 0,
       contactPersonName: [''],
-      contactEmailId: [''],
+      contactEmailId: ['', Validators.email],
       contactCountryCallingCode:91,
       //contactMobileNumber: ['', Validators.compose([
         //Validators.minLength(10),
@@ -694,9 +694,7 @@ export class LegalentityEquipmentComponent implements OnInit {
       };
 
 
-    //console.log(this.addEquipmentFormObj);
-
-    /* this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
+    this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
       .subscribe((data:IaddQrIdResponseStruct) => {
 
       
@@ -725,11 +723,15 @@ export class LegalentityEquipmentComponent implements OnInit {
         
       }, error => {
         this.toastService.error("Something went wrong while add QR ID details");
-      }); */
+      }); 
       
         
     }   
-
+    else{
+      this.toastService.error("Please check validation errors","");
+      this.addEquptProgressBar=false;
+      return false;
+    }
 
 
   }
@@ -821,6 +823,54 @@ export class LegalentityEquipmentComponent implements OnInit {
           }
 
           if (contactPeronName !='' && contactEmailId ==''){
+            indivFormControl['controls']['contactMobileNumber'].setValidators([Validators.required]);
+            indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity({emitEvent: false});
+
+            indivFormControl['controls']['contactEmailId'].setValidators([Validators.required]);
+            indivFormControl['controls']['contactEmailId'].updateValueAndValidity({emitEvent: false});
+          }
+        }
+
+      });
+
+
+      const contactEmailControlsChange$ = indivFormControl['controls']['contactEmailId'].valueChanges;
+
+      contactEmailControlsChange$
+      .subscribe(emailTxt => {
+
+        if (emailTxt != ''){
+
+          let contactPeronName: string = indivFormControl['controls']['contactPersonName'].value;
+          let contactMobileNumber: string = indivFormControl['controls']['contactMobileNumber'].value;
+
+          if (contactPeronName == ''){
+            indivFormControl['controls']['contactPersonName'].setValidators([Validators.required]);
+            indivFormControl['controls']['contactPersonName'].updateValueAndValidity({emitEvent: false});
+          }
+
+          if (contactMobileNumber == ''){
+            indivFormControl['controls']['contactMobileNumber'].clearValidators([Validators.required]);
+            indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity({emitEvent: false});
+          }
+
+        }
+        else{
+          let contactPeronName: string = indivFormControl['controls']['contactPersonName'].value;
+          let contactMobileNumber: string = indivFormControl['controls']['contactMobileNumber'].value;
+
+          if (contactPeronName == '' && contactMobileNumber == ''){
+            indivFormControl['controls']['contactMobileNumber'].clearValidators([Validators.required]);
+            indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity({emitEvent: false});
+
+            indivFormControl['controls']['contactEmailId'].clearValidators([Validators.required]);
+            indivFormControl['controls']['contactEmailId'].updateValueAndValidity({emitEvent: false});
+
+            indivFormControl['controls']['contactPersonName'].clearValidators([Validators.required]);
+            indivFormControl['controls']['contactPersonName'].updateValueAndValidity({emitEvent: false});
+          }
+
+          if (contactPeronName !='' && contactMobileNumber ==''){
             indivFormControl['controls']['contactMobileNumber'].setValidators([Validators.required]);
             indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity({emitEvent: false});
 

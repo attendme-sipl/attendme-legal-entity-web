@@ -721,6 +721,9 @@ get qrContactDetailsFormArray()
     });
   }
 
+
+  
+
   ngOnInit() {     
 
     if (localStorage.getItem("legalEntityUserDetails") != null)

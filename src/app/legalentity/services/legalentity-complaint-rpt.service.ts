@@ -38,11 +38,17 @@ export interface IcomplaintIndivResponseStruct{
   imageData: [{
      imageDocTransId: number,
      imageName: string,
-     imageTitle: string,
-     imageBase64Data: string
+     complaintStatus: string,
+     imageLink: string
   }],
   qrCodeId: number,
-  qrId: string
+  qrId: string,
+  formFieldDetails:[{
+    equptFormFieldIndexId: number,
+    formFieldId: number,
+    formFieldTitle: string,
+    formFieldValue: string
+ }]
 };
 
 export interface IassignComplaintStructure {
@@ -206,7 +212,7 @@ export class LegalentityComplaintRptService {
 
   getIndivComplaintDetails(indivComplaintReqObj: IcomplaintIndivReqStruct):Observable<IcomplaintIndivResponseStruct>{
    
-    return this.httpClient.post<IcomplaintIndivResponseStruct>(this.util.mobileRestApiURL + "/getComplaintDetails", indivComplaintReqObj);
+    return this.httpClient.post<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail", indivComplaintReqObj);
   }
 
   assignTechnicianToComplaint(complaintDetails:IAssingTechnicianDialogData):Observable<any>{

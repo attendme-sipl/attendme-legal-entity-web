@@ -70,10 +70,13 @@
                                             <mat-grid-tile colspan="2">
                                                 <mat-form-field>
                                                    <input type="text" formControlName="contactPersonName" matInput autocomplete="OFF" placeholder="Contact Person Name" autocomplete="OFF" />
-                                                   <mat-error *ngIf="(equptFormSubmitted || editEquptForm.controls['specificToQrContact'].at(i).controls['contactPersonName'].touched || editEquptForm.controls['specificToQrContact'].at(i).controls['contactPersonName'].dirty)
+                                                   <!--<mat-error *ngIf="(equptFormSubmitted || editEquptForm.controls['specificToQrContact'].at(i).controls['contactPersonName'].touched || editEquptForm.controls['specificToQrContact'].at(i).controls['contactPersonName'].dirty)
                                                     && (editEquptForm.controls['specificToQrContact'].at(i).controls['contactPersonName'].invalid)
                                                    ">
                                                     Enter Contact Person Name 
+                                                   </mat-error>-->
+                                                   <mat-error *ngIf="editEquptForm.controls['specificToQrContact'].at(i).controls['contactPersonName'].hasError('required')">
+                                                    Enter contact person name
                                                    </mat-error>
                                                 </mat-form-field>
   
@@ -90,10 +93,14 @@
                                            <mat-grid-tile colspan="2">
                                              <mat-form-field>
                                                  <input type="text" formControlName="contactMobileNumber" matInput placeholder="Mobile Number" autocomplete="OFF" />
-                                                 <mat-error *ngIf="(equptFormSubmitted || editEquptForm.controls['specificToQrContact'].at(i).controls['contactMobileNumber'].touched || editEquptForm.controls['specificToQrContact'].at(i).controls['contactMobileNumber'].dirty)
+                                                 <!--<mat-error *ngIf="(equptFormSubmitted || editEquptForm.controls['specificToQrContact'].at(i).controls['contactMobileNumber'].touched || editEquptForm.controls['specificToQrContact'].at(i).controls['contactMobileNumber'].dirty)
                                                     && (editEquptForm.controls['specificToQrContact'].at(i).controls['contactMobileNumber'].invalid)
                                                    ">
                                                     Enter valid mobile number
+                                                </mat-error>-->
+
+                                                <mat-error *ngIf="editEquptForm.controls['specificToQrContact'].at(i).controls['contactMobileNumber'].hasError('required')" >
+                                                    Please enter mobile number
                                                 </mat-error>
                                              </mat-form-field>
                                            </mat-grid-tile>
@@ -101,11 +108,15 @@
                                            <mat-grid-tile colspan="2">
                                                <mat-form-field>
                                                    <input type="text" formControlName="contactEmailId" matInput placeholder="Email ID" autocomplete="OFF" />
-                                                   <mat-error *ngIf="(equptFormSubmitted || editEquptForm.controls['specificToQrContact'].at(i).controls['contactEmailId'].touched || editEquptForm.controls['specificToQrContact'].at(i).controls['contactEmailId'].dirty)
-                                                    && (editEquptForm.controls['specificToQrContact'].at(i).controls['contactEmailId'].invalid)
-                                                   ">
-                                                    Enter valid email Id
-                                                </mat-error>
+                                                                   <mat-error *ngIf="(equptFormSubmitted || editEquptForm.controls['specificToQrContact'].at(i).controls['contactEmailId'].touched || editEquptForm.controls['specificToQrContact'].at(i).controls['contactEmailId'].dirty)
+                                                                    && (editEquptForm.controls['specificToQrContact'].at(i).controls['contactEmailId'].hasError('email'))
+                                                                   ">
+                                                                    Enter valid email Id
+                                                                   </mat-error>
+
+                                                                <mat-error *ngIf="editEquptForm.controls['specificToQrContact'].at(i).controls['contactEmailId'].hasError('required')" >
+                                                                    Please enter email id
+                                                                </mat-error>
                                                </mat-form-field>
                                            </mat-grid-tile>
   
@@ -231,7 +242,8 @@
 
 
           <mat-card-actions align="right">
-            <button type="submit" mat-raised-button color="primary" [disabled]="editEquptForm.invalid">Submit</button>
+            <!--<button type="submit" mat-raised-button color="primary" [disabled]="editEquptForm.invalid">Submit</button>-->
+            <button type="submit" mat-raised-button color="primary">Submit</button>
             <button type="button" mat-raised-button color="default" (click)="cancelClick()">Cancel</button>
         </mat-card-actions>
 

@@ -30,7 +30,7 @@
               <mat-list-item role="listitem"
                *ngFor="let indivDocData of indivComplaintDocLinkArr"
               >
-                <a href="{{indivDocData.imageBase64Data}}" target="_blank">
+                <a href="{{indivDocData.imageLink}}" target="_blank">
                   {{indivDocData.imageName}}
                 </a>
               
@@ -52,7 +52,7 @@
     <tr>
       <th>Assigned To</th>
       <td>
-        <span *ngIf="indivComptDetailsModel.assignTechnicianName != ''">{{indivComptDetailsModel.assignTechnicianName}} ({{indivComptDetailsModel.assignTechnicianContactNumber}})</span>
+        <span *ngIf="indivComptDetailsModel.assignTechnicianName != null">{{indivComptDetailsModel.assignTechnicianName}} ({{indivComptDetailsModel.assignTechnicianContactNumber}})</span>
       </td>
     </tr>
 
@@ -74,6 +74,11 @@
     <tr>
       <th>Action Taken</th>
       <td>{{indivComptDetailsModel.actionTaken}}</td>
+    </tr>
+    
+    <tr *ngFor="let indivFormFieldObj of qrIdFormFieldsObj">
+      <th>{{indivFormFieldObj.formFieldTitle}}</th>
+      <td>{{indivFormFieldObj.formFieldValue}}</td>
     </tr>
 
   </table>

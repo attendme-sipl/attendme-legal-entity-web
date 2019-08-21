@@ -16,9 +16,10 @@ export class LegalentityIndivComptDetails {
     imageData: [{
        imageDocTransId: number,
        imageName: string,
-       imageTitle: string,
-       imageBase64Data: string
+       complaintStatus: string,
+       imageLink: string
   }];
   qrCodeId: number;
   qrId: string;
+  
 }

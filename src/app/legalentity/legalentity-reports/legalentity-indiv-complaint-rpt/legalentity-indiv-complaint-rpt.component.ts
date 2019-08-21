@@ -8,8 +8,15 @@ import { LegalentityIndivComptDetails } from '../../model/legalentity-indiv-comp
 export interface IcomplaintIndivDocResponseStruct{
    imageDocTransId: number,
    imageName: string,
-   imageTitle: string,
-   imageBase64Data: string
+   complaintStatus: string,
+   imageLink: string
+};
+
+export interface IqrIdFormFieldsResponseStruct{
+  equptFormFieldIndexId: number,
+  formFieldId: number,
+  formFieldTitle: string,
+  formFieldValue: string
 };
 
 @Component({
@@ -27,7 +34,10 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
   indivComplaintDetailsObj: IcomplaintIndivResponseStruct;
 
   indivComplaintDocLinkArr: IcomplaintIndivDocResponseStruct[];
+
+  qrIdFormFieldsObj: IqrIdFormFieldsResponseStruct[];
   
+  formFieldCountToDisp: number;
 
   constructor(
     private utilServices: LegalentityUtilService,
@@ -54,7 +64,7 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
     this.complaintRptServiceAPI.getIndivComplaintDetails(indivComplaintReqObj)
     .subscribe((data: IcomplaintIndivResponseStruct) => {
 
-      //console.log(data);
+     // console.log(data);
 
       if (data.errorOccured){
         this.indivComplaintProgressBar = false;
@@ -69,6 +79,26 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
 
       this.indivComplaintProgressBar = false;
 
+      let formFieldDataObj: IqrIdFormFieldsResponseStruct[] = data.formFieldDetails;
+
+      let formFiledDataCount: number = data.formFieldDetails.length;
+
+      this.qrIdFormFieldsObj=[];
+      
+      if (formFiledDataCount >= this.formFieldCountToDisp){
+        for(let i:number=0;i<this.formFieldCountToDisp;i++){
+          this.qrIdFormFieldsObj.push(formFieldDataObj[i]);
+        }
+      }
+      else{
+        this.qrIdFormFieldsObj=data.formFieldDetails;
+      }
+
+
+      //this.qrIdFormFieldsObj=data.formFieldDetails;
+
+      //console.log(this.qrIdFormFieldsObj);
+
     }, error => {
       this.indivComplaintProgressBar = false;
     });
@@ -78,6 +108,8 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
 
     this.legalEntityMenuPrefModel = this.utilServices.getLegalEntityMenuPrefNames();
      this.popIndivComplaintDetails();
+
+     this.formFieldCountToDisp=4;
   }
 
 }
