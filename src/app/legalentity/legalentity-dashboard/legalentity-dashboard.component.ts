@@ -204,7 +204,19 @@ export class LegalentityDashboardComponent implements OnInit {
 
   popUnreslovedComptRpt():void{
     this.enableUnresolvedRptProgressBar=true;
-    this.dashboardServiceAPI.getBranchUnreslovedComptRpt(this.branchId,this.unreslovedComptDayLimit)
+
+    this.dashboardServiceAPI.getUnresolvedDaysRuleBook(this.legalEntityId)
+    .subscribe(unresolvedComptDaysData => {
+     
+      if (unresolvedComptDaysData['errorOccured']){
+        this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
+        this.enableUnresolvedRptProgressBar=false;
+        return false;
+      }
+
+      this.unreslovedComptDayLimit = parseInt(unresolvedComptDaysData['unresolvedDaysCount']);
+
+      this.dashboardServiceAPI.getBranchUnreslovedComptRpt(this.branchId,this.unreslovedComptDayLimit)
     .subscribe(data => {
       if (data['errorOccurred']){
         this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
@@ -222,6 +234,12 @@ export class LegalentityDashboardComponent implements OnInit {
       this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
         this.enableUnresolvedRptProgressBar=false;
     });
+    },error => {
+      this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
+      this.enableUnresolvedRptProgressBar=false;
+    });
+
+    
   }
 
   ngOnInit() {
@@ -255,7 +273,7 @@ export class LegalentityDashboardComponent implements OnInit {
 
     //this.popBranchWiseAllottedQrIdRpt();
 
-    this.unreslovedComptDayLimit=7;
+    this.unreslovedComptDayLimit=0;
 
     this.popUnreslovedComptRpt();
 

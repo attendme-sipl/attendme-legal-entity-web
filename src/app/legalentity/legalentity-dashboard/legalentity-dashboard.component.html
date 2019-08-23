@@ -229,7 +229,11 @@
 
                           <ng-container matColumnDef="qrIdAssignedCount">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>Assigned</th>
-                              <td mat-cell *matCellDef="let element">{{element.qrIdAssignedCount}}</td>
+                              <td mat-cell *matCellDef="let element">
+                                <a routerLink="/legalentity/portal/rpt/branch/qr-details/{{element.branchId}}">
+                                 {{element.qrIdAssignedCount}}
+                                </a>
+                              </td>
                           </ng-container>
 
                           <ng-container matColumnDef="qrIdPendingCount">

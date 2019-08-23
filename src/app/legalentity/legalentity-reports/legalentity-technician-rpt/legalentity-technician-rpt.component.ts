@@ -5,8 +5,10 @@ import { Router } from '@angular/router';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { LegalentityAddTechnicianService, ItechnicianListRptResponse } from '../../services/legalentity-add-technician.service';
 import { ToastrService } from 'ngx-toastr';
-import { MatPaginator, MatSort, MatTableDataSource, MatIconRegistry } from '@angular/material';
+import { MatPaginator, MatSort, MatTableDataSource, MatIconRegistry, MatDialog } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../legalentity-confirm-alert/legalentity-confirm-alert.component';
+import { LegalentityTechnicianService } from '../../services/legalentity-technician.service';
 
 export interface ItechnicianListDetailsStruct{
    technicianId: number,
@@ -55,7 +57,9 @@ export class LegalentityTechnicianRptComponent implements OnInit {
     private technicianServiceAPI: LegalentityAddTechnicianService,
     private toastService: ToastrService,
     private iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer
+    private technicianUpdateServiceAPI: LegalentityTechnicianService,
+    sanitizer: DomSanitizer,
+    private dialog:MatDialog
   ) { 
       iconRegistry.addSvgIcon(
         'edit-icon',
@@ -85,12 +89,21 @@ export class LegalentityTechnicianRptComponent implements OnInit {
         return false;
       }
 
-      this.technicianRecordCount=data.technicianList.length;
-      this.dataSource=new MatTableDataSource(data.technicianList);
+      let filteredTechnicianList = data.technicianList.map((value,index) => value ? {
+         technicianId: value['technicianId'],
+         technicianActiveStatus: value['technicianActiveStatus'],
+         technicianName: value['technicianName'],
+         technicianMobileNumber: value['technicianMobileNumber'],
+         technicianEmailId: value['technicianEmailId']
+      }: null)
+      .filter(value => value.technicianActiveStatus == true);
+
+      this.technicianRecordCount= filteredTechnicianList.length;//data.technicianList.length;
+      this.dataSource=new MatTableDataSource(filteredTechnicianList);
       this.dataSource.paginator=this.paginator;
       this.dataSource.sort=this.sort;
 
-      this.technicianDetailsArray=data.technicianList;
+      this.technicianDetailsArray= filteredTechnicianList;//data.technicianList;
 
       this.enableProgressBar=false;
 
@@ -107,6 +120,45 @@ export class LegalentityTechnicianRptComponent implements OnInit {
 
   onEditClick(technicianId: number){
     this.router.navigate(['legalentity','portal','edit','technician',technicianId]);
+  }
+
+  deleteTechnician(technicianId: number){
+    const confirmAlertDialogObj: IConfirmAlertStruct = {
+      alertMessage: "Are you sure you want to remove " + this.technicianMenuName,
+      confirmBit: false
+    };
+
+    let alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent, {
+      data: confirmAlertDialogObj,
+      panelClass: 'custom-dialog-container'
+    });
+
+    alertDialogRef.afterClosed().subscribe(result => {
+      if (confirmAlertDialogObj.confirmBit){
+
+        this.enableProgressBar=true;
+
+        this.technicianUpdateServiceAPI.deleteTechnicianUser(technicianId)
+        .subscribe(data => {
+
+          if (data['errorOccurred'])
+          {
+            this.enableProgressBar=false;
+            this.toastService.error("Something went wrong while deleting " + this.technicianMenuName);
+            return false;
+          }
+
+          this.enableProgressBar=false;
+          this.toastService.success(this.technicianMenuName + " deleted successfully");
+          this.popTechnicianListRpt();
+
+        },error => {
+          this.enableProgressBar=false;
+          this.toastService.error("Something went wrong while deleting " + this.technicianMenuName);
+        });
+
+      }
+    })
   }
 
   ngOnInit() {

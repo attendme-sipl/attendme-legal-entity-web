@@ -75,6 +75,7 @@ import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { LegalentityQrDetailsRptComponent } from './legalentity/legalentity-reports/legalentity-qr-details-rpt/legalentity-qr-details-rpt.component';
 import { LegalentityAddBranchNewComponent } from './legalentity/legalentity-add-branch-new/legalentity-add-branch-new.component';
 import { LegalentityUpdateQrDetailsComponent } from './legalentity/legalentity-update-qr-details/legalentity-update-qr-details.component';
+import { LegalentityBranchQrDetailsRptComponent } from './legalentity/legalentity-reports/legalentity-branch-qr-details-rpt/legalentity-branch-qr-details-rpt.component';
 
 @NgModule({
   declarations: [
@@ -107,7 +108,8 @@ import { LegalentityUpdateQrDetailsComponent } from './legalentity/legalentity-u
     LegalentityBranchListRptComponent,
     LegalentityQrDetailsRptComponent,
     LegalentityAddBranchNewComponent,
-    LegalentityUpdateQrDetailsComponent
+    LegalentityUpdateQrDetailsComponent,
+    LegalentityBranchQrDetailsRptComponent
   ],
   imports: [
     BrowserModule,

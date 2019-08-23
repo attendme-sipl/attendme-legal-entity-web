@@ -45,4 +45,10 @@ export class LegalentityTechnicianService {
   updateTechnicianDetails(updateTechnicianReqObj:ItechnicianUpdateReqStruct):Observable<any>{
     return this.httpClient.patch(this.util.legalEntityRestApuURL+"/updateTechnicianDetails", updateTechnicianReqObj);
   }
+
+  deleteTechnicianUser(technicianId: number):Observable<any>{
+    return this.httpClient.patch(this.util.legalEntityRestApuURL + "/deleteTechnician",{
+      technician: technicianId
+    });
+  }
 }

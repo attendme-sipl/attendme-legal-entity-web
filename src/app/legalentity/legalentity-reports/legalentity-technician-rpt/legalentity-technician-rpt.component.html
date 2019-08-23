@@ -70,7 +70,7 @@
               <ng-container matColumnDef="deleteTechnician">
                   <th mat-header-cell *matHeaderCellDef>Delete</th>
                   <td mat-cell *matCellDef="let element">
-                      <button type="button" mat-button color="primary" disabled>
+                      <button type="button" mat-button color="primary" (click)="deleteTechnician(element.technicianId)">
                         <!--<mat-icon svgIcon="delete-icon"></mat-icon>-->
                         Delete
                       </button>

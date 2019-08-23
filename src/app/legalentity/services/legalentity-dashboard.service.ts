@@ -85,5 +85,11 @@ export class LegalentityDashboardService {
        unresolvedComptDayCount: unresolvedComptDayCount
     });
   }
+
+  getUnresolvedDaysRuleBook(legalEntityId: number):Observable<any>{
+    return this.httpClient.post(this.util.legalEntityRestApuURL + "/unresolvedRuleBookDetails",{
+      legalEntityId: legalEntityId
+    });
+  }
  
 }

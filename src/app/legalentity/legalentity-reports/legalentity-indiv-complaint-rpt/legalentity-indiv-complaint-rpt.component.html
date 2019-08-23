@@ -13,6 +13,11 @@
         <td>{{indivComptDetailsModel.complaintNumber}}</td>
     </tr>
 
+    <tr *ngFor="let indivFormFieldObj of qrIdFormFieldsObj">
+        <th>{{indivFormFieldObj.formFieldTitle}}</th>
+        <td>{{indivFormFieldObj.formFieldValue}}</td>
+    </tr>
+
     <tr>
         <th>Open Date and Time</th>
         <td>{{indivComptDetailsModel.complaintDate | date:'medium'}}</td>
@@ -76,10 +81,7 @@
       <td>{{indivComptDetailsModel.actionTaken}}</td>
     </tr>
     
-    <tr *ngFor="let indivFormFieldObj of qrIdFormFieldsObj">
-      <th>{{indivFormFieldObj.formFieldTitle}}</th>
-      <td>{{indivFormFieldObj.formFieldValue}}</td>
-    </tr>
+    
 
   </table>
 
