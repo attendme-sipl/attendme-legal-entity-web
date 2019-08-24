@@ -93,7 +93,9 @@ export interface IAssingnComplaintResponse {
      assingedToTechncianName: string,
      equipmentName: string,
      equipmentModel: string,
-     equipmentSerial: string
+     equipmentSerial: string,
+     qrId: string,
+     qrCodeId: number
   }]
 };
 
@@ -222,7 +224,7 @@ export class LegalentityComplaintRptService {
     }
 
     getAssingedComplaintsListRpt(reportReqBodyObj: IComplaintBodyStruct):Observable<IAssingnComplaintResponse> {
-      console.log(reportReqBodyObj)
+      //console.log(reportReqBodyObj)
       return this.httpClient.post<IAssingnComplaintResponse>(this.util.legalEntityRestApuURL + "/assignComplaintReport", reportReqBodyObj);
     }
 

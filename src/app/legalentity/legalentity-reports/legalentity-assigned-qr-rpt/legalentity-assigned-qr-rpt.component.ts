@@ -88,7 +88,7 @@ export class LegalentityAssignedQrRptComponent implements OnInit {
 
      this.qrServiceAPI.getAssignedQrIdListRpt(assignQrIdRptReqObj)
      .subscribe((data:IassignedQrIdRptResponse) => {
-       console.log(data);
+      // console.log(data);
 
        if (data.errorOccurred){
          this.toastService.error("Something went wrong while loading assinged QR Id List");

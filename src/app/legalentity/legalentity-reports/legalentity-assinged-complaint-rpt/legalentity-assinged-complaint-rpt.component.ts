@@ -46,6 +46,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
   displayedColumn: string[] = [
     "srNo",
     "complaintNumber",
+    "qrId",
     "complaintOpenDateTime",
     "complaintAssignedDateTime",
     "assingedToTechncianName"

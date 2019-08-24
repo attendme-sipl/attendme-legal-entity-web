@@ -152,7 +152,8 @@
                                                            </mat-grid-tile>
 
                                                            <mat-grid-tile colspan="1" >
-                                                                <mat-checkbox formControlName="smsRequired" [disabled]="equptForm.get('specificToQrContact').value[i]['contactMobileNumber'] == ''"></mat-checkbox>
+                                                                <mat-checkbox formControlName="smsRequired" 
+                                                                [disabled]="equptForm.get('specificToQrContact').value[i]['contactMobileNumber'] == ''"></mat-checkbox>
                                                                 <span style="margin-left: 5px;"></span>
                                                                 SMS
                                                            </mat-grid-tile>

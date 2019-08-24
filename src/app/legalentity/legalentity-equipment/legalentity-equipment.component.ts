@@ -693,7 +693,7 @@ export class LegalentityEquipmentComponent implements OnInit {
         legalEntityId: this.legalEntityId
       };
 
-
+//console.log(this.addEquipmentFormObj);
     this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
       .subscribe((data:IaddQrIdResponseStruct) => {
 
@@ -806,6 +806,10 @@ export class LegalentityEquipmentComponent implements OnInit {
             indivFormControl['controls']['contactEmailId'].updateValueAndValidity({emitEvent: false});
           }
 
+          indivFormControl.patchValue({
+            smsRequired: true
+          });
+
         }
         else{
           let contactPeronName: string = indivFormControl['controls']['contactPersonName'].value;
@@ -829,6 +833,10 @@ export class LegalentityEquipmentComponent implements OnInit {
             indivFormControl['controls']['contactEmailId'].setValidators([Validators.required]);
             indivFormControl['controls']['contactEmailId'].updateValueAndValidity({emitEvent: false});
           }
+
+          indivFormControl.patchValue({
+            smsRequired: false
+          });
         }
 
       });
@@ -854,6 +862,10 @@ export class LegalentityEquipmentComponent implements OnInit {
             indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity({emitEvent: false});
           }
 
+          indivFormControl.patchValue({
+            emailRequired: true
+          });
+
         }
         else{
           let contactPeronName: string = indivFormControl['controls']['contactPersonName'].value;
@@ -877,6 +889,10 @@ export class LegalentityEquipmentComponent implements OnInit {
             indivFormControl['controls']['contactEmailId'].setValidators([Validators.required]);
             indivFormControl['controls']['contactEmailId'].updateValueAndValidity({emitEvent: false});
           }
+
+          indivFormControl.patchValue({
+            emailRequired: false
+          });
         }
 
       });
