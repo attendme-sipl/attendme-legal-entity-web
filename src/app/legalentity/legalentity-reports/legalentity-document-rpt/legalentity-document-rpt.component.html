@@ -1,0 +1,28 @@
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-sm-12">
+
+      <form [formGroup] ="uploadDocForm" (ngSubmit)="onSubmitClick()">
+        <div class="row">
+          <div class="col-sm-12">
+            
+            <input class="form-control" formControlName="docFile" type="file"
+            (change)="handleFileInput($event.target.files)">
+  
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-sm-12">
+            <button class="btn-default" type="submit">Submit</button>
+          </div>
+        </div>
+      </form>
+
+      
+
+    </div>
+  </div>
+
+</div>

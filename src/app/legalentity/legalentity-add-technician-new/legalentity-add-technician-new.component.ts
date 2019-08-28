@@ -135,6 +135,7 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
     this.menuName = this.legalEntityMenuPrefModel.technicianMenuName;
     this.branchMenuName = this.legalEntityMenuPrefModel.branchMenuName;
 
+    this.util.setTitle("Legalentity - Add " + this.techMenuName + " | Attendme");
 
    /* if (localStorage.getItem('legalEntityUser') != null)
     {

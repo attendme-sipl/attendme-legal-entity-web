@@ -42,7 +42,9 @@
                     </mat-form-field>
       
                     <mat-form-field>
-                      <input type="number" required formControlName="numOfQRId" matInput placeholder="Number of QR IDs" autocomplete="OFF" />
+                      <input type="number" required formControlName="numOfQRId" 
+                      matInput placeholder="Number of QR IDs" autocomplete="OFF" 
+                      min="0"/>
 
                       <mat-error *ngIf="(formSubmit || allotQrIdBranchFormGroup.controls['numOfQRId'].touched) && allotQrIdBranchFormGroup.controls['numOfQRId'].invalid">
                         Enter number of QR IDs

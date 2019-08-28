@@ -76,6 +76,8 @@ import { LegalentityQrDetailsRptComponent } from './legalentity/legalentity-repo
 import { LegalentityAddBranchNewComponent } from './legalentity/legalentity-add-branch-new/legalentity-add-branch-new.component';
 import { LegalentityUpdateQrDetailsComponent } from './legalentity/legalentity-update-qr-details/legalentity-update-qr-details.component';
 import { LegalentityBranchQrDetailsRptComponent } from './legalentity/legalentity-reports/legalentity-branch-qr-details-rpt/legalentity-branch-qr-details-rpt.component';
+import { LegalentityUploadDocumentComponent } from './legalentity/legalentity-upload-document/legalentity-upload-document.component';
+import { LegalentityDocumentRptComponent } from './legalentity/legalentity-reports/legalentity-document-rpt/legalentity-document-rpt.component';
 
 @NgModule({
   declarations: [
@@ -109,7 +111,9 @@ import { LegalentityBranchQrDetailsRptComponent } from './legalentity/legalentit
     LegalentityQrDetailsRptComponent,
     LegalentityAddBranchNewComponent,
     LegalentityUpdateQrDetailsComponent,
-    LegalentityBranchQrDetailsRptComponent
+    LegalentityBranchQrDetailsRptComponent,
+    LegalentityUploadDocumentComponent,
+    LegalentityDocumentRptComponent
   ],
   imports: [
     BrowserModule,

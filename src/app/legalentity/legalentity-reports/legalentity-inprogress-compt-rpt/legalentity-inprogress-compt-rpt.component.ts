@@ -3,7 +3,7 @@ import { LegalentityUser } from '../../model/legalentity-user';
 import { LegalentityUtilService } from '../../services/legalentity-util.service';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { MatIconRegistry, MatPaginator, MatSort, MatTableDataSource, MatDialog } from '@angular/material';
+import { MatIconRegistry, MatPaginator, MatSort, MatTableDataSource, MatDialog, Sort } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityComplaintRptService, IComplaintBodyStruct, IinprogressComptListResponse, IinprogressComptRptResponse, IcomplaintIndivReqStruct } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
@@ -86,6 +86,11 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       this.dataSource=new MatTableDataSource(data.complaintList);
       this.dataSource.paginator=this.paginator;
       this.dataSource.sort=this.sort;
+
+      const sortState: Sort = {active: 'inprogressDateTime', direction: 'desc'};
+      this.sort.active = sortState.active;
+      this.sort.direction = sortState.direction;
+      this.sort.sortChange.emit(sortState);
 
       this.enableProgressBar=false;
 

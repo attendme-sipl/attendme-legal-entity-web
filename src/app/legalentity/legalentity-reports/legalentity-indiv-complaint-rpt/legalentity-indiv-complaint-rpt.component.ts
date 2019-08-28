@@ -81,7 +81,14 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
 
       let formFieldDataObj: IqrIdFormFieldsResponseStruct[] = data.formFieldDetails;
 
-      let formFiledDataCount: number = data.formFieldDetails.length;
+      let formFiledDataCount: number; //= data.formFieldDetails.length;
+
+      if (data.formFieldDetails != null){
+        formFiledDataCount = data.formFieldDetails.length;
+      }
+      else{
+        formFiledDataCount=0;
+      }
 
       this.qrIdFormFieldsObj=[];
       
@@ -94,6 +101,7 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
         this.qrIdFormFieldsObj=data.formFieldDetails;
       }
 
+      console.log(this.qrIdFormFieldsObj);
 
       //this.qrIdFormFieldsObj=data.formFieldDetails;
 

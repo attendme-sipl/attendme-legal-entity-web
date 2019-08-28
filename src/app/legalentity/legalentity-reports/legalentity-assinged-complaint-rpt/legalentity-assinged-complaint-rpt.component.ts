@@ -9,7 +9,7 @@ import { LegalentityBranch } from '../../model/legalentity-branch';
 //import { IComplaintBodyStruct, LegalentityComplaintsService, IAssingnComplaintResponse, IassignComplaintStructure } from '../../services/legalentity-complaints.service';
 //import { IComplaintIdStruct } from '../legalentity-open-complaint-rpt/legalentity-open-complaint-rpt.component';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
-import { MatPaginator, MatSort, MatDialog, MatIconRegistry, MatTableDataSource } from '@angular/material';
+import { MatPaginator, MatSort, MatDialog, MatIconRegistry, MatTableDataSource, Sort } from '@angular/material';
 import { IassignComplaintStructure, LegalentityComplaintRptService, IComplaintBodyStruct, IAssingnComplaintResponse, IComplaintIdStruct } from '../../services/legalentity-complaint-rpt.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
@@ -136,6 +136,11 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
      this.dataSource = new MatTableDataSource(data.complaintList);
      this.dataSource.paginator = this.paginator;
      this.dataSource.sort = this.sort;
+
+     const sortState: Sort = {active: 'complaintAssignedDateTime', direction: 'desc'};
+     this.sort.active = sortState.active;
+     this.sort.direction = sortState.direction;
+     this.sort.sortChange.emit(sortState);
  
      this.complaintResponseData = data.complaintList;
     

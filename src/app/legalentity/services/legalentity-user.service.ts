@@ -59,9 +59,11 @@ export class LegalentityUserService {
   }
   
 
-  requestOTP(emailId: string):Observable<IforgotPasswordOtpResponse>{
+  requestOTP(emailId: string, userRole: string):Observable<IforgotPasswordOtpResponse>{
+    console.log(userRole);
     return this.httpClient.post<IforgotPasswordOtpResponse>(this.utilServiceAPI.legalEntityRestApuURL + "/forgotPassword", {
-      emailId: emailId
+      emailId: emailId,
+      userRole: userRole
     });
   }
 

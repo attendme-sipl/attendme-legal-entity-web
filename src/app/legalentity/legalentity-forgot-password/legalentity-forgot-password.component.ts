@@ -61,10 +61,11 @@ export class LegalentityForgotPasswordComponent implements OnInit {
 
       let emailId: string = this.forgotPasswordForm.value['emailId'];
 
-      this.userServiceAPI.requestOTP(emailId)
+      this.userServiceAPI.requestOTP(emailId,'user')
       .subscribe((data:IforgotPasswordOtpResponse) => {
-
+        console.log(data);
         if (data.errorOccured){
+          
           this.errorMsgEnableDisplay = true;
           this.errorMsgText="Something whet wrong. Please try again later.";
           this.forgotPasswordFormProgressBar=false;
