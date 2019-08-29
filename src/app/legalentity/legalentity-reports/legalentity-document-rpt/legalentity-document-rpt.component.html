@@ -3,24 +3,29 @@
   <div class="row">
     <div class="col-sm-12">
 
-      <form [formGroup] ="uploadDocForm" (ngSubmit)="onSubmitClick()">
-        <div class="row">
-          <div class="col-sm-12">
+      <div class="row">
+        <div class="col-sm-12">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+
+          <mat-toolbar style="background-color: transparent;">
             
-            <input class="form-control" formControlName="docFile" type="file"
-            (change)="handleFileInput($event.target.files)">
-  
-          </div>
+              <mat-toolbar-row>
+                <h3 style="font-size: 1.75rem;">Documents</h3>
+                <span class="menu-toolbar-spacer"></span>
+    
+                <button mat-raised-button color="primary" (click)="uploadDocument()">Upload Document</button>
+    
+                <button type="button" class="btn btn-default float-right">
+                    <mat-icon svgIcon="refresh-icon" (click)="popLegalEntityDocument()"></mat-icon>
+                </button>
+    
+              </mat-toolbar-row>
+    
+          </mat-toolbar>
+          
         </div>
-
-        <div class="row">
-          <div class="col-sm-12">
-            <button class="btn-default" type="submit">Submit</button>
-          </div>
-        </div>
-      </form>
-
-      
+      </div>
 
     </div>
   </div>

@@ -42,6 +42,8 @@ export class LegalentityUploadDocumentComponent implements OnInit {
       return false;
     }
 
+    this.utilServiceAPI.setTitle("Legalentity - Upload Document | Attendme");
+
 
   }
 

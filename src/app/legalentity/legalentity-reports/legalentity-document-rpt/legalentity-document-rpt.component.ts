@@ -16,9 +16,7 @@ import { Observable } from 'rxjs';
 })
 export class LegalentityDocumentRptComponent implements OnInit {
 
-  private file: File | null = null;
-
-  
+  enableProgressBar: boolean;
 
   fileToUpload: File = null;
   uploadDocForm: FormGroup;
@@ -33,49 +31,58 @@ export class LegalentityDocumentRptComponent implements OnInit {
     private fb: FormBuilder,
     private host: ElementRef<HTMLInputElement>,
     private httpClient: HttpClient
-  ) { }
+  ) {
+    iconRegistry.addSvgIcon(
+      'refresh-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
+    )
+   }
 
-  onSubmitClick(){
+   uploadDocument(){
+     this.router.navigate(['legalentity','portal','upload','document']);
+   }
 
-    //console.log(this.fileToUpload);
-   
-    /*this.httpClient.post("http://192.168.0.99:8080/uploadFile",{
-      file: this.fileToUpload
-    })
-    .subscribe(data =>{
-      console.log(data);
-    });*/
+   popLegalEntityDocument(){}
+
+  /*onSubmitClick(){
   
     this.postFile(this.fileToUpload)
     .subscribe(data => {
       console.log(data);
     },error => {console.log(error);});
-  }
+  }*/
 
-  postFile(fileToUpload: File): Observable<any> {
-    const endpoint = 'http://192.168.0.99:8080/uploadFile';
+  /*postFile(fileToUpload: File): Observable<any> {
+    const endpoint = 'http://192.168.0.99:4201/api/uploadDocument';
     const formData: FormData = new FormData();
-    formData.append('file', fileToUpload, fileToUpload.name);
+    formData.append('docData', fileToUpload, fileToUpload.name);
+    formData.append('legalEntityId',"4");
+    formData.append('docDesc',"This is test file");
+    formData.append('specificToQr',"false");
+    formData.append('docActiveStatus',"true");
     return this.httpClient
       .post(endpoint, formData);
       //.map(() => { return true; })
       //.catch((e) => this.handleError(e));
-}
+  }*/
 
 
-  handleFileInput(files: FileList) {
+  /*handleFileInput(files: FileList) {
     this.fileToUpload = files.item(0);
-}
+  }*/
 
 
 
 
   ngOnInit() {
-    //console.log(this.f.type);
+    
+    if (localStorage.getItem('legalEntityUserDetails') != null){
+      this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
-    this.uploadDocForm=this.fb.group({
-      docFile:['']
-    });
+    }
+    else{
+      this.router.navigate(['legalentity','login']);
+    }
 
   }
 

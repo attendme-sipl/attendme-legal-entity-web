@@ -13,9 +13,9 @@ export const environment = {
 
     // This is Local host
 
-          //superAdminAPIURL: "http://192.168.0.7:4202/api",
-          //legalEntityAPIURL: 'http://192.168.0.7:4201/api',
-          //mobileServiceAPIURL: "http://192.168.0.7:5000/api"
+          superAdminAPIURL: "http://192.168.0.7:4202/api",
+          legalEntityAPIURL: 'http://192.168.0.7:4201/api',
+          mobileServiceAPIURL: "http://192.168.0.7:5000/api"
 
       //superAdminAPIURL: "http://192.168.0.99:4202/api",
       //legalEntityAPIURL: 'http://192.168.0.99:4201/api',
@@ -29,9 +29,9 @@ export const environment = {
 
       // AWS New Demo Instance (https)
 
-        superAdminAPIURL: "https://demo-sa.attendme.in/api",
-        legalEntityAPIURL: "https://demo-le.attendme.in/api",
-        mobileServiceAPIURL: "https://demo-android.attendme.in/api"
+        //superAdminAPIURL: "https://demo-sa.attendme.in/api",
+        //legalEntityAPIURL: "https://demo-le.attendme.in/api",
+        //mobileServiceAPIURL: "https://demo-android.attendme.in/api"
 
         // AWS New Production Instance (https)
 
