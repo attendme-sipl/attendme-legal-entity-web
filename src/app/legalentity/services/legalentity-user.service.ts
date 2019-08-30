@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LegalentityUser } from '../model/legalentity-user';
 
+
 export interface IuserLoginReqStruct{
    emailId: string,
    userPassword: string,
@@ -79,4 +80,5 @@ export class LegalentityUserService {
         passwordChange:passwordChange
       })
     }
+
 }

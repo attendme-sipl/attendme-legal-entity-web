@@ -78,6 +78,7 @@ import { LegalentityUpdateQrDetailsComponent } from './legalentity/legalentity-u
 import { LegalentityBranchQrDetailsRptComponent } from './legalentity/legalentity-reports/legalentity-branch-qr-details-rpt/legalentity-branch-qr-details-rpt.component';
 import { LegalentityUploadDocumentComponent } from './legalentity/legalentity-upload-document/legalentity-upload-document.component';
 import { LegalentityDocumentRptComponent } from './legalentity/legalentity-reports/legalentity-document-rpt/legalentity-document-rpt.component';
+import {LegalentityDocumentServiceService} from './legalentity/services/legalentity-document-service.service';
 
 @NgModule({
   declarations: [
@@ -168,7 +169,8 @@ import { LegalentityDocumentRptComponent } from './legalentity/legalentity-repor
     LegalentityAddBranch,
     LegalentityBranchRulebook,
     LegalentityIndivComptDetails,
-    DatePipe
+    DatePipe,
+    LegalentityDocumentServiceService
   ],
   bootstrap: [AppComponent],
   entryComponents:[

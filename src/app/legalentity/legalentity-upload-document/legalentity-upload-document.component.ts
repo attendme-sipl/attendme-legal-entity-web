@@ -6,6 +6,14 @@ import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { Router } from '@angular/router';
 import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { HttpClient, HttpResponse} from '@angular/common/http';
+//import {Http, ResponseContentType} from '@angular/http';
+import {Http, ResponseContentType, ResponseType} from '@angular/http';
+import { Observable } from 'rxjs';
+import 'rxjs/add/operator/map'; 
+import { saveAs } from 'file-saver';
+
+
 
 @Component({
   selector: 'app-legalentity-upload-document',
@@ -22,7 +30,8 @@ export class LegalentityUploadDocumentComponent implements OnInit {
     private userModel: LegalentityUser,
     private router: Router,
     private iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer
+    sanitizer: DomSanitizer,
+    private httpClient: HttpClient
   ) {
     iconRegistry.addSvgIcon(
       'refresh-icon',
@@ -45,6 +54,28 @@ export class LegalentityUploadDocumentComponent implements OnInit {
     this.utilServiceAPI.setTitle("Legalentity - Upload Document | Attendme");
 
 
+
+   // this.DownloadFile().subscribe(data => {
+     // console.log(data);
+     //  saveAs(data,'fileNm');
+  //  })
+
   }
+
+ 
+
+
+
+  DownloadFile(): Observable<any>{
+    //let fileExtension = fileType;
+    //let input = filePath;
+    return this.httpClient.get("http://192.168.0.99:8080/api/download", {responseType: 'blob' as 'json'})
+    .map(
+      (res: Blob) => {
+            var blob = new Blob([res], {type: 'image/png'} )
+            return blob;            
+      });
+  }
+   
 
 }
