@@ -12,6 +12,8 @@ import {Http, ResponseContentType, ResponseType} from '@angular/http';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map'; 
 import { saveAs } from 'file-saver';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { LegalentityDocumentServiceService, IuploadDocumentReq } from '../services/legalentity-document-service.service';
 
 
 
@@ -24,6 +26,12 @@ export class LegalentityUploadDocumentComponent implements OnInit {
 
   legalEntityId: number;
 
+  addDocumentFormGroup: FormGroup;
+  enableProgressBar: boolean;
+  formSubmit: boolean;
+
+  uploadedFileObj:File;
+
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private toastService: ToastrService,
@@ -31,12 +39,78 @@ export class LegalentityUploadDocumentComponent implements OnInit {
     private router: Router,
     private iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private addDocumentFb: FormBuilder,
+    private documentServiceAPI: LegalentityDocumentServiceService
   ) {
     iconRegistry.addSvgIcon(
       'refresh-icon',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
     )
+  }
+
+  uploadDocument(){
+    //console.log(this.addDocumentFormGroup.value);
+
+    this.formSubmit=true;
+
+    if (this.addDocumentFormGroup.valid){
+
+      this.enableProgressBar=true;
+
+      const documentUploadObj: IuploadDocumentReq = {
+        docActiveStatus: true,
+        docData: this.uploadedFileObj,
+        docDesc: this.addDocumentFormGroup.get('docDesc').value,
+        legalEntityId: this.legalEntityId,
+        specificToQr: false
+      };
+
+      this.documentServiceAPI.uploadLegalEntityDocument(documentUploadObj)
+      .subscribe(data => {
+        if (data['errorOccured']){
+          this.toastService.error("Something went wrong while uploading document","");
+          this.enableProgressBar=false;
+          return false;
+        }
+
+        this.enableProgressBar=false;
+        this.toastService.success("Document upload successful");
+      }, error => {
+        this.toastService.error("Something went wrong while uploading document","");
+        this.enableProgressBar=false;
+      })
+    }
+
+    //let fileUpload:File = this.addDocumentFormGroup.get('docData');
+
+    console.log(this.addDocumentFormGroup.get('docData'));
+
+
+
+  }
+
+  onFileChange(event){
+    //console.log(event.target.files);
+
+    this.uploadedFileObj= event.target.files[0];
+
+    //console.log(this.uploadedFileObj);
+
+    if (!(this.uploadedFileObj.type == 'application/pdf' || 
+    this.uploadedFileObj.type == 'image/gif' ||
+    this.uploadedFileObj.type == 'image/jpeg' ||
+    this.uploadedFileObj.type == 'image/png')
+    
+    ){
+      this.addDocumentFormGroup.patchValue({
+        docData: ['']
+      });
+
+      this.toastService.error("Selected file type not supported");
+      return false;
+    }
+    
   }
 
   ngOnInit() {
@@ -53,12 +127,15 @@ export class LegalentityUploadDocumentComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - Upload Document | Attendme");
 
+    this.addDocumentFormGroup=this.addDocumentFb.group({
+      docData: ['', [Validators.required]],
+      docDesc: ['']
+    });
 
-
-   // this.DownloadFile().subscribe(data => {
+   //this.DownloadFile().subscribe(data => {
      // console.log(data);
-     //  saveAs(data,'fileNm');
-  //  })
+       //saveAs(data,'excelReport');
+   //})
 
   }
 
@@ -69,10 +146,19 @@ export class LegalentityUploadDocumentComponent implements OnInit {
   DownloadFile(): Observable<any>{
     //let fileExtension = fileType;
     //let input = filePath;
-    return this.httpClient.get("http://192.168.0.99:8080/api/download", {responseType: 'blob' as 'json'})
+    return this.httpClient.post("http://192.168.0.99:4201/api/complaintsExcelReport",{
+      "allBranch": false,
+      "branchId": 4,
+      "legalEntityId": 4,
+      "fromDate": null,
+      "toDate": null,
+      "lastRecordCount": 0,
+      "complaintMenuName": 'Complaint',
+      "technicianMenuName": 'Technician'
+    },{responseType: 'blob' as 'json'})
     .map(
       (res: Blob) => {
-            var blob = new Blob([res], {type: 'image/png'} )
+            var blob = new Blob([res], {type: 'application/vnd.ms-excel'} )
             return blob;            
       });
   }

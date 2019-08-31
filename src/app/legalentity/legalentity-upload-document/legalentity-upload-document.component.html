@@ -10,26 +10,45 @@
               <div class="row">
                 <div class="col-sm-3"></div>
                 <div class="col-sm-6">
+
+                  <mat-progress-bar *ngIf="enableProgressBar" mode="indeterminate"></mat-progress-bar>
+
+                  <form [formGroup]="addDocumentFormGroup" (ngSubmit)="uploadDocument()">
+                  
+                      <mat-card>
+
+                          <mat-card-header>
+                            <mat-card-title>Upload Document</mat-card-title>
+                          </mat-card-header>
       
-                  <mat-card>
+                          <mat-card-content>
+                            
+                            <input type="file" (change)="onFileChange($event)" formControlName="docData" class="form-control" accept="image/*,application/pdf"
+                            [ngClass]="{'is-invalid': (formSubmit || addDocumentFormGroup.controls['docData'].dirty) && addDocumentFormGroup.controls['docData'].hasError('required')}" />
 
-                    <mat-card-header>
-                      <mat-card-title>Upload</mat-card-title>
-                    </mat-card-header>
+                            <small>
+                              <i>*Supported file format image and PDF</i>
+                              <br>
+                              <i>*Supported file size upto 10 MB</i>
+                            </small>
 
-                    <div class="card-body">
-
-                      <input type="file"  class="form-control" tooltip="Select File" />
+                            <mat-error *ngIf="(formSubmit || addDocumentFormGroup.controls['docData'].dirty) && addDocumentFormGroup.controls['docData'].hasError('required')">
+                               Please select file to upload
+                            </mat-error>
+            
+                            <mat-form-field style="margin-top: 15px;">
+                              <textarea matInput formControlName="docDesc" placeholder="Document Description"></textarea>
+                            </mat-form-field>
+                            
+                          </mat-card-content>
       
-                      <mat-form-field style="margin-top: 15px;">
-                        <textarea matInput placeholder="Document Description"></textarea>
-                      </mat-form-field>
-
-                      <button type="button" (click)="DownloadFile()">Download</button>
-                      
-                    </div>
-
-                  </mat-card>
+                          <mat-card-actions align="right">
+                            <button type="submit" mat-raised-button color="primary">Submit</button>
+                            <button type="button" mat-raised-button color="default">Reset</button>
+                          </mat-card-actions>
+      
+                        </mat-card>
+                  </form>
       
                 </div>
                 <div class="col-sm-3"></div>

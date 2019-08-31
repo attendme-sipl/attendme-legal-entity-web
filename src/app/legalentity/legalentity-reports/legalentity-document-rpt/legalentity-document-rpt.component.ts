@@ -8,6 +8,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse } from '../../services/legalentity-document-service.service';
 
 @Component({
   selector: 'app-legalentity-document-rpt',
@@ -21,6 +22,8 @@ export class LegalentityDocumentRptComponent implements OnInit {
   fileToUpload: File = null;
   uploadDocForm: FormGroup;
 
+  legalEntityId: number;
+
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private toastService: ToastrService,
@@ -30,7 +33,8 @@ export class LegalentityDocumentRptComponent implements OnInit {
     sanitizer: DomSanitizer,
     private fb: FormBuilder,
     private host: ElementRef<HTMLInputElement>,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private documentServiceAPI: LegalentityDocumentServiceService
   ) {
     iconRegistry.addSvgIcon(
       'refresh-icon',
@@ -42,7 +46,12 @@ export class LegalentityDocumentRptComponent implements OnInit {
      this.router.navigate(['legalentity','portal','upload','document']);
    }
 
-   popLegalEntityDocument(){}
+   popLegalEntityDocument(){
+     this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
+     .subscribe((data: IlegalEntityDocumentRptResponse) => {
+       console.log(data);
+     });
+   }
 
   /*onSubmitClick(){
   
@@ -79,10 +88,14 @@ export class LegalentityDocumentRptComponent implements OnInit {
     if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
+      this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
     }
     else{
       this.router.navigate(['legalentity','login']);
+      return false;
     }
+
+    this.popLegalEntityDocument();
 
   }
 
