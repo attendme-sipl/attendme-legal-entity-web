@@ -111,12 +111,12 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
         totalQrAssignCount: parseInt(this.allotQrIdBranchFormGroup.get('numOfQRId').value)
       };
 
-      console.log(allotQrIdToBranchObj);
+      //console.log(allotQrIdToBranchObj);
 
       this.qrIdServiceAPI.allotQrIdtoBrachNew(allotQrIdToBranchObj)
       .subscribe(data => {
 
-        console.log(data);
+        ///console.log(data);
         if (data['errorOccurred']){
           this.toastService.error("Something went wrong while alloting QR IDs");
           this.enableProgressBar=false;

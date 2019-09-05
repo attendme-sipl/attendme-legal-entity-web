@@ -17,6 +17,17 @@ export interface IlegalEntityDocumentRptResponse{
   }]
 };
 
+export interface IlegalEntityDocumentRptDetails{
+  docId: number,
+  docPath: string,
+  docName: string,
+  docFileType: string,
+  docFileSize: number,
+  docDesc: string,
+  docCreationDate: string,
+  docActiveStatus: boolean
+};
+
 export interface IuploadDocumentReq{
   legalEntityId: number,
   docData: File,

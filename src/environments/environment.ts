@@ -29,9 +29,9 @@ export const environment = {
 
        // AWS New Demo Instance (https)
 
-       //superAdminAPIURL: "https://demo-sa.attendme.in/api",
-       //legalEntityAPIURL: "https://demo-le.attendme.in/api",
-       //mobileServiceAPIURL: "https://demo-android.attendme.in/api"
+       //superAdminAPIURL: "http://demo-sa.attendme.in/api",
+       //legalEntityAPIURL: "http://demo-le.attendme.in/api",
+       //mobileServiceAPIURL: "http://demo-android.attendme.in/api"
 
         // AWS New Production Instance (https)
 

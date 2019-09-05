@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { ToastrService } from 'ngx-toastr';
 import { LegalentityUser } from '../model/legalentity-user';
@@ -12,7 +12,7 @@ import {Http, ResponseContentType, ResponseType} from '@angular/http';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map'; 
 import { saveAs } from 'file-saver';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { LegalentityDocumentServiceService, IuploadDocumentReq } from '../services/legalentity-document-service.service';
 
 
@@ -23,12 +23,14 @@ import { LegalentityDocumentServiceService, IuploadDocumentReq } from '../servic
   styleUrls: ['./legalentity-upload-document.component.css']
 })
 export class LegalentityUploadDocumentComponent implements OnInit {
+  //@ViewChild('form') form;
 
   legalEntityId: number;
 
   addDocumentFormGroup: FormGroup;
   enableProgressBar: boolean;
   formSubmit: boolean;
+  disableSubmitButton:boolean;
 
   uploadedFileObj:File;
 
@@ -57,6 +59,7 @@ export class LegalentityUploadDocumentComponent implements OnInit {
     if (this.addDocumentFormGroup.valid){
 
       this.enableProgressBar=true;
+      this.disableSubmitButton=true;
 
       const documentUploadObj: IuploadDocumentReq = {
         docActiveStatus: true,
@@ -68,23 +71,28 @@ export class LegalentityUploadDocumentComponent implements OnInit {
 
       this.documentServiceAPI.uploadLegalEntityDocument(documentUploadObj)
       .subscribe(data => {
+        console.log(data);
         if (data['errorOccured']){
           this.toastService.error("Something went wrong while uploading document","");
           this.enableProgressBar=false;
+          this.disableSubmitButton=false;
           return false;
         }
 
         this.enableProgressBar=false;
         this.toastService.success("Document upload successful");
+        this.resetForm();
       }, error => {
+        console.log(error);
         this.toastService.error("Something went wrong while uploading document","");
+        this.disableSubmitButton=false;
         this.enableProgressBar=false;
       })
     }
 
     //let fileUpload:File = this.addDocumentFormGroup.get('docData');
 
-    console.log(this.addDocumentFormGroup.get('docData'));
+    //console.log(this.addDocumentFormGroup.get('docData'));
 
 
 
@@ -97,7 +105,8 @@ export class LegalentityUploadDocumentComponent implements OnInit {
 
     //console.log(this.uploadedFileObj);
 
-    if (!(this.uploadedFileObj.type == 'application/pdf' || 
+    if (this.uploadedFileObj != null){
+      if (!(this.uploadedFileObj.type == 'application/pdf' || 
     this.uploadedFileObj.type == 'image/gif' ||
     this.uploadedFileObj.type == 'image/jpeg' ||
     this.uploadedFileObj.type == 'image/png')
@@ -109,7 +118,24 @@ export class LegalentityUploadDocumentComponent implements OnInit {
 
       this.toastService.error("Selected file type not supported");
       return false;
+    
     }
+
+    let fileSize:number = this.uploadedFileObj.size;
+
+    if (fileSize > 10485760){
+      this.addDocumentFormGroup.patchValue({
+        docData: ['']
+      });
+
+      this.toastService.error("Selected file size exceeds allowed file size");
+      return false;
+    }
+  }
+
+    
+
+    
     
   }
 
@@ -139,6 +165,13 @@ export class LegalentityUploadDocumentComponent implements OnInit {
 
   }
 
+  resetForm(){
+    this.enableProgressBar=false;
+    this.formSubmit=false;
+    //this.form.resetForm();
+    this.disableSubmitButton=false;
+    this.addDocumentFormGroup.reset();     
+  }
  
 
 
