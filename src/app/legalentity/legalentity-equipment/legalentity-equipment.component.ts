@@ -19,6 +19,7 @@ import { LegalentityQrService, IavailbleQrIdCountReqStruct } from '../services/l
 import { Observable } from 'rxjs';
 import { startWith, map, filter, distinctUntilChanged } from 'rxjs/operators';
 import {RequireMatch as RequireMatch} from '../requireMatch';
+import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IlegalEntityDocumentRptDetails } from '../services/legalentity-document-service.service';
 
 
 export interface IalottedQRIDList{
@@ -129,6 +130,9 @@ export class LegalentityEquipmentComponent implements OnInit {
 
   errorMessageEnable: boolean;
   errorMessageTxt: string;
+
+  documentRptResponseObj: IlegalEntityDocumentRptResponse;
+  documentRptDetailsObj: IlegalEntityDocumentRptDetails[];
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -144,7 +148,8 @@ export class LegalentityEquipmentComponent implements OnInit {
     private contatServiceAPI: LegalentityContactsService,
     private dialog:MatDialog,
     private contactServiceAPI: LegalentityContactsService,
-    private qrIdServiceAPI: LegalentityQrService
+    private qrIdServiceAPI: LegalentityQrService,
+    private documentServiceAPI: LegalentityDocumentServiceService
   ) { 
     iconRegistry.addSvgIcon(
       "addRecordIcon",
@@ -903,6 +908,40 @@ export class LegalentityEquipmentComponent implements OnInit {
     
   }
 
+  get qrIdDocumentListFormArray()
+  {
+    return this.equptForm.get('equptDocList') as FormArray;
+  }
+
+  popDocumentList(){
+   this.addEquptProgressBar=true;
+
+   this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
+   .subscribe((data: IlegalEntityDocumentRptResponse) => {
+     if (data.errorOccurred){
+       this.addEquptProgressBar=false;
+       this.toastService.error("Something went wrong while loading document list");
+       return false;
+     }
+
+     this.documentRptDetailsObj=data.documentList;
+
+     //this.qrIdDocumentListFormArray.push(this.equptFormFieldBuider.group(this.documentRptDetailsObj))
+
+     this.documentRptDetailsObj.forEach(indivDocObj => {
+       
+       this.qrIdDocumentListFormArray.push(this.equptFormFieldBuider.group(indivDocObj))
+     });
+
+     console.log(this.qrIdContactFormArray);     
+
+     this.addEquptProgressBar=false;
+   }, error => {
+    this.addEquptProgressBar=false;
+    this.toastService.error("Something went wrong while loading document list");
+   });
+  }
+
   onResetClick(){
     this.equptForm.reset();
 
@@ -1002,7 +1041,8 @@ export class LegalentityEquipmentComponent implements OnInit {
         this.getSpcificQrIdContactFromGroup()
       ]),
       qrCodeId: [''],
-      qrCodeData: ['', [Validators.required, RequireMatch]]
+      qrCodeData: ['', [Validators.required, RequireMatch]],
+      equptDocList: this.equptFormFieldBuider.array([])
   
     });
 
@@ -1020,6 +1060,8 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.popNotificationContactList();
 
     this.setCustomValidators();
+
+    this.popDocumentList();
    
     this.filterOptions = this.equptForm.get('qrCodeData').valueChanges
     .pipe(
