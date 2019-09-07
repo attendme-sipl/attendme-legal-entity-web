@@ -12,6 +12,8 @@ import { IalottedQRIDList, equptFormfieldTitleDataStruct, IcontactEquptMappingRe
 import { LegalentityEquipmentService, IequptFormFieldPrefResponse, IqrIdIndivDetailsResponse } from '../services/legalentity-equipment.service';
 import { LegalentityContactsService, IcontactResponseStruct } from '../services/legalentity-contacts.service';
 import { LegalentityEquipment } from '../model/legalentity-equipment';
+import { flattenStyles } from '@angular/platform-browser/src/dom/dom_renderer';
+import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IlegalEntityDocumentRptDetails, IlegalEntityDocumentRptWithSelect } from '../services/legalentity-document-service.service';
 
 @Component({
   selector: 'app-legalentity-update-qr-details',
@@ -58,6 +60,8 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
   smsSelectall: boolean;
   emailSelectAll: boolean;
 
+  documentRptDetailsObj: IlegalEntityDocumentRptDetails[];
+
   constructor(
     private router: Router,
     private utilServiceAPI: LegalentityUtilService,
@@ -69,7 +73,8 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     private menuModel: LegalentityMenuPrefNames,
     private equptEditFb: FormBuilder,
     private equptService: LegalentityEquipmentService,
-    private contatServiceAPI: LegalentityContactsService
+    private contatServiceAPI: LegalentityContactsService,
+    private documentServiceAPI: LegalentityDocumentServiceService
   ) { 
     iconRegistry.addSvgIcon(
       "addRecordIcon",
@@ -251,11 +256,74 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
 
    this.equptService.getQrIdIndivDetails(this.qrCodeId)
    .subscribe((data:IqrIdIndivDetailsResponse) => {
+    
      if (data.errorOccurred){
        this.editEquptProgressBar=false;
        this.toastService.error("Something went wrong while loading " + this.equptMenuName + " details");
        return false;
      }
+
+     let selectedDocIdObj: any[] = data.equptDocList;
+
+     this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
+     .subscribe((data: IlegalEntityDocumentRptResponse) => {
+       if (data.errorOccurred){
+         this.editEquptProgressBar=false;
+         this.toastService.error("Something went wrong while loading document list");
+         return false;
+       }
+  
+       this.documentRptDetailsObj=data.documentList.map((value,index) => value ? {
+        docId: value['docId'],
+        docPath: value['docPath'],
+        docName: value['docName'],
+        docFileType: value['docFileType'],
+        docFileSize: value['docFileSize'],
+        docDesc: value['docDesc'],
+        docCreationDate: value['docCreationDate'],
+        docActiveStatus: value['docActiveStatus']
+       } : null)
+       .filter(value => value.docActiveStatus == true);
+  
+       //this.qrIdDocumentListFormArray.push(this.equptFormFieldBuider.group(this.documentRptDetailsObj))
+       let updatedDocumentListObj: IlegalEntityDocumentRptWithSelect;
+
+ 
+   
+       this.documentRptDetailsObj.forEach(indivDocObj => {
+
+        let docPreSelected:boolean;
+        console.log(indivDocObj.docId);
+        if (selectedDocIdObj.includes(indivDocObj.docId)){
+          docPreSelected = true;
+        }
+
+       
+  
+        updatedDocumentListObj = {
+          docCreationDate: indivDocObj.docCreationDate,
+          docDesc: indivDocObj.docDesc,
+          docFileSize: indivDocObj.docFileSize,
+          docFileType: indivDocObj.docFileType,
+          docName: indivDocObj.docName,
+          docPath: indivDocObj.docPath,
+          equptDocActiveStatus: indivDocObj.docActiveStatus,
+          equptDocId: indivDocObj.docId,
+          docSelected: docPreSelected
+        }
+         
+         this.qrIdDocumentListFormArray.push(this.equptEditFb.group(updatedDocumentListObj))
+       });
+  
+       //console.log(this.qrIdContactFormArray);     
+  
+       this.editEquptProgressBar=false;
+     }, error => {
+      this.editEquptProgressBar=false;
+      this.toastService.error("Something went wrong while loading document list");
+     });
+
+   
 
      let qrIdFormFieldDataObj: any[] = data.qrIdData;
 
@@ -622,7 +690,12 @@ onSubmit(){
         qrCodeId: this.qrCodeId, //this.editEquptForm.get('qrCodeData').value['qrCodeId'],
         qrContactData: qrIdContactArrUpdated,
         headOffice: this.headOffice,
-        legalEntityId: this.legalEntityId
+        legalEntityId: this.legalEntityId,
+        equptDocList: [{
+          docSelected: false,
+          equptDocActiveStatus: false,
+          equptDocId: 1
+        }]
       };
 
       //console.log(this.addEquipmentFormObj);
@@ -801,6 +874,64 @@ setCustomValidators(){
   
 }
 
+get qrIdDocumentListFormArray()
+  {
+    return this.editEquptForm.get('equptDocList') as FormArray;
+  }
+
+  popDocumentList(){
+   this.editEquptProgressBar=true;
+
+   this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
+   .subscribe((data: IlegalEntityDocumentRptResponse) => {
+     if (data.errorOccurred){
+       this.editEquptProgressBar=false;
+       this.toastService.error("Something went wrong while loading document list");
+       return false;
+     }
+
+     this.documentRptDetailsObj=data.documentList.map((value,index) => value ? {
+      docId: value['docId'],
+      docPath: value['docPath'],
+      docName: value['docName'],
+      docFileType: value['docFileType'],
+      docFileSize: value['docFileSize'],
+      docDesc: value['docDesc'],
+      docCreationDate: value['docCreationDate'],
+      docActiveStatus: value['docActiveStatus']
+     } : null)
+     .filter(value => value.docActiveStatus == true);
+
+     //this.qrIdDocumentListFormArray.push(this.equptFormFieldBuider.group(this.documentRptDetailsObj))
+
+     let updatedDocumentListObj: IlegalEntityDocumentRptWithSelect;
+
+     this.documentRptDetailsObj.forEach(indivDocObj => {
+
+      updatedDocumentListObj = {
+        docCreationDate: indivDocObj.docCreationDate,
+        docDesc: indivDocObj.docDesc,
+        docFileSize: indivDocObj.docFileSize,
+        docFileType: indivDocObj.docFileType,
+        docName: indivDocObj.docName,
+        docPath: indivDocObj.docPath,
+        equptDocActiveStatus: indivDocObj.docActiveStatus,
+        equptDocId: indivDocObj.docId,
+        docSelected: false
+      }
+       
+       this.qrIdDocumentListFormArray.push(this.equptEditFb.group(updatedDocumentListObj))
+     });
+
+     //console.log(this.qrIdContactFormArray);     
+
+     this.editEquptProgressBar=false;
+   }, error => {
+    this.editEquptProgressBar=false;
+    this.toastService.error("Something went wrong while loading document list");
+   });
+  }
+
   ngOnInit() {
 
     if (localStorage.getItem('legalEntityUserDetails') != null){
@@ -840,7 +971,8 @@ setCustomValidators(){
         this.getSpcificQrIdContactFromGroup()
       ]),
       qrCodeId: this.qrCodeId,
-      qrCodeData: ['']
+      qrCodeData: [''],
+      equptDocList: this.equptEditFb.array([])
     })
 
     this.editEquptForm.controls['qrCodeData'].disable();
@@ -854,6 +986,8 @@ setCustomValidators(){
     this.popCountryCallingCode();
 
     this.setCustomValidators();
+
+   // this.popDocumentList();
 
     //this.popNotificationContactList();
 

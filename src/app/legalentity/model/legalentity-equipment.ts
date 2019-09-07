@@ -18,7 +18,12 @@ export interface LegalentityEquipment {
                          contactMobileNumber: string,
                          contactEmailId: string,
                          contactToBeDisplayed: boolean
-                    }[]
+                    }[],
+  equptDocList:{
+    equptDocId: number,
+    equptDocActiveStatus: boolean,
+    docSelected: boolean
+  }[]
                 
 
 }

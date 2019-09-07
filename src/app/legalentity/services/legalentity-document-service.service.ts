@@ -28,6 +28,18 @@ export interface IlegalEntityDocumentRptDetails{
   docActiveStatus: boolean
 };
 
+export interface IlegalEntityDocumentRptWithSelect{
+  equptDocId: number,
+  docPath: string,
+  docName: string,
+  docFileType: string,
+  docFileSize: number,
+  docDesc: string,
+  docCreationDate: string,
+  equptDocActiveStatus: boolean,
+  docSelected: boolean
+};
+
 export interface IuploadDocumentReq{
   legalEntityId: number,
   docData: File,
@@ -62,5 +74,23 @@ export class LegalentityDocumentServiceService {
 
     return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/uploadDocument", formData);
 
+  }
+
+  requestDocDownloadData(documentId: number): Observable<any>{
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/downloadDocument",{
+      documentId: documentId
+    }, {responseType: 'blob' as 'json'})
+    .map(
+      (res: Blob) => {
+        var blob = new Blob([res], {type: 'application/vnd.ms-excel'} )
+        return blob;
+      }
+    )
+  }
+
+  deleteDocumentRequest(documentId: number):Observable<any>{
+    return this.httpClient.patch(this.utilServiceAPI.legalEntityRestApuURL + "/deleteDocument", {
+      documentId: documentId
+    });
   }
 }

@@ -75,6 +75,9 @@ export interface IqrIdIndivDetailsResponse{
      contactToBeDisplayed: boolean,
      smsRequired: boolean,
      emailRequired: boolean
+   }],
+   equptDocList:[{
+    equptDocId: number
    }]
 };
 

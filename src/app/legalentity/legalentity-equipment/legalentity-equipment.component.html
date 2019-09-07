@@ -109,8 +109,12 @@
                                                             {{i+1}}
                                                        </td>
 
+                                                       <td>{{indivContactObj.get('docName').value}}</td>
+
+                                                       <td>{{indivContactObj.get('docDesc').value}}</td>
+
                                                        <td>
-                                                           {{indivContactObj.get('docName').value}}
+                                                           <mat-checkbox formControlName="docSelected" [checked]="indivContactObj.get('docSelected').value"></mat-checkbox>
                                                        </td>
                                                      
                                                        <!--<td>

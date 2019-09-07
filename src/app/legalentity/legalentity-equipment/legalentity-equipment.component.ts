@@ -19,7 +19,7 @@ import { LegalentityQrService, IavailbleQrIdCountReqStruct } from '../services/l
 import { Observable } from 'rxjs';
 import { startWith, map, filter, distinctUntilChanged } from 'rxjs/operators';
 import {RequireMatch as RequireMatch} from '../requireMatch';
-import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IlegalEntityDocumentRptDetails } from '../services/legalentity-document-service.service';
+import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IlegalEntityDocumentRptDetails, IlegalEntityDocumentRptWithSelect } from '../services/legalentity-document-service.service';
 
 
 export interface IalottedQRIDList{
@@ -670,6 +670,8 @@ export class LegalentityEquipmentComponent implements OnInit {
           spcificQrIdIndivContact.emailRequired=false;
         }
 
+        
+
         qrIdContactArrUpdated.push({
           contactEmailId: spcificQrIdIndivContact.contactEmailId,
           contactId: spcificQrIdIndivContact.contactId,
@@ -679,12 +681,23 @@ export class LegalentityEquipmentComponent implements OnInit {
           contactToBeDisplayed: spcificQrIdIndivContact.contactToBeDisplayed,
           emailRequired: spcificQrIdIndivContact.emailRequired,
           smsRequired: spcificQrIdIndivContact.smsRequired,
-          specificToQrId: spcificQrIdIndivContact.specificToQrId
+          specificToQrId: spcificQrIdIndivContact.specificToQrId,
+
         });
 
       }
     });
+
+    let documentListObj: IlegalEntityDocumentRptWithSelect[] = this.equptForm.get('equptDocList').value;
+
+        const documentListObjFiltered = documentListObj.map((value,index) => value ? {
+          equptDocId: value['equptDocId'],
+          equptDocActiveStatus: value['equptDocActiveStatus'],
+          docSelected: value['docSelected']
+        } : null)
+        .filter(value => value.docSelected == true);
       
+    //console.log(this.equptForm.value);
     
       this.addEquipmentFormObj = {
         addedByUserId: this.equptForm.value['addedByUserId'],
@@ -695,14 +708,15 @@ export class LegalentityEquipmentComponent implements OnInit {
         qrCodeId: this.equptForm.get('qrCodeData').value['qrCodeId'],
         qrContactData: qrIdContactArrUpdated,
         headOffice: this.headOffice,
-        legalEntityId: this.legalEntityId
+        legalEntityId: this.legalEntityId,
+        equptDocList: documentListObjFiltered
       };
 
 //console.log(this.addEquipmentFormObj);
     this.equptService.getAddQrIdDetails(this.addEquipmentFormObj)
       .subscribe((data:IaddQrIdResponseStruct) => {
 
-      
+      //console.log(data);
         if (data.errorOccured){
           this.addEquptProgressBar=false;
           this.toastService.error("Something went wrong while add QR ID details");
@@ -924,16 +938,44 @@ export class LegalentityEquipmentComponent implements OnInit {
        return false;
      }
 
-     this.documentRptDetailsObj=data.documentList;
+     //while(this.qrIdDocumentListFormArray.length){
+      //this.qrIdDocumentListFormArray.removeAt(0);
+    //}
+
+     this.documentRptDetailsObj=data.documentList.map((value,index) => value ? {
+      docId: value['docId'],
+      docPath: value['docPath'],
+      docName: value['docName'],
+      docFileType: value['docFileType'],
+      docFileSize: value['docFileSize'],
+      docDesc: value['docDesc'],
+      docCreationDate: value['docCreationDate'],
+      docActiveStatus: value['docActiveStatus']
+     } : null)
+     .filter(value => value.docActiveStatus == true);
 
      //this.qrIdDocumentListFormArray.push(this.equptFormFieldBuider.group(this.documentRptDetailsObj))
 
+     let updatedDocumentListObj: IlegalEntityDocumentRptWithSelect;
+
      this.documentRptDetailsObj.forEach(indivDocObj => {
+
+      updatedDocumentListObj = {
+        docCreationDate: indivDocObj.docCreationDate,
+        docDesc: indivDocObj.docDesc,
+        docFileSize: indivDocObj.docFileSize,
+        docFileType: indivDocObj.docFileType,
+        docName: indivDocObj.docName,
+        docPath: indivDocObj.docPath,
+        equptDocActiveStatus: indivDocObj.docActiveStatus,
+        equptDocId: indivDocObj.docId,
+        docSelected: false
+      }
        
-       this.qrIdDocumentListFormArray.push(this.equptFormFieldBuider.group(indivDocObj))
+       this.qrIdDocumentListFormArray.push(this.equptFormFieldBuider.group(updatedDocumentListObj))
      });
 
-     console.log(this.qrIdContactFormArray);     
+     //console.log(this.qrIdContactFormArray);     
 
      this.addEquptProgressBar=false;
    }, error => {
@@ -973,6 +1015,8 @@ export class LegalentityEquipmentComponent implements OnInit {
 
     this.popQrIdDrp();
     this.popNotificationContactList();
+
+    this.popDocumentList();
 
     this.makeAllPublic=false;
     this.selectAllContacts=false;

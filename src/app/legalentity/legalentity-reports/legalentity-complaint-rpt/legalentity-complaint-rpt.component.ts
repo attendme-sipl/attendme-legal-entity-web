@@ -5,8 +5,10 @@ import { LegalentityUtilService } from '../../services/legalentity-util.service'
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { DomSanitizer } from '@angular/platform-browser';
-import { LegalentityComplaintRptService, IComplaintBodyStruct, IqrIdAllcomplaintDetailsResponse, IqrIdAllcomplaintRptResponse } from '../../services/legalentity-complaint-rpt.service';
+import { LegalentityComplaintRptService, IComplaintBodyStruct, IqrIdAllcomplaintDetailsResponse, IqrIdAllcomplaintRptResponse, IComplaintBodyStructForExcelRpt } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 @Component({
   selector: 'app-legalentity-complaint-rpt',
@@ -132,6 +134,34 @@ export class LegalentityComplaintRptComponent implements OnInit {
 
   applyFilter(filterValue: string){
     this.dataSource.filter = filterValue.trim().toLocaleLowerCase();
+  }
+
+  dowloadExcel(){
+
+    this.enableProgressBar=true;
+
+    const qrIdComplaintArrRptReqObj:IComplaintBodyStructForExcelRpt={
+      allBranch: false,
+      branchId: this.branchId,
+      complaintStatus: '',
+      fromDate:null,
+      legalEntityId: this.legalEntityId,
+      toDate: null,
+      complaintMenuName: this.complaintMenuName,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    let fileName: string = this.complaintMenuName + "-report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+
+   this.complaintRtpServiceAPI.exportToExcelQrIdAllComptRpt(qrIdComplaintArrRptReqObj)
+   .subscribe(data => {
+    saveAs(data, fileName);
+    this.enableProgressBar=false;
+   }, error => {
+     this.toastService.error("Something went wrong while exporting data to excel");
+     this.enableProgressBar=false;
+   });
+
   }
   
 

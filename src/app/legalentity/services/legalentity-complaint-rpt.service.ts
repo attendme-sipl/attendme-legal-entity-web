@@ -69,7 +69,18 @@ export interface IComplaintBodyStruct
   legalEntityId: number,
   complaintStatus: string,
   fromDate: string,
- toDate: string
+  toDate: string
+};
+
+export interface IComplaintBodyStructForExcelRpt{
+  allBranch: boolean,
+  branchId: number,
+  legalEntityId: number,
+  complaintStatus: string,
+  fromDate: string,
+  toDate: string,
+  complaintMenuName: string,
+  technicianMenuName: string
 };
 
 export interface IassignComplaintStructure {
@@ -238,6 +249,19 @@ export class LegalentityComplaintRptService {
 
     getQrIdAllComplaintsRpt(qrIdAllComplaintRtpReqObj: IComplaintBodyStruct):Observable<IqrIdAllcomplaintRptResponse>{
       return this.httpClient.post<IqrIdAllcomplaintRptResponse>(this.util.legalEntityRestApuURL + "/complaintListReport", qrIdAllComplaintRtpReqObj);
+    }
+
+    exportToExcelQrIdAllComptRpt(qrIdAllComplaintRtpReqObj: IComplaintBodyStruct):Observable<any>{
+      return this.httpClient.post(this.util.legalEntityRestApuURL + "/complaintsExcelReport",
+      qrIdAllComplaintRtpReqObj,
+      {responseType: 'blob' as 'json'}
+      )
+      .map(
+        (res: Blob) => {
+          var blob = new Blob([res], {type: 'application/vnd.ms-excel'} )
+          return blob;
+        }
+      )
     }
     
 }
