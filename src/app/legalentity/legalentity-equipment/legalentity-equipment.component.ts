@@ -930,6 +930,12 @@ export class LegalentityEquipmentComponent implements OnInit {
   popDocumentList(){
    this.addEquptProgressBar=true;
 
+   while(this.qrIdDocumentListFormArray.length){
+    this.qrIdDocumentListFormArray.removeAt(0);
+  }
+
+  console.log(this.qrIdDocumentListFormArray.length);
+
    this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
    .subscribe((data: IlegalEntityDocumentRptResponse) => {
      if (data.errorOccurred){
