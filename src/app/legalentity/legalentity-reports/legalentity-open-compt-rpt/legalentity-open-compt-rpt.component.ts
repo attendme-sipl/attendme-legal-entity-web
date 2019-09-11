@@ -16,7 +16,7 @@ import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-comp
 import { LegalentityAssignTechnicianComponent } from '../../legalentity-assign-technician/legalentity-assign-technician.component';
 import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../legalentity-confirm-alert/legalentity-confirm-alert.component';
 import { LegalentityQrDetailsComponent } from '../../legalentity-qr-details/legalentity-qr-details.component';
-
+import {saveAs} from 'file-saver';
 
 export interface IAssingTechnicianDialogData{
   complaintId: number,
@@ -35,7 +35,12 @@ export interface IopenComplaintRtpReqStruct{
    legalEntityId: number,
    complaintStatus: string,
    fromDate: string,
-   toDate: string
+   toDate: string,
+   exportToExcel: boolean,
+   complaintMenuName: string,
+   technicianMenuName: string,
+   equptMenuName: string,
+   branchMenuName: string
 };
 
 export interface IopenComplaintListStruct{
@@ -112,11 +117,24 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       complaintStatus:'open',
       fromDate: null,
       legalEntityId: this.legalEntityId,
-      toDate: null
+      toDate: null,
+      branchMenuName: "Reseller",
+      complaintMenuName: "Complaint",
+      equptMenuName: "Machine",
+      exportToExcel: true,
+      technicianMenuName: "Technician"
     };
 
-    this.complaintRptServiceAPI.getOpenComplaintRtp(openComplaintReqObj)
+    this.complaintRptServiceAPI.getOpenComplaintRtpToExcel(openComplaintReqObj)
+    .subscribe(data => {
+      console.log(data);
+      saveAs(data,"abc");
+  
+    });
+
+    /*this.complaintRptServiceAPI.getOpenComplaintRtp(openComplaintReqObj)
     .subscribe((data: IopenComplaintRptResponseStruct) => {
+      console.log(data);
       if (data.errorOccured)
       {
         this.openComplaintProgressBar=false;
@@ -139,9 +157,10 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       this.openComplaintProgressBar=false;
  
     }, error => {
+      
       this.openComplaintProgressBar=false;
       this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
-    })
+    })*/
   }
 
   openComplaintDetailsDialog(complaintId: number):void{

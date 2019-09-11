@@ -223,6 +223,19 @@ export class LegalentityComplaintRptService {
     return this.httpClient.post<IopenComplaintRptResponseStruct>(this.util.legalEntityRestApuURL + "/getOpenComplaints", openComplaintRptReqObj);
   }
 
+
+  getOpenComplaintRtpToExcel(openComplaintRptReqObj: IopenComplaintRtpReqStruct): Observable<any>{
+ console.log(openComplaintRptReqObj);
+    return this.httpClient.post(this.util.legalEntityRestApuURL + "/getOpenComplaints",openComplaintRptReqObj, 
+    {responseType: 'blob' as 'json'})
+    .map(
+      (res: Blob) => {
+        var blob = new Blob([res], {type: 'application/vnd.ms-excel'} )
+        return blob;
+      }
+    )
+  }
+
   getIndivComplaintDetails(indivComplaintReqObj: IcomplaintIndivReqStruct):Observable<IcomplaintIndivResponseStruct>{
    
     return this.httpClient.post<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail", indivComplaintReqObj);

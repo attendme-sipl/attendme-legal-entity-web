@@ -62,6 +62,8 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
 
   documentRptDetailsObj: IlegalEntityDocumentRptDetails[];
 
+  qrIdAttachedDocList: any[];
+
   constructor(
     private router: Router,
     private utilServiceAPI: LegalentityUtilService,
@@ -263,67 +265,10 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
        return false;
      }
 
-     let selectedDocIdObj: any[] = data.equptDocList;
+     this.qrIdAttachedDocList=data.equptDocList;
 
-     this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
-     .subscribe((data: IlegalEntityDocumentRptResponse) => {
-       if (data.errorOccurred){
-         this.editEquptProgressBar=false;
-         this.toastService.error("Something went wrong while loading document list");
-         return false;
-       }
-  
-       this.documentRptDetailsObj=data.documentList.map((value,index) => value ? {
-        docId: value['docId'],
-        docPath: value['docPath'],
-        docName: value['docName'],
-        docFileType: value['docFileType'],
-        docFileSize: value['docFileSize'],
-        docDesc: value['docDesc'],
-        docCreationDate: value['docCreationDate'],
-        docActiveStatus: value['docActiveStatus']
-       } : null)
-       .filter(value => value.docActiveStatus == true);
-  
-       //this.qrIdDocumentListFormArray.push(this.equptFormFieldBuider.group(this.documentRptDetailsObj))
-       let updatedDocumentListObj: IlegalEntityDocumentRptWithSelect;
-
- 
-   
-       this.documentRptDetailsObj.forEach(indivDocObj => {
-
-        let docPreSelected:boolean;
-        console.log(indivDocObj.docId);
-        if (selectedDocIdObj.includes(indivDocObj.docId)){
-          docPreSelected = true;
-        }
-
-       
-  
-        updatedDocumentListObj = {
-          docCreationDate: indivDocObj.docCreationDate,
-          docDesc: indivDocObj.docDesc,
-          docFileSize: indivDocObj.docFileSize,
-          docFileType: indivDocObj.docFileType,
-          docName: indivDocObj.docName,
-          docPath: indivDocObj.docPath,
-          equptDocActiveStatus: indivDocObj.docActiveStatus,
-          equptDocId: indivDocObj.docId,
-          docSelected: docPreSelected
-        }
-         
-         this.qrIdDocumentListFormArray.push(this.equptEditFb.group(updatedDocumentListObj))
-       });
-  
-       //console.log(this.qrIdContactFormArray);     
-  
-       this.editEquptProgressBar=false;
-     }, error => {
-      this.editEquptProgressBar=false;
-      this.toastService.error("Something went wrong while loading document list");
-     });
-
-   
+     this.popDocumentList();
+     
 
      let qrIdFormFieldDataObj: any[] = data.qrIdData;
 
@@ -679,6 +624,15 @@ onSubmit(){
 
       }
     });
+
+    let documentListObj: IlegalEntityDocumentRptWithSelect[] = this.editEquptForm.get('equptDocList').value;
+
+        const documentListObjFiltered = documentListObj.map((value,index) => value ? {
+          equptDocId: value['equptDocId'],
+          equptDocActiveStatus: value['equptDocActiveStatus'],
+          docSelected: value['docSelected']
+        } : null)
+        .filter(value => value.docSelected == true);
       
     
       this.addEquipmentFormObj = {
@@ -691,11 +645,7 @@ onSubmit(){
         qrContactData: qrIdContactArrUpdated,
         headOffice: this.headOffice,
         legalEntityId: this.legalEntityId,
-        equptDocList: [{
-          docSelected: false,
-          equptDocActiveStatus: false,
-          equptDocId: 1
-        }]
+        equptDocList: documentListObjFiltered
       };
 
       //console.log(this.addEquipmentFormObj);
@@ -882,6 +832,12 @@ get qrIdDocumentListFormArray()
   popDocumentList(){
    this.editEquptProgressBar=true;
 
+   while(this.qrIdDocumentListFormArray.length){
+    this.qrIdDocumentListFormArray.removeAt(0);
+  }
+
+  //console.log(this.qrIdAttachedDocList);
+
    this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
    .subscribe((data: IlegalEntityDocumentRptResponse) => {
      if (data.errorOccurred){
@@ -908,6 +864,14 @@ get qrIdDocumentListFormArray()
 
      this.documentRptDetailsObj.forEach(indivDocObj => {
 
+      let docSelectValue: boolean;
+
+      this.qrIdAttachedDocList.forEach(indivDocObject => {
+        if (indivDocObject['equptDocId'] == indivDocObj.docId){
+          docSelectValue=true;
+        }
+      })
+
       updatedDocumentListObj = {
         docCreationDate: indivDocObj.docCreationDate,
         docDesc: indivDocObj.docDesc,
@@ -917,7 +881,7 @@ get qrIdDocumentListFormArray()
         docPath: indivDocObj.docPath,
         equptDocActiveStatus: indivDocObj.docActiveStatus,
         equptDocId: indivDocObj.docId,
-        docSelected: false
+        docSelected: docSelectValue
       }
        
        this.qrIdDocumentListFormArray.push(this.equptEditFb.group(updatedDocumentListObj))
@@ -987,7 +951,7 @@ get qrIdDocumentListFormArray()
 
     this.setCustomValidators();
 
-   // this.popDocumentList();
+    //this.popDocumentList();
 
     //this.popNotificationContactList();
 
