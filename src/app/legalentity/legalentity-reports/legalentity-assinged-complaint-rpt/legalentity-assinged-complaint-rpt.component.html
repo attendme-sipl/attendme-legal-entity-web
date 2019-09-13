@@ -5,16 +5,31 @@
 
       <!--Assinged complaint report heading-->
 
+      <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+
       <div class="row">
         <div class="col-sm-12">
+          
+          <mat-toolbar style="background-color: transparent;">
+            <mat-toolbar-row>
+              <h3 style="font-size: 1.75rem;">{{ complaintMenuName }} Report (Status: Assigned)</h3>
+              <span style="flex: 1 1 auto;"></span>
 
-          <div class="clearfix">
+              <button type="button" mat-raised-button color="primary" (click)="popComplaintAssingRptGrid(true)">Download Excel</button>
+      
+              <button type="button" class="btn btn-default float-right">
+                <mat-icon svgIcon="refresh-panel" (click)="popComplaintAssingRptGrid(false)"></mat-icon>
+              </button>
+            </mat-toolbar-row>
+          </mat-toolbar>
+
+          <!--<div class="clearfix">
             <h3 class="float-left">{{ complaintMenuName }} Report (Status: Assigned)</h3>
             <button type="button" class="btn btn-default float-right"
              (click) = "popComplaintAssingRptGrid()" >
               <mat-icon svgIcon="refresh-panel"></mat-icon>
             </button>
-          </div>
+          </div>-->
 
         </div>
       </div>
@@ -24,7 +39,7 @@
       <div class="row">
         <div class="col-sm-12">
 
-          <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+          
 
           <mat-form-field>
             <input matInput (keyup) = "applyFilter($event.target.value)" placeholder="filter" autocomplete="OFF" />

@@ -18,6 +18,8 @@ import { LegalentityUserService } from '../../services/legalentity-user.service'
 import { LegalentityUser } from '../../model/legalentity-user';
 import { LegalentityUtilService } from '../../services/legalentity-util.service';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 @Component({
   selector: 'app-legalentity-assinged-complaint-rpt',
@@ -36,6 +38,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
   equipmentMenuName:string;
   technicianMenuName:string;
   complaintMenuName:string;
+  branchMenuName: string;
 
   enableProgressBar: boolean;
 
@@ -109,7 +112,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
      }
   }*/
 
-  popComplaintAssingRptGrid(): void{
+  popComplaintAssingRptGrid(exportToExcel: boolean): void{
 
    let assignComplaintReqObj: IComplaintBodyStruct = {
      allBranch: false,
@@ -117,12 +120,33 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
      complaintStatus: 'assigned',
      fromDate: null,
      legalEntityId: this.legalEntityId,
-     toDate: null
+     toDate: null,
+     branchMenuName: this.branchMenuName,
+     complaintMenuName: this.complaintMenuName,
+     equptMenuName: this.equipmentMenuName,
+     exportToExcel: exportToExcel,
+     technicianMenuName: this.technicianMenuName
    };
 
    this.enableProgressBar = true;
 
-   this.complaintServiceAPI.getAssingedComplaintsListRpt(assignComplaintReqObj)
+   if (exportToExcel){
+
+    let fileName: string = "Assigned-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+
+    this.complaintServiceAPI.getAssingedComplaintsListExportToExcel(assignComplaintReqObj)
+    .subscribe(data => {
+      saveAs(data, fileName);
+      this.enableProgressBar=false;
+    }, error => {
+      this.toastService.error("Something went wrong while downloading excel");
+      this.enableProgressBar=false;
+    });
+
+   }
+   else{
+
+    this.complaintServiceAPI.getAssingedComplaintsListRpt(assignComplaintReqObj)
    .subscribe((data: IAssingnComplaintResponse) => {
   
     if (data.errorOccurred)
@@ -150,6 +174,10 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     this.toastService.error("Something went wrong while loading assinged " + this.complaintMenuName + " reprot");
     this.enableProgressBar = false;
    });
+
+   }
+
+   
 
   }
 
@@ -207,6 +235,8 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
     this.complaintMenuName=this.menuModel.complaintMenuName;
     this.technicianMenuName=this.menuModel.technicianMenuName;
+    this.branchMenuName=this.menuModel.branchMenuName;
+    this.equipmentMenuName=this.menuModel.equipmentMenuName;
 
    /* if (localStorage.getItem('legalEntityUser') != null)
     {
@@ -233,7 +263,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
     //this.setLegalEntityMenuPref();
 
-    this.popComplaintAssingRptGrid();
+    this.popComplaintAssingRptGrid(false);
 
     this.util.setTitle("Legal Entity - Assinged " + this.complaintMenuName + " Report | Attendme");
 

@@ -17,6 +17,7 @@ import { LegalentityAssignTechnicianComponent } from '../../legalentity-assign-t
 import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../legalentity-confirm-alert/legalentity-confirm-alert.component';
 import { LegalentityQrDetailsComponent } from '../../legalentity-qr-details/legalentity-qr-details.component';
 import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 export interface IAssingTechnicianDialogData{
   complaintId: number,
@@ -88,6 +89,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
   complaintMenuName: string;
   equptMenuName: string;
   technicianMenuName: string;
+  branchMenuName: string;
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -107,7 +109,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     )
   }
 
-  popOpenComplaintGrid():void{
+  popOpenComplaintGrid(exportToExcel: boolean):void{
 
     this.openComplaintProgressBar=true;
 
@@ -118,23 +120,38 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       fromDate: null,
       legalEntityId: this.legalEntityId,
       toDate: null,
-      branchMenuName: "Reseller",
-      complaintMenuName: "Complaint",
-      equptMenuName: "Machine",
-      exportToExcel: true,
-      technicianMenuName: "Technician"
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: exportToExcel,
+      technicianMenuName: this.technicianMenuName
     };
 
-    this.complaintRptServiceAPI.getOpenComplaintRtpToExcel(openComplaintReqObj)
+    /*this.complaintRptServiceAPI.getOpenComplaintRtpToExcel(openComplaintReqObj)
     .subscribe(data => {
       console.log(data);
       saveAs(data,"abc");
   
-    });
+    });*/
 
-    /*this.complaintRptServiceAPI.getOpenComplaintRtp(openComplaintReqObj)
+    if (exportToExcel){
+
+      let fileName: string = "Open-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+
+      this.complaintRptServiceAPI.getOpenComplaintRtpToExcel(openComplaintReqObj)
+      .subscribe(data => {
+        saveAs(data,fileName);
+        this.openComplaintProgressBar=false;
+      },error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.openComplaintProgressBar=false;
+      });
+
+    }
+    else{
+      this.complaintRptServiceAPI.getOpenComplaintRtp(openComplaintReqObj)
     .subscribe((data: IopenComplaintRptResponseStruct) => {
-      console.log(data);
+      //console.log(data);
       if (data.errorOccured)
       {
         this.openComplaintProgressBar=false;
@@ -160,7 +177,10 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       
       this.openComplaintProgressBar=false;
       this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
-    })*/
+    })
+    }
+
+    
   }
 
   openComplaintDetailsDialog(complaintId: number):void{
@@ -231,7 +251,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
                 return false;
               }
 
-              this.popOpenComplaintGrid();
+              this.popOpenComplaintGrid(false);
               this.toastService.success(this.technicianMenuName + " assigned to a " + this.complaintMenuName + " successfully","");
 
             }, error => {
@@ -246,6 +266,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     });
 
   }
+
+  
 
   opendQrDetailsDialog(qrCodeId: number){
     const qrIdDialog = this.dialog.open(LegalentityQrDetailsComponent);
@@ -269,10 +291,11 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     this.complaintMenuName = this.legalEntityMenuPrefModel.complaintMenuName;
     this.equptMenuName = this.legalEntityMenuPrefModel.equipmentMenuName;
     this.technicianMenuName = this.legalEntityMenuPrefModel.technicianMenuName;
+    this.branchMenuName=this.legalEntityMenuPrefModel.branchMenuName;
 
     this.utilService.setTitle("Legalentity - Open " + this.legalEntityMenuPrefModel.complaintMenuName + " Report | Attendme");
 
-    this.popOpenComplaintGrid();
+    this.popOpenComplaintGrid(false);
       
     
   }

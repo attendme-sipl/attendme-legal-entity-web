@@ -7,12 +7,26 @@
 
           <mat-progress-bar mode="indeterminate" *ngIf="openComplaintProgressBar"></mat-progress-bar>
 
-          <div class="clearfix">
+          <mat-toolbar style="background-color: transparent;">
+            <mat-toolbar-row>
+              <h3 style="font-size: 1.75rem;">{{legalEntityMenuPrefModel.complaintMenuName}}  (Status: Open)</h3>
+                  <span style="flex: 1 1 auto;"></span>
+
+                  <button type="button" mat-raised-button color="primary" (click)="popOpenComplaintGrid(true)">Download Excel</button>
+        
+                  <button type="button" class="btn btn-default float-right">
+                    <mat-icon svgIcon="refreshIcon" (click)="popOpenComplaintGrid(false)"></mat-icon>
+                  </button>
+            </mat-toolbar-row>
+          </mat-toolbar>
+
+          <!--<div class="clearfix">
               <h3 class="float-left">{{legalEntityMenuPrefModel.complaintMenuName}}  (Status: Open)</h3>
+              <button type="button" mat-raised-button class="float-right">Download Excel</button>
               <button type="button" class="btn btn-default float-right" (click)="popOpenComplaintGrid()">
                 <mat-icon svgIcon="refreshIcon"></mat-icon>
               </button>
-          </div>
+          </div>-->
 
         </div>
       </div>

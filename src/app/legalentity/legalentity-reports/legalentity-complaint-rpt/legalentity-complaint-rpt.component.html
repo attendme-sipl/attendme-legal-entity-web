@@ -15,10 +15,10 @@
                     <h3 style="font-size: 1.75rem;">{{complaintMenuName}} Report</h3>
                     <span style="flex: 1 1 auto;"></span>
 
-                    <button type="button" mat-raised-button color="primary" (click)="dowloadExcel()">Download Excel</button>
+                    <button type="button" mat-raised-button color="primary" (click)="popQrIdAllComplaintRpt(true)">Download Excel</button>
         
                     <button type="button" class="btn btn-default float-right">
-                        <mat-icon svgIcon="refresh-icon" (click)="popQrIdAllComplaintRpt()"></mat-icon>
+                        <mat-icon svgIcon="refresh-icon" (click)="popQrIdAllComplaintRpt(false)"></mat-icon>
                     </button>
         
                   </mat-toolbar-row>

@@ -14,9 +14,11 @@
                   <mat-toolbar-row>
                     <h3 style="font-size: 1.75rem;">{{complaintMenuName}} (Status: Closed)</h3>
                     <span style="flex: 1 1 auto;"></span>
+
+                    <button type="button" mat-raised-button color="primary" (click)="popClosedComplaintRpt(true)">Downlaod Excel</button>
         
                     <button type="button" class="btn btn-default float-right">
-                        <mat-icon svgIcon="refresh-icon" (click)="popClosedComplaintRpt()"></mat-icon>
+                        <mat-icon svgIcon="refresh-icon" (click)="popClosedComplaintRpt(false)"></mat-icon>
                     </button>
         
                   </mat-toolbar-row>

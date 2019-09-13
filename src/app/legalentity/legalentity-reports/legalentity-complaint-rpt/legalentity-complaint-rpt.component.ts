@@ -25,6 +25,8 @@ export class LegalentityComplaintRptComponent implements OnInit {
 
   complaintMenuName: string;
   technicianMenuName: string; 
+  branchMenuName: string;
+  equptMenuName: string;
 
   enableProgressBar: boolean;
 
@@ -67,7 +69,7 @@ export class LegalentityComplaintRptComponent implements OnInit {
     );
   }
 
-  popQrIdAllComplaintRpt():void{
+  popQrIdAllComplaintRpt(exportToExcel: boolean):void{
     this.enableProgressBar=true;
 
     const qrIdComplaintArrRptReqObj:IComplaintBodyStruct={
@@ -76,12 +78,29 @@ export class LegalentityComplaintRptComponent implements OnInit {
       complaintStatus: '',
       fromDate:null,
       legalEntityId: this.legalEntityId,
-      toDate: null
+      toDate: null,
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: exportToExcel,
+      technicianMenuName: this.technicianMenuName
     };
 
     //console.log(qrIdComplaintArrRptReqObj);
 
-    this.complaintRtpServiceAPI.getQrIdAllComplaintsRpt(qrIdComplaintArrRptReqObj)
+    if (exportToExcel){
+      this.complaintRtpServiceAPI.getQrIdAllComplaintsExportToExcel(qrIdComplaintArrRptReqObj)
+      .subscribe(data => {
+        let fileName: string = "All-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+        saveAs(data, fileName);
+        this.enableProgressBar=false;
+      }, error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.enableProgressBar=false;
+      });
+    }
+    else{
+      this.complaintRtpServiceAPI.getQrIdAllComplaintsRpt(qrIdComplaintArrRptReqObj)
     .subscribe((data: IqrIdAllcomplaintRptResponse) => {
       //console.log(data);
         if (data.errorOccurred){
@@ -107,6 +126,9 @@ export class LegalentityComplaintRptComponent implements OnInit {
         this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details report");
         this.enableProgressBar=false;
     })
+    }
+
+    
   }
 
 
@@ -126,17 +148,19 @@ export class LegalentityComplaintRptComponent implements OnInit {
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.complaintMenuName=this.menuModel.complaintMenuName;
     this.technicianMenuName=this.menuModel.technicianMenuName;
+    this.branchMenuName=this.menuModel.branchMenuName;
+    this.equptMenuName=this.menuModel.equipmentMenuName;
 
     this.utilServiceAPI.setTitle("Legalentity - Closed " + this.complaintMenuName + " Report | Attendme");
 
-    this.popQrIdAllComplaintRpt();
+    this.popQrIdAllComplaintRpt(false);
   }
 
   applyFilter(filterValue: string){
     this.dataSource.filter = filterValue.trim().toLocaleLowerCase();
   }
 
-  dowloadExcel(){
+  /*dowloadExcel(){
 
     this.enableProgressBar=true;
 
@@ -162,7 +186,7 @@ export class LegalentityComplaintRptComponent implements OnInit {
      this.enableProgressBar=false;
    });
 
-  }
+  }*/
   
 
 }

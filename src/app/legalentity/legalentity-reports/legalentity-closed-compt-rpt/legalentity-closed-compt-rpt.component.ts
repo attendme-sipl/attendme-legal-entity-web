@@ -8,6 +8,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityComplaintRptService, IcomplaintIndivReqStruct, IComplaintIdStruct, IComplaintBodyStruct, IclosedComplaintListRptResponse, IclosedComplaintListDetailsResponse } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 @Component({
   selector: 'app-legalentity-closed-compt-rpt',
@@ -23,6 +25,9 @@ export class LegalentityClosedComptRptComponent implements OnInit {
   branchId: number;
 
   complaintMenuName: string;
+  technicianMenuName: string;
+  branchMenuName: string;
+  equptMenuName: string;
 
   enableProgressBar: boolean;
 
@@ -72,7 +77,7 @@ export class LegalentityClosedComptRptComponent implements OnInit {
 
   }
 
-  popClosedComplaintRpt():void{
+  popClosedComplaintRpt(exportToExcel: boolean):void{
 
     this.enableProgressBar=true;
 
@@ -82,31 +87,51 @@ export class LegalentityClosedComptRptComponent implements OnInit {
       complaintStatus: 'closed',
       fromDate: null,
       legalEntityId: this.legalEntityId,
-      toDate: null
+      toDate: null,
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: exportToExcel,
+      technicianMenuName: this.technicianMenuName
     };
 
-    this.complaintRtpServiceAPI.getClosedComplaintListRpt(closedComplaintsReqObj)
-    .subscribe((data: IclosedComplaintListRptResponse) => {
-      if (data.errorOccurred){
+    if (exportToExcel){
+      let fileName: string = "Closed-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+      this.complaintRtpServiceAPI.getClosedComplaintListExportToExcel(closedComplaintsReqObj)
+      .subscribe(data => {
+        saveAs(data, fileName);
+        this.enableProgressBar=false;
+      }, error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.enableProgressBar=false;
+      });
+    }
+    else{
+      this.complaintRtpServiceAPI.getClosedComplaintListRpt(closedComplaintsReqObj)
+      .subscribe((data: IclosedComplaintListRptResponse) => {
+        if (data.errorOccurred){
+          this.toastService.error("Something went wrong while loading closed " + this.complaintMenuName + " list report");
+          this.enableProgressBar=false;
+          return false;
+        }
+  
+        //console.log(data);
+  
+        this.closedComplaintListDetailsObj=data.complaintList;
+  
+        this.closedComptListCount=data.complaintList.length;
+        this.dataSource=new MatTableDataSource(data.complaintList);
+        this.dataSource.paginator=this.paginator;
+        this.dataSource.sort=this.sort; 
+  
+        this.enableProgressBar=false;
+      }, error => {
         this.toastService.error("Something went wrong while loading closed " + this.complaintMenuName + " list report");
         this.enableProgressBar=false;
-        return false;
-      }
+      });
+    }
 
-      //console.log(data);
-
-      this.closedComplaintListDetailsObj=data.complaintList;
-
-      this.closedComptListCount=data.complaintList.length;
-      this.dataSource=new MatTableDataSource(data.complaintList);
-      this.dataSource.paginator=this.paginator;
-      this.dataSource.sort=this.sort; 
-
-      this.enableProgressBar=false;
-    }, error => {
-      this.toastService.error("Something went wrong while loading closed " + this.complaintMenuName + " list report");
-      this.enableProgressBar=false;
-    });
+    
   }
 
   ngOnInit() {
@@ -123,10 +148,13 @@ export class LegalentityClosedComptRptComponent implements OnInit {
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.complaintMenuName=this.menuModel.complaintMenuName;
+    this.branchMenuName=this.menuModel.branchMenuName;
+    this.equptMenuName=this.menuModel.equipmentMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
 
     this.utilServiceAPI.setTitle("Legalentity - Closed " + this.complaintMenuName + " Report | Attendme");
     
-    this.popClosedComplaintRpt();
+    this.popClosedComplaintRpt(false);
   }
 
   applyFilter(filterValue: string){

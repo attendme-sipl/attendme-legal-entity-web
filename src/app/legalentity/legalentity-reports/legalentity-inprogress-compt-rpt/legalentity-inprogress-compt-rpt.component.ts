@@ -8,6 +8,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityComplaintRptService, IComplaintBodyStruct, IinprogressComptListResponse, IinprogressComptRptResponse, IcomplaintIndivReqStruct } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 @Component({
   selector: 'app-legalentity-inprogress-compt-rpt',
@@ -23,6 +25,9 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
   branchId: number;
 
   complaintMenuName: string;
+  technicianMenuName: string;
+  branchMenuName: string;
+  equptMenuName: string;
 
   enableProgressBar: boolean;
 
@@ -58,7 +63,7 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     );
   }
 
-  popInprogressComplaintsRpt():void{
+  popInprogressComplaintsRpt(exportToExcel: boolean):void{
     
     this.enableProgressBar=true;
 
@@ -68,10 +73,29 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       complaintStatus: 'inprogress',
       fromDate: null,
       legalEntityId: this.legalEntityId,
-      toDate: null
+      toDate: null,
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: exportToExcel,
+      technicianMenuName: this.technicianMenuName
     };
-    
-    this.complaintRtpServiceAPI.getIprogressComptListRpt(inprogressComplaintRtpReqObj)
+
+    if (exportToExcel){
+
+      let fileName: string = "In-Progress-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+
+      this.complaintRtpServiceAPI.getIprogressComptListExportToExcel(inprogressComplaintRtpReqObj)
+      .subscribe(data => {
+        saveAs(data, fileName);
+        this.enableProgressBar=false;
+      }, error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.enableProgressBar=false;
+      });
+    }
+    else{
+      this.complaintRtpServiceAPI.getIprogressComptListRpt(inprogressComplaintRtpReqObj)
     .subscribe((data: IinprogressComptRptResponse) => {
 
       if (data.errorOccurred){
@@ -98,6 +122,9 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       this.toastService.error("Something went wrong while loading inprogress " + this.complaintMenuName);
       this.enableProgressBar=false;
     });
+    }
+    
+    
   }
 
   openComplaintDetailsDialog(complaintId: number):void{
@@ -126,10 +153,13 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.complaintMenuName=this.menuModel.complaintMenuName;
+    this.branchMenuName=this.menuModel.branchMenuName;
+    this.equptMenuName=this.menuModel.equipmentMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
 
     this.utilServiceAPI.setTitle("Legalentity - In Progress " + this.complaintMenuName + " Report | Attendme");
 
-    this.popInprogressComplaintsRpt();
+    this.popInprogressComplaintsRpt(false);
     
 
   }

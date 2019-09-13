@@ -69,7 +69,12 @@ export interface IComplaintBodyStruct
   legalEntityId: number,
   complaintStatus: string,
   fromDate: string,
-  toDate: string
+  toDate: string,
+  exportToExcel: boolean,
+  complaintMenuName: string,
+  technicianMenuName: string,
+  equptMenuName: string,
+  branchMenuName: string
 };
 
 export interface IComplaintBodyStructForExcelRpt{
@@ -271,10 +276,60 @@ export class LegalentityComplaintRptService {
       )
       .map(
         (res: Blob) => {
-          var blob = new Blob([res], {type: 'application/vnd.ms-excel'} )
+          var blob = new Blob([res], {type: 'application/vnd.ms-excel'} );
           return blob;
         }
+      );
+    }
+
+    getAssingedComplaintsListExportToExcel(reportReqBodyObj: IComplaintBodyStruct):Observable<any>{
+      
+      return this.httpClient.post(this.util.legalEntityRestApuURL + "/assignComplaintReport", 
+      reportReqBodyObj,
+      {responseType: 'blob' as 'json'})
+      .map(
+        (res: Blob) => {
+          var blob = new Blob([res], {type: 'application/vnd.ms-excel'});
+          return blob;
+        }
+      );
+    }
+
+    getIprogressComptListExportToExcel(inprogressComptRtpReqObj: IComplaintBodyStruct):Observable<any>{
+      return this.httpClient.post(this.util.legalEntityRestApuURL + "/inProgressComplaintList", 
+      inprogressComptRtpReqObj,
+      {responseType: 'blob' as 'json'})
+      .map(
+        (res: Blob) => {
+          var blob = new Blob([res], {type: 'application/vnd.ms-excel'});
+          return blob;
+        }
+      );
+    }
+
+    getClosedComplaintListExportToExcel(closedComplaintReqObj:IComplaintBodyStruct):Observable<any>{
+      return this.httpClient.post(this.util.legalEntityRestApuURL + "/closeComplaintsList", 
+      closedComplaintReqObj,
+      {responseType: 'blob' as 'json'}
       )
+      .map(
+        (res: Blob) => {
+          var blob = new Blob([res], {type: 'application/vnd.ms-excel'});
+          return blob;
+        }
+      );
+    }
+
+    getQrIdAllComplaintsExportToExcel(qrIdAllComplaintRtpReqObj: IComplaintBodyStruct):Observable<any>{
+      return this.httpClient.post(this.util.legalEntityRestApuURL + "/complaintListReport", 
+      qrIdAllComplaintRtpReqObj,
+      {responseType: 'blob' as 'json'})
+      .map(
+        (res: Blob) => {
+          var blob = new Blob([res], {type: 'application/vnd.ms-excel'});
+          return blob;
+        }
+      );
     }
     
 }
