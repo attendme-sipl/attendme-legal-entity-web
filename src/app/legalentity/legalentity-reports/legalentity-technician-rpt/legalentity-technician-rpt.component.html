@@ -13,9 +13,9 @@
             <span class="menu-toolbar-spacer"></span>
 
             <button mat-raised-button color="primary" (click)="addTechnicianClick()">Add {{technicianMenuName}}</button>
-
+            <button mat-raised-button color="primary" (click)="popTechnicianListRpt(true)" style="margin-left: 5px;">Download Excel</button> 
             <button type="button" class="btn btn-default float-right">
-                <mat-icon svgIcon="refresh-icon" (click)="popTechnicianListRpt()"></mat-icon>
+                <mat-icon svgIcon="refresh-icon" (click)="popTechnicianListRpt(false)"></mat-icon>
             </button>
 
           </mat-toolbar-row>

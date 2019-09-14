@@ -10,7 +10,7 @@ import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { IalottedQRIDList, equptFormfieldTitleDataStruct, IcontactEquptMappingReqStruct, IqrIdFormFieldObjStruct, ISpecQrIdcontactEquptMappingReqStruct } from '../legalentity-equipment/legalentity-equipment.component';
 import { LegalentityEquipmentService, IequptFormFieldPrefResponse, IqrIdIndivDetailsResponse } from '../services/legalentity-equipment.service';
-import { LegalentityContactsService, IcontactResponseStruct } from '../services/legalentity-contacts.service';
+import { LegalentityContactsService, IcontactResponseStruct, IcontactRptReqStruct } from '../services/legalentity-contacts.service';
 import { LegalentityEquipment } from '../model/legalentity-equipment';
 import { flattenStyles } from '@angular/platform-browser/src/dom/dom_renderer';
 import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IlegalEntityDocumentRptDetails, IlegalEntityDocumentRptWithSelect } from '../services/legalentity-document-service.service';
@@ -392,9 +392,19 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
   if (this.specificQrIdContactFormArray.length == 0){
     this.addSpecificQrIdContactToFormArray();
   }
+
+  const contactRptReqObj: IcontactRptReqStruct={
+    branchMenuName: this.menuModel.branchMenuName,
+    complaintMenuName: this.menuModel.complaintMenuName,
+    contactActiveStatus: true,
+    equptMenuName: this.menuModel.equipmentMenuName,
+    exportToExcel: false,
+    legalEntityId: this.legalEntityId,
+    technicianMenuName: this.menuModel.technicianMenuName
+  };
   
   
-  this.contatServiceAPI.getLegalEntityContactListRpt(this.legalEntityId,true)
+  this.contatServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
   .subscribe((data:IcontactResponseStruct) => {
     if (data.errorOccurred){
       this.toastService.error("Something went wrong while loading contacts list");

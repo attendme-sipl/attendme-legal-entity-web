@@ -25,6 +25,16 @@ export interface IdeactivateContactReqStruct{
    contactActiveStatus: boolean
 };
 
+export interface IcontactRptReqStruct{
+   legalEntityId: number,
+   contactActiveStatus: boolean,
+   exportToExcel: boolean,
+   complaintMenuName: string,
+   technicianMenuName: string,
+   equptMenuName: string,
+   branchMenuName: string
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,11 +45,8 @@ export class LegalentityContactsService {
     private httpClient: HttpClient
   ) { }
 
-  getLegalEntityContactListRpt(legalEntityId: number, contactActiveStatus: boolean):Observable<IcontactResponseStruct>{
-    return this.httpClient.post<IcontactResponseStruct>(this.utilServicesAPI.legalEntityRestApuURL + "/equptNotificationContactList",{
-      legalEntityId: legalEntityId,
-      contactActiveStatus: contactActiveStatus
-    });
+  getLegalEntityContactListRpt(contactRptReqObj: IcontactRptReqStruct):Observable<IcontactResponseStruct>{
+    return this.httpClient.post<IcontactResponseStruct>(this.utilServicesAPI.legalEntityRestApuURL + "/equptNotificationContactList", contactRptReqObj);
   }
 
   addContacts(addContactResponseObj:IaddContactReqUpdatedStruct):Observable<any>{
@@ -48,6 +55,18 @@ export class LegalentityContactsService {
 
   deactiveContact(deactiveContactReqObj: IdeactivateContactReqStruct):Observable<any>{
     return this.httpClient.patch(this.utilServicesAPI.legalEntityRestApuURL + "/activeDeActivateNotificationContact", deactiveContactReqObj);
+  }
+
+  getLegalEntityContactListExportToExcel(contactRptReqObj: IcontactRptReqStruct):Observable<any>{
+    return this.httpClient.post(this.utilServicesAPI.legalEntityRestApuURL + "/equptNotificationContactList", 
+    contactRptReqObj,
+    {responseType: 'blob' as 'json'})
+    .map(
+      (res: Blob) => {
+        var blob = new Blob([res], {type: 'application/vnd.ms-excel'});
+        return blob;
+      }
+    );
   }
 
 }

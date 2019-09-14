@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
-import { IbranchListDetailsResponse, LegalentityBranchService, IbranchListReportResponse } from '../services/legalentity-branch.service';
+import { IbranchListDetailsResponse, LegalentityBranchService, IbranchListReportResponse, IbranchRptReqStruct } from '../services/legalentity-branch.service';
 import { LegalentityQrService, IallotQrIdToBranchResponseStruct, IavailbleQrIdCountReqStruct, IallotQrIdToBranchNewReq } from '../services/legalentity-qr.service';
 
 export interface IupdatedBranchDetailsResponse{
@@ -24,6 +24,10 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
   @ViewChild('form') form;
   
   branchMenuName: string;
+  complaintMenuName: string;
+  technicianMenuName: string;
+  equptMenuName: string;
+
   legalEntityId: number;
   allotQrIdBranchFormGroup: FormGroup;
 
@@ -52,8 +56,18 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     private qrIdServiceAPI: LegalentityQrService
   ) { }
 
-  popBranchList():void{
-    this.branchServiceAPI.getBranchListReport(this.legalEntityId)
+  popBranchList(exportToExcel: boolean):void{
+
+    const branchRptReqObj: IbranchRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: exportToExcel,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    this.branchServiceAPI.getBranchListReport(branchRptReqObj)
     .subscribe((data:IbranchListReportResponse) => {
       
       if (data.errorOccured){
@@ -234,11 +248,14 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.branchMenuName=this.menuModel.branchMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
+    this.complaintMenuName=this.menuModel.complaintMenuName;
+    this.equptMenuName=this.menuModel.equipmentMenuName;
  
     this.setFormGroup();
     
 
-    this.popBranchList();
+    this.popBranchList(false);
 
     this.getAvailableQrToAllot();
   }

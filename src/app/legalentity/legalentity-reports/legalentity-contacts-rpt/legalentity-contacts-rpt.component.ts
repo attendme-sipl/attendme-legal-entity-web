@@ -6,8 +6,11 @@ import { MatIconRegistry, MatDialog, MatTableDataSource, MatPaginator, MatSort }
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { LegalentityAddContactComponent } from '../../legalentity-add-contact/legalentity-add-contact.component';
-import { LegalentityContactsService, IcontactResponseStruct, IdeactivateContactReqStruct } from '../../services/legalentity-contacts.service';
+import { LegalentityContactsService, IcontactResponseStruct, IdeactivateContactReqStruct, IcontactRptReqStruct } from '../../services/legalentity-contacts.service';
 import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../legalentity-confirm-alert/legalentity-confirm-alert.component';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
+import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 
 export interface IaddContactReqStruct{
   legalEntityId: number,
@@ -69,6 +72,11 @@ export class LegalentityContactsRptComponent implements OnInit {
   "deleteContact"
   ];
 
+  technicianMenuName: string;
+  branchMenuName: string;
+  complaintMenuName: string;
+  equptMenuName: string;
+
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private legalEntityUserModel: LegalentityUser,
@@ -77,7 +85,8 @@ export class LegalentityContactsRptComponent implements OnInit {
     sanitizer: DomSanitizer,
     private router: Router,
     private dialog: MatDialog,
-    private contactServiceAPI: LegalentityContactsService
+    private contactServiceAPI: LegalentityContactsService,
+    private menuModel: LegalentityMenuPrefNames
   ) { 
     iconRegistry.addSvgIcon(
       'contact-icon',
@@ -102,13 +111,35 @@ export class LegalentityContactsRptComponent implements OnInit {
    
   }
 
-  popLegalEntityContactRpt():void{
+  popLegalEntityContactRpt(exportToExcel: boolean):void{
 
     this.enableProgressBar=true;
 
     this.contactSearch='';
 
-    this.contactServiceAPI.getLegalEntityContactListRpt(this.legalEntityId,true)
+    const contactRptReqObj: IcontactRptReqStruct={
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      contactActiveStatus: true,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: exportToExcel,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    if (exportToExcel){
+      let fileName: string = "Contacts-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+      this.contactServiceAPI.getLegalEntityContactListExportToExcel(contactRptReqObj)
+      .subscribe(data => {
+        saveAs(data, fileName);
+        this.enableProgressBar=false;
+      }, error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.enableProgressBar=false;
+      });
+    }
+    else{
+      this.contactServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
     .subscribe((data:IcontactResponseStruct) => {
 
       if (data.errorOccurred){
@@ -138,6 +169,9 @@ export class LegalentityContactsRptComponent implements OnInit {
       this.enableProgressBar=false;
       this.toastService.error("Something went wrong while loading contact list report");
     });
+    }
+
+    
   }
 
   openAddContactDialog(){
@@ -182,7 +216,7 @@ export class LegalentityContactsRptComponent implements OnInit {
 
       this.enableProgressBar=false;
       this.toastService.success("Contacts added successfully");
-      this.popLegalEntityContactRpt();
+      this.popLegalEntityContactRpt(false);
 
     }, error => {
       this.enableProgressBar=false;
@@ -230,7 +264,7 @@ export class LegalentityContactsRptComponent implements OnInit {
           this.enableProgressBar = false;
           this.toastService.success("Contact removed successfully");
 
-          this.popLegalEntityContactRpt();
+          this.popLegalEntityContactRpt(false);
         }, error => {
           this.toastService.error("Something went wrong while removing contact, please try again later");
         })
@@ -257,11 +291,19 @@ export class LegalentityContactsRptComponent implements OnInit {
     }
     else{
       this.router.navigate(['legalentity','login']); 
+      return false;
     }
+
+    this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
+
+    this.complaintMenuName=this.menuModel.complaintMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
+    this.equptMenuName=this.menuModel.equipmentMenuName;
+    this.branchMenuName=this.menuModel.branchMenuName;
 
     this.utilServiceAPI.setTitle("Legalentity - Contacts | Attendme");
 
-    this.popLegalEntityContactRpt();
+    this.popLegalEntityContactRpt(false);
 
    // console.log(this.displayedColumns[5]);
   }

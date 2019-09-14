@@ -8,6 +8,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { LegalentityQrService, IqrIdRptReqStruct, IqrIdRptResponseStruct } from '../../services/legalentity-qr.service';
 import { DatePipe } from '@angular/common';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 export interface IHashMap{
   [key:string]: string;
@@ -30,6 +32,8 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
   equipmentMenuName: string;
   branchMenuName: string;
+  technicianMenuName: string;
+  complaintManueName: string;
 
   displayedColumns: string[] = [];
 
@@ -61,7 +65,7 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
     );
    }
 
-   popQrIdDetailsRpt(lastRecordCount: number):void{
+   popQrIdDetailsRpt(lastRecordCount: number, exportToExcel: boolean):void{
   
      this.enableProgressBar=true;
      this.contactSearch='';
@@ -72,122 +76,143 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
        lastRecordCount: lastRecordCount,
        legalEntityId: this.legalEntityId,
        qrActiveStatus: true,
-       startDateTime: null
+       startDateTime: null,
+       branchMenuName: this.branchMenuName,
+       complaintMenuName: this.complaintManueName,
+       equptMenuName: this.equipmentMenuName,
+       exportToExcel: exportToExcel,
+       technicianMenuName: this.technicianMenuName
      };
 
-     this.qrIdServiceAPI.getQrIdDetailsRpt(qrIdDetailsRptReqObj)
-     .subscribe((data:IqrIdRptResponseStruct) => {
+     if (exportToExcel){
+      let fileName: string = this.equipmentMenuName + "-" + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
 
-      if (data.errorOccured){
+      this.qrIdServiceAPI.getQrIdDetailsExportToExcel(qrIdDetailsRptReqObj)
+      .subscribe(data => {
+        saveAs(data, fileName);
         this.enableProgressBar=false;
-        this.toastService.error("Something went wrong while loading QR ID details list");
-        return false;
-      }
-
-       this.displayedColumns = [];
-
-       this.displayedColumns = [
-         "srNo",
-         "QR ID",
-         "Edit",
-         "Assigned Date"
-        ];
-       
-       let dynamicFormHeadsArr: any[] = data.formHeads;
-
-       dynamicFormHeadsArr.forEach(indivFormField => {
-         this.displayedColumns.push(indivFormField['formFiledTitleName'])
-
-       });
-
-       this.updatedColumnDef = this.displayedColumns;
-
-       this.displayedColumns.forEach(indivColumn => {
-         if (indivColumn == 'srNo'){}
-       })
-
-  
-       this.updatedColumnDef=[];
-
-
-       let myMap: IHashMap = {};
-       
-       let qrRptUpdatedObj: any[] = [];
-
-       let srNo:number = 1;
-
-       data.qrIdDetailsList.forEach(indivQrDetails => {
-
-         //this.displayedColumns.forEach(indivColumnName => {
+      }, error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.enableProgressBar=false;
+      });
+     }
+     else{
+      this.qrIdServiceAPI.getQrIdDetailsRpt(qrIdDetailsRptReqObj)
+      .subscribe((data:IqrIdRptResponseStruct) => {
+ 
+       if (data.errorOccured){
+         this.enableProgressBar=false;
+         this.toastService.error("Something went wrong while loading QR ID details list");
+         return false;
+       }
+ 
+        this.displayedColumns = [];
+ 
+        this.displayedColumns = [
+          "srNo",
+          "QR ID",
+          "Edit",
+          "Assigned Date"
+         ];
+        
+        let dynamicFormHeadsArr: any[] = data.formHeads;
+ 
+        dynamicFormHeadsArr.forEach(indivFormField => {
+          this.displayedColumns.push(indivFormField['formFiledTitleName'])
+ 
+        });
+ 
+        this.updatedColumnDef = this.displayedColumns;
+ 
+        this.displayedColumns.forEach(indivColumn => {
+          if (indivColumn == 'srNo'){}
+        })
+ 
+   
+        this.updatedColumnDef=[];
+ 
+ 
+        let myMap: IHashMap = {};
+        
+        let qrRptUpdatedObj: any[] = [];
+ 
+        let srNo:number = 1;
+ 
+        data.qrIdDetailsList.forEach(indivQrDetails => {
+ 
+          //this.displayedColumns.forEach(indivColumnName => {
+            
+            //myMap[indivColumnName] = ''
+          //});
+         
+          myMap = {};
+ 
+          // myMap['Sr No.']= srNo.toString();
+           myMap['QR ID'] = indivQrDetails.qrId;
+           myMap[this.branchMenuName] = indivQrDetails.branchName;
+           myMap['qrCodeFileLink']=indivQrDetails.qrCodeFileLink;
+           myMap['qrCodeId']=indivQrDetails.qrCodeId;
+           let assignDate:string = this.datePipe.transform(indivQrDetails.qrAssignDateTime, 'yyyy-MM-dd hh:mm:ss');
+ 
+           myMap['Assigned Date'] = assignDate;
            
-           //myMap[indivColumnName] = ''
-         //});
+ 
+           let qrIdFieldsObj: any[] = indivQrDetails.formFieldDetails;
+ 
+           qrIdFieldsObj.forEach(indivFormFieldObj => {
+ 
+             let formFieldId: number = indivFormFieldObj['formFieldId'];
+ 
+             let formFiledValue: string = indivFormFieldObj['formFieldValue'];
+ 
+             const formFiledNameObj = data.formHeads.map((value,index) => value?{
+               formFieldId: value['formFieldId'],
+               formFiledTitleName: value['formFiledTitleName']
+             }:null)
+             .filter(value => value.formFieldId == formFieldId);
+ 
+             myMap[formFiledNameObj[0]['formFiledTitleName']] = formFiledValue;
+ 
+           })
+         
+           qrRptUpdatedObj.push(myMap);
+ 
+           srNo=srNo+1;
+         
+           
+   
+ 
+        });
+ 
+      
         
-         myMap = {};
-
-         // myMap['Sr No.']= srNo.toString();
-          myMap['QR ID'] = indivQrDetails.qrId;
-          myMap[this.branchMenuName] = indivQrDetails.branchName;
-          myMap['qrCodeFileLink']=indivQrDetails.qrCodeFileLink;
-          myMap['qrCodeId']=indivQrDetails.qrCodeId;
-          let assignDate:string = this.datePipe.transform(indivQrDetails.qrAssignDateTime, 'yyyy-MM-dd hh:mm:ss');
-
-          myMap['Assigned Date'] = assignDate;
+ 
+        this.qrRecordCount = qrRptUpdatedObj.length; //data.contactList.length;
+           this.dataSource = new MatTableDataSource(qrRptUpdatedObj);
+           
+           this.dataSource.paginator = this.paginator;
+         //console.log(qrRptUpdatedObj);
+           this.dataSource.sort = this.sort;
+ 
+ 
+ 
+           const sortState: Sort = {active: 'Assigned Date', direction: 'desc'};
+           this.sort.active = sortState.active;
+           this.sort.direction = sortState.direction;
+           this.sort.sortChange.emit(sortState);
+ 
+           
           
-
-          let qrIdFieldsObj: any[] = indivQrDetails.formFieldDetails;
-
-          qrIdFieldsObj.forEach(indivFormFieldObj => {
-
-            let formFieldId: number = indivFormFieldObj['formFieldId'];
-
-            let formFiledValue: string = indivFormFieldObj['formFieldValue'];
-
-            const formFiledNameObj = data.formHeads.map((value,index) => value?{
-              formFieldId: value['formFieldId'],
-              formFiledTitleName: value['formFiledTitleName']
-            }:null)
-            .filter(value => value.formFieldId == formFieldId);
-
-            myMap[formFiledNameObj[0]['formFiledTitleName']] = formFiledValue;
-
-          })
-        
-          qrRptUpdatedObj.push(myMap);
-
-          srNo=srNo+1;
-        
-          
-  
-
-       });
+ 
+        this.enableProgressBar=false;
+ 
+      }, error => {
+       this.enableProgressBar=false;
+       this.toastService.error("Something went wrong while loading QR ID details list");
+      });
+     }
 
      
-       
-
-       this.qrRecordCount = qrRptUpdatedObj.length; //data.contactList.length;
-          this.dataSource = new MatTableDataSource(qrRptUpdatedObj);
-          
-          this.dataSource.paginator = this.paginator;
-        //console.log(qrRptUpdatedObj);
-          this.dataSource.sort = this.sort;
-
-
-
-          const sortState: Sort = {active: 'Assigned Date', direction: 'desc'};
-          this.sort.active = sortState.active;
-          this.sort.direction = sortState.direction;
-          this.sort.sortChange.emit(sortState);
-
-          
-         
-
-       this.enableProgressBar=false;
-
-     }, error => {
-      this.enableProgressBar=false;
-      this.toastService.error("Something went wrong while loading QR ID details list");
-     });
 
 
    }
@@ -210,12 +235,14 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
     this.equipmentMenuName=this.menuModel.equipmentMenuName;
     this.branchMenuName=this.menuModel.branchMenuName;
+    this.complaintManueName=this.menuModel.complaintMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
 
     this.displayedColumns.push(this.branchMenuName);
 
     this.utileServiceAPI.setTitle("Legalentity - " + this.equipmentMenuName + " | Attendme" );
 
-    this.popQrIdDetailsRpt(5);
+    this.popQrIdDetailsRpt(5, false);
   }
   
   openEquipmentFrom(){

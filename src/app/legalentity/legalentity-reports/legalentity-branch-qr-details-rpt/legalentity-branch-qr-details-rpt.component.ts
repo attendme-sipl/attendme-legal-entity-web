@@ -10,7 +10,7 @@ import { Router, Route, ActivatedRoute } from '@angular/router';
 import { IqrIdRptReqStruct, LegalentityQrService, IqrIdRptResponseStruct } from '../../services/legalentity-qr.service';
 import { IHashMap } from '../legalentity-qr-details-rpt/legalentity-qr-details-rpt.component';
 import { DatePipe } from '@angular/common';
-import { LegalentityBranchService, IbranchListDetailsResponse, IbranchListReportResponse } from '../../services/legalentity-branch.service';
+import { LegalentityBranchService, IbranchListDetailsResponse, IbranchListReportResponse, IbranchRptReqStruct } from '../../services/legalentity-branch.service';
 
 @Component({
   selector: 'app-legalentity-branch-qr-details-rpt',
@@ -29,6 +29,8 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
   equipmentMenuName: string;
   branchMenuName: string;
+  technicianMenuName: string;
+  complaintMenuName: string;
 
   displayedColumns: string[] = [];
 
@@ -66,6 +68,8 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
    popQrIdDetailsRpt(lastRecordCount: number):void{
   
+    let exportToExcel: boolean = false;
+
     this.enableProgressBar=true;
     this.contactSearch='';
     const qrIdDetailsRptReqObj: IqrIdRptReqStruct = {
@@ -75,7 +79,12 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
       lastRecordCount: lastRecordCount,
       legalEntityId: this.legalEntityId,
       qrActiveStatus: true,
-      startDateTime: null
+      startDateTime: null,
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equipmentMenuName,
+      exportToExcel: exportToExcel,
+      technicianMenuName: this.technicianMenuName
     };
 
     //console.log(qrIdDetailsRptReqObj);
@@ -199,8 +208,18 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLocaleLowerCase();
   }
 
-  setBranchName(){
-    this.branchServiceAPI.getBranchListReport(this.legalEntityId)
+  setBranchName(exportToExcel: boolean){
+
+    const branchRptReqObj: IbranchRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equipmentMenuName,
+      exportToExcel: exportToExcel,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    this.branchServiceAPI.getBranchListReport(branchRptReqObj)
     .subscribe((data:IbranchListReportResponse) =>{
       
       let branchListObjFiltered = data.branchDetailsList.map((value,index) => value?{
@@ -222,6 +241,14 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
+      
+      this.menuModel= this.utilServiceAPI.getLegalEntityMenuPrefNames();
+
+      this.equipmentMenuName=this.menuModel.equipmentMenuName;
+      this.technicianMenuName=this.menuModel.technicianMenuName;
+      this.branchMenuName=this.menuModel.branchMenuName;
+      this.complaintMenuName=this.menuModel.complaintMenuName;
+      
       //this.branchId=this.userModel.legalEntityBranchDetails.branchId;
     }
     else{
@@ -233,6 +260,8 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
     this.equipmentMenuName=this.menuModel.equipmentMenuName;
     this.branchMenuName=this.menuModel.branchMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
+    this.complaintMenuName=this.menuModel.complaintMenuName;
 
     this.utilServiceAPI.setTitle("" + this.branchMenuName + " QR ID assigned report | Attendme");
 
@@ -240,7 +269,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
     this.popQrIdDetailsRpt(0);
 
-    this.setBranchName();
+    this.setBranchName(false);
   }
 
 }

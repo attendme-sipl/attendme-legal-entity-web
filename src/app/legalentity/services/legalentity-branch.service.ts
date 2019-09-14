@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { LegalentityUtilService } from './legalentity-util.service';
 import { LegalentityAddBranch } from '../model/legalentity-add-branch';
 import { LegalentityBranchRulebook } from '../model/legalentity-branch-rulebook';
+import { IbranchReqStruct } from './legalentity-user.service';
 
 export interface IbranchListReportResponse{
   errorOccured: boolean,
@@ -31,6 +32,15 @@ export interface IbranchListDetailsResponse{
   branchAddress: string,
   allotedQRIdCount: number,
   branchActiveStatus: boolean
+};
+
+export interface IbranchRptReqStruct{
+  legalEntityId: number,
+  exportToExcel: boolean,
+  complaintMenuName: string,
+  technicianMenuName: string,
+  equptMenuName: string,
+  branchMenuName: string
 };
 
 @Injectable({
@@ -81,10 +91,20 @@ getBranchRuleBook():Observable<LegalentityBranchRulebook>
   return this.httpClient.post<LegalentityBranchRulebook>(this.util.legalEntityRestApuURL + "/checkBranchCount",this.branchRuleBookModel)
 }
 
-getBranchListReport(legalEntityId: number):Observable<IbranchListReportResponse>{
-  return this.httpClient.post<IbranchListReportResponse>(this.util.legalEntityRestApuURL + "/legalEntityBranchReport", {
-    legalEntityId: legalEntityId
-  });
+getBranchListReport(branchListRptReqObj: IbranchRptReqStruct):Observable<IbranchListReportResponse>{
+  return this.httpClient.post<IbranchListReportResponse>(this.util.legalEntityRestApuURL + "/legalEntityBranchReport", branchListRptReqObj);
+}
+
+getBranchListExportToExcel(branchListRptReqObj: IbranchRptReqStruct):Observable<any>{
+  return this.httpClient.post(this.util.legalEntityRestApuURL + "/legalEntityBranchReport", 
+  branchListRptReqObj,
+  {responseType: 'blob' as 'json'})
+  .map(
+    (res: Blob) => {
+      var blob = new Blob([res], {type: 'application/vnd.ms-excel'});
+      return blob;
+    }
+  );
 }
 
 }

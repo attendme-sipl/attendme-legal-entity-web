@@ -19,9 +19,9 @@
               <span class="menu-toolbar-spacer"></span>
 
               <button mat-raised-button color="primary" (click)="openAddContactDialog()">Add Contact</button>
-
+              <button mat-raised-button color="primary" (click)="popLegalEntityContactRpt(true)" style="margin-left: 5px;">Download Excel</button>
               <button type="button" class="btn btn-default float-right">
-                  <mat-icon svgIcon="refresh-icon" (click)="popLegalEntityContactRpt()"></mat-icon>
+                  <mat-icon svgIcon="refresh-icon" (click)="popLegalEntityContactRpt(false)"></mat-icon>
               </button>
 
             </mat-toolbar-row>

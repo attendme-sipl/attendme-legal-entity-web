@@ -10,7 +10,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityCommons } from '../model/legalentity-commons';
 import {LegalentityEquipment} from '../model/legalentity-equipment'
-import { LegalentityContactsService, IcontactResponseStruct } from '../services/legalentity-contacts.service';
+import { LegalentityContactsService, IcontactResponseStruct, IcontactRptReqStruct } from '../services/legalentity-contacts.service';
 import { IaddContactReqUpdatedStruct } from '../legalentity-reports/legalentity-contacts-rpt/legalentity-contacts-rpt.component';
 import { MatDialog } from '@angular/material';
 import { LegalentityAddContactComponent } from '../legalentity-add-contact/legalentity-add-contact.component';
@@ -421,8 +421,18 @@ export class LegalentityEquipmentComponent implements OnInit {
     while(this.qrIdContactFormArray.length){
       this.qrIdContactFormArray.removeAt(0);
     }
+
+    const contactRptReqObj: IcontactRptReqStruct={
+      branchMenuName: this.menuPrefNameModel.branchMenuName,
+      complaintMenuName: this.menuPrefNameModel.complaintMenuName,
+      contactActiveStatus: true,
+      equptMenuName: this.menuPrefNameModel.equipmentMenuName,
+      exportToExcel: false,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.menuPrefNameModel.technicianMenuName
+    };
     
-    this.contatServiceAPI.getLegalEntityContactListRpt(this.legalEntityId,true)
+    this.contatServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
     .subscribe((data:IcontactResponseStruct) => {
       if (data.errorOccurred){
         this.toastService.error("Something went wrong while loading contacts list");

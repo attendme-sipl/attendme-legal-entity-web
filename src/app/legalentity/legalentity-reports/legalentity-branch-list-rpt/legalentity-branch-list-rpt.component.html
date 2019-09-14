@@ -12,9 +12,9 @@
           <span class="menu-toolbar-spacer"></span>
 
           <button mat-raised-button color="primary" (click)="addBranchClick()">Add {{branchMenuName}}</button>
-
+          <button mat-raised-button color="primary" (click)="popBranchList(true)" style="margin-left: 5px;">Download Excel</button>
           <button type="button" class="btn btn-default float-right">
-              <mat-icon svgIcon="refresh-icon" (click)="popBranchList()"></mat-icon>
+              <mat-icon svgIcon="refresh-icon" (click)="popBranchList(false)"></mat-icon>
           </button>
 
         </mat-toolbar-row>

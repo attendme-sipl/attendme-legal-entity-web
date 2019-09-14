@@ -15,6 +15,15 @@ export interface ItechnicianListRptResponse{
   }]
 };
 
+export interface ItechnicianRptReqStruct{
+  legalEntityId: number,
+  exportToExcel: boolean,
+  complaintMenuName: string,
+  technicianMenuName: string,
+  equptMenuName: string,
+  branchMenuName: string
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -47,9 +56,19 @@ export class LegalentityAddTechnicianService {
     });
   }
 
-  getTechnicianList(legalEntityId: number):Observable<ItechnicianListRptResponse>{
-    return this.httpClient.post<ItechnicianListRptResponse>(this.util.legalEntityRestApuURL + "/technicianReportList", {
-      legalEntityId: legalEntityId
-    });
+  getTechnicianList(technicianRtpReqObj: ItechnicianRptReqStruct):Observable<ItechnicianListRptResponse>{
+    return this.httpClient.post<ItechnicianListRptResponse>(this.util.legalEntityRestApuURL + "/technicianReportList", technicianRtpReqObj);
+  }
+
+  getTechnicianListExportToExcel(technicianRtpReqObj: ItechnicianRptReqStruct):Observable<any>{
+    return this.httpClient.post(this.util.legalEntityRestApuURL + "/technicianReportList", 
+    technicianRtpReqObj,
+    {responseType: 'blob' as 'json'})
+    .map(
+      (res: Blob) => {
+        var blob = new Blob([res], {type: 'application/vnd.ms-excel'});
+        return blob;
+      }
+    );
   }
 }

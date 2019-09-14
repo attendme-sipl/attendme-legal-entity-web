@@ -3,12 +3,14 @@ import { LegalentityUser } from '../../model/legalentity-user';
 import { LegalentityUtilService } from '../../services/legalentity-util.service';
 import { Router } from '@angular/router';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
-import { LegalentityAddTechnicianService, ItechnicianListRptResponse } from '../../services/legalentity-add-technician.service';
+import { LegalentityAddTechnicianService, ItechnicianListRptResponse, ItechnicianRptReqStruct } from '../../services/legalentity-add-technician.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatPaginator, MatSort, MatTableDataSource, MatIconRegistry, MatDialog } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../legalentity-confirm-alert/legalentity-confirm-alert.component';
 import { LegalentityTechnicianService } from '../../services/legalentity-technician.service';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 export interface ItechnicianListDetailsStruct{
    technicianId: number,
@@ -31,6 +33,10 @@ export class LegalentityTechnicianRptComponent implements OnInit {
   userId: number;
 
   technicianMenuName: string;
+  branchMenuName: string;
+  equptMenuName: string;
+  complaintMenuName: string;
+
   enableProgressBar: boolean;
 
   dataSource;
@@ -77,10 +83,32 @@ export class LegalentityTechnicianRptComponent implements OnInit {
       )
   }
 
-  popTechnicianListRpt():void{
+  popTechnicianListRpt(exportToExcel: boolean):void{
     this.enableProgressBar=true;
 
-    this.technicianServiceAPI.getTechnicianList(this.legalEntityId)
+    const technicianRptReqObj: ItechnicianRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: exportToExcel,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    if (exportToExcel){
+      let fileName: string = this.technicianMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+
+      this.technicianServiceAPI.getTechnicianListExportToExcel(technicianRptReqObj)
+      .subscribe(data => {
+        saveAs(data, fileName);
+        this.enableProgressBar=false;
+      }, error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.enableProgressBar=false;
+      });
+    }
+    else{
+      this.technicianServiceAPI.getTechnicianList(technicianRptReqObj)
     .subscribe((data:ItechnicianListRptResponse) => {
       
       if (data.errorOccurred){
@@ -111,6 +139,9 @@ export class LegalentityTechnicianRptComponent implements OnInit {
       this.toastService.error("Something went wrong while loading " + this.technicianMenuName + " list");
       this.enableProgressBar=false;
     });
+    }
+
+    
   }
 
   addTechnicianClick(){
@@ -150,7 +181,7 @@ export class LegalentityTechnicianRptComponent implements OnInit {
 
           this.enableProgressBar=false;
           this.toastService.success(this.technicianMenuName + " deleted successfully");
-          this.popTechnicianListRpt();
+          this.popTechnicianListRpt(false);
 
         },error => {
           this.enableProgressBar=false;
@@ -173,13 +204,16 @@ export class LegalentityTechnicianRptComponent implements OnInit {
       this.menuPrefNameModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
 
       this.technicianMenuName=this.menuPrefNameModel.technicianMenuName;
+      this.equptMenuName=this.menuPrefNameModel.equipmentMenuName;
+      this.complaintMenuName=this.menuPrefNameModel.complaintMenuName;
+      this.branchMenuName=this.menuPrefNameModel.branchMenuName;
 
     }
     else{
       this.router.navigate(['legalentity','login']);
     }
 
-    this.popTechnicianListRpt();
+    this.popTechnicianListRpt(false);
 
     this.utilServiceAPI.setTitle("Legalentity - " + this.technicianMenuName + " | Attendme");
 

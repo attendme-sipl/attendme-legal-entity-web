@@ -58,7 +58,12 @@ export interface IqrIdRptReqStruct{
    qrActiveStatus: boolean,
    startDateTime: string,
    endDateTime: string,
-   lastRecordCount: number
+   lastRecordCount: number,
+   exportToExcel: boolean,
+   complaintMenuName: string,
+   technicianMenuName: string,
+   equptMenuName: string,
+   branchMenuName: string
 };
 
 export interface IqrIdRptResponseStruct{
@@ -114,5 +119,17 @@ export class LegalentityQrService {
 
   getQrIdDetailsRpt(qrIdDetailsRtpReqObj: IqrIdRptReqStruct):Observable<IqrIdRptResponseStruct>{
     return this.httpClient.post<IqrIdRptResponseStruct>(this.utilServiceAPI.legalEntityRestApuURL + "/qrIdDetailsListReport", qrIdDetailsRtpReqObj);
+  }
+
+  getQrIdDetailsExportToExcel(qrIdDetailsRtpReqObj: IqrIdRptReqStruct):Observable<any>{
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/qrIdDetailsListReport", 
+    qrIdDetailsRtpReqObj,
+    {responseType: 'blob' as 'json'})
+    .map(
+      (res: Blob) => {
+        var blob = new Blob([res], {type: 'application/vnd.ms-excel'});
+        return blob;
+      }
+    );
   }
 }

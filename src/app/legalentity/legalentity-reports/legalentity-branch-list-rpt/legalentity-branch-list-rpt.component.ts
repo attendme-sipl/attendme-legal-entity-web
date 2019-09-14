@@ -6,8 +6,10 @@ import { MatIconRegistry, MatPaginator, MatSort, MatTableDataSource } from '@ang
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { Router } from '@angular/router';
-import { LegalentityBranchService, IbranchListDetailsResponse, IbranchListReportResponse } from '../../services/legalentity-branch.service';
+import { LegalentityBranchService, IbranchListDetailsResponse, IbranchListReportResponse, IbranchRptReqStruct } from '../../services/legalentity-branch.service';
 //import { IbranchListReportResponse, IbranchListDetailsResponse } from 'attendme-legal-entity-web/src/app/legalentity/services/legalentity-branch.service';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 @Component({
   selector: 'app-legalentity-branch-list-rpt',
@@ -20,7 +22,11 @@ export class LegalentityBranchListRptComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   
   legalEntityId: number;
+
   branchMenuName: string;
+  technicianMenuName: string;
+  complaintMenuName: string;
+  equptMenuName: string;
 
   branchDetailsArray: IbranchListDetailsResponse[];
 
@@ -66,9 +72,32 @@ export class LegalentityBranchListRptComponent implements OnInit {
     )
   }
 
-  popBranchList():void{
+  popBranchList(exportToExcel: boolean):void{
     this.enableProgressBar=true;
-    this.branchServiceAPI.getBranchListReport(this.legalEntityId)
+
+    const branchRptReqObj: IbranchRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: exportToExcel,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    if (exportToExcel){
+      let fileName: string = this.branchMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+
+      this.branchServiceAPI.getBranchListExportToExcel(branchRptReqObj)
+      .subscribe(data => {
+        saveAs(data, fileName);
+        this.enableProgressBar=false;
+      }, error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.enableProgressBar=false;
+      });
+    }
+    else{
+      this.branchServiceAPI.getBranchListReport(branchRptReqObj)
     .subscribe((data:IbranchListReportResponse) => {
 
       if (data.errorOccured){
@@ -101,6 +130,10 @@ export class LegalentityBranchListRptComponent implements OnInit {
       this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details");
       this.enableProgressBar=false;
     });
+    }
+    
+
+    
   }
 
   addBranchClick():void{
@@ -122,10 +155,13 @@ export class LegalentityBranchListRptComponent implements OnInit {
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
 
     this.branchMenuName=this.menuModel.branchMenuName;
+    this.equptMenuName=this.menuModel.equipmentMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
+    this.complaintMenuName=this.menuModel.complaintMenuName;
 
     this.utilServiceAPI.setTitle("Legalentity - " + this.branchMenuName + " List | Attendme");
 
-    this.popBranchList();
+    this.popBranchList(false);
   }
 
   applyFilter(filterValue: string){
