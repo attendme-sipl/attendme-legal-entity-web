@@ -76,54 +76,7 @@
 
                         </mat-card-content>
 
-                       
-                        <mat-card>
-                            <mat-card-header>
-                                <mat-card-title style="margin-left:-8px;">Attach Document</mat-card-title>
-                            </mat-card-header>
-
-                            <mat-card-content>
-                                <div class="table-responsive">
-                                    <table class="table" >
-                                        <thead>
-                                            <tr>
-                                                <th>Sr. No.</th>
-                                                <th>Document Name</th>
-                                                <th>Document Description</th>
-                                                <th>Attach Document</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody formArrayName="equptDocList" 
-                                        *ngFor="let indivContactObj of equptForm.get('equptDocList')['controls']; let i=index;">
-                                           
-                                            <tr [formGroupName] ='i'>
-
-                                               <td>
-                                                    {{i+1}}
-                                               </td>
-                                             
-                                               <td>
-                                                 {{indivContactObj.get('docName').value}} 
-                                               </td>
-
-                                               <td>
-                                                {{indivContactObj.get('docDesc').value}}
-                                               </td>
-
-                                               <td>
-                                                <mat-checkbox formControlName="docSelected" [checked]="indivContactObj.get('docSelected').value"></mat-checkbox>
-                                               </td>
-                                               
-                                               
-
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </mat-card-content>
-                        </mat-card>
-                       
+                    
 
                         <mat-card>
                                 <mat-card-header>
@@ -314,6 +267,53 @@
                                     </table>
                                 </div>
                             
+                            </mat-card-content>
+                        </mat-card>
+
+                        <mat-card>
+                            <mat-card-header>
+                                <mat-card-title style="margin-left:-8px;">Attach Document</mat-card-title>
+                            </mat-card-header>
+
+                            <mat-card-content>
+                                <div class="table-responsive">
+                                    <table class="table" >
+                                        <thead>
+                                            <tr>
+                                                <th>Sr. No.</th>
+                                                <th>Document Name</th>
+                                                <th>Document Description</th>
+                                                <th>Attach Document</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody formArrayName="equptDocList" 
+                                        *ngFor="let indivContactObj of equptForm.get('equptDocList')['controls']; let i=index;">
+                                           
+                                            <tr [formGroupName] ='i'>
+
+                                               <td>
+                                                    {{i+1}}
+                                               </td>
+                                             
+                                               <td>
+                                                 {{indivContactObj.get('docName').value}} 
+                                               </td>
+
+                                               <td>
+                                                {{indivContactObj.get('docDesc').value}}
+                                               </td>
+
+                                               <td>
+                                                <mat-checkbox formControlName="docSelected" [checked]="indivContactObj.get('docSelected').value"></mat-checkbox>
+                                               </td>
+                                               
+                                               
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </mat-card-content>
                         </mat-card>
 
