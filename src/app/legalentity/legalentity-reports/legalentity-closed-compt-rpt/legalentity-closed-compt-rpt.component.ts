@@ -99,7 +99,7 @@ export class LegalentityClosedComptRptComponent implements OnInit {
       let fileName: string = "Closed-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
       this.complaintRtpServiceAPI.getClosedComplaintListExportToExcel(closedComplaintsReqObj)
       .subscribe(data => {
-        saveAs(data, fileName);
+        saveAs(data, fileName + ".xls");
         this.enableProgressBar=false;
       }, error => {
         this.toastService.error("Something went wrong while downloading excel");

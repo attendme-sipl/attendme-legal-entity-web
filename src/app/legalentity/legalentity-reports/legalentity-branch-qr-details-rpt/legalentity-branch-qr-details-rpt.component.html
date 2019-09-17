@@ -13,8 +13,10 @@
               <h3 style="font-size: 1.75rem;">{{equipmentMenuName}} (<b>{{branchMenuName}}: </b>{{branchName}})</h3>
               <span class="menu-toolbar-spacer"></span>
 
-              <button type="button" class="btn btn-default float-right">
-                  <mat-icon svgIcon="refresh-icon" (click)="popQrIdDetailsRpt(0)"></mat-icon>
+              <button type="button" mat-raised-button color="primary" (click)="popQrIdDetailsRpt(0,true)">Download Excel</button>
+
+              <button type="button" class="btn btn-default" style="margin-left: 5px;">
+                  <mat-icon svgIcon="refresh-icon" (click)="popQrIdDetailsRpt(0, false)"></mat-icon>
               </button>
 
             </mat-toolbar-row>

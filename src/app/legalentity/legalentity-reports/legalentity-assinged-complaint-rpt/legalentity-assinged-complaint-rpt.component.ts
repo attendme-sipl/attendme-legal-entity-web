@@ -136,7 +136,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
     this.complaintServiceAPI.getAssingedComplaintsListExportToExcel(assignComplaintReqObj)
     .subscribe(data => {
-      saveAs(data, fileName);
+      saveAs(data, fileName + ".xls");
       this.enableProgressBar=false;
     }, error => {
       this.toastService.error("Something went wrong while downloading excel");

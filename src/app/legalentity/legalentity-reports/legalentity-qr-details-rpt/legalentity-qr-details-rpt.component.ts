@@ -85,11 +85,11 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
      };
 
      if (exportToExcel){
-      let fileName: string = this.equipmentMenuName + "-" + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+      let fileName: string = this.equipmentMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
 
       this.qrIdServiceAPI.getQrIdDetailsExportToExcel(qrIdDetailsRptReqObj)
       .subscribe(data => {
-        saveAs(data, fileName);
+        saveAs(data, fileName + ".xls");
         this.enableProgressBar=false;
       }, error => {
         this.toastService.error("Something went wrong while downloading excel");

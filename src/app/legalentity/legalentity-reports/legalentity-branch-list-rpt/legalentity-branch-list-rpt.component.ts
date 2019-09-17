@@ -89,7 +89,7 @@ export class LegalentityBranchListRptComponent implements OnInit {
 
       this.branchServiceAPI.getBranchListExportToExcel(branchRptReqObj)
       .subscribe(data => {
-        saveAs(data, fileName);
+        saveAs(data, fileName + ".xls");
         this.enableProgressBar=false;
       }, error => {
         this.toastService.error("Something went wrong while downloading excel");

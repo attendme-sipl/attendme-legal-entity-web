@@ -63,7 +63,7 @@ export class LegalentityContactsService {
     {responseType: 'blob' as 'json'})
     .map(
       (res: Blob) => {
-        var blob = new Blob([res], {type: 'application/vnd.ms-excel'});
+        var blob = new Blob([res], {type: 'application/vnd.ms-excel;charset=utf-8'});
         return blob;
       }
     );

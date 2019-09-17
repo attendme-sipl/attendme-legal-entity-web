@@ -140,7 +140,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
       this.complaintRptServiceAPI.getOpenComplaintRtpToExcel(openComplaintReqObj)
       .subscribe(data => {
-        saveAs(data,fileName);
+        saveAs(data,fileName + ".xls");
         this.openComplaintProgressBar=false;
       },error => {
         this.toastService.error("Something went wrong while downloading excel");

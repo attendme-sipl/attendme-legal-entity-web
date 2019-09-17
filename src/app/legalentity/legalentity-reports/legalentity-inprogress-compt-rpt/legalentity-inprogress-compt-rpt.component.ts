@@ -87,7 +87,7 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
 
       this.complaintRtpServiceAPI.getIprogressComptListExportToExcel(inprogressComplaintRtpReqObj)
       .subscribe(data => {
-        saveAs(data, fileName);
+        saveAs(data, fileName + ".xls");
         this.enableProgressBar=false;
       }, error => {
         this.toastService.error("Something went wrong while downloading excel");

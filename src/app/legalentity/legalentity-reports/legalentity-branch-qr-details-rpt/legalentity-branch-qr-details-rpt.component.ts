@@ -11,6 +11,8 @@ import { IqrIdRptReqStruct, LegalentityQrService, IqrIdRptResponseStruct } from 
 import { IHashMap } from '../legalentity-qr-details-rpt/legalentity-qr-details-rpt.component';
 import { DatePipe } from '@angular/common';
 import { LegalentityBranchService, IbranchListDetailsResponse, IbranchListReportResponse, IbranchRptReqStruct } from '../../services/legalentity-branch.service';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 @Component({
   selector: 'app-legalentity-branch-qr-details-rpt',
@@ -66,9 +68,8 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
     );
    }
 
-   popQrIdDetailsRpt(lastRecordCount: number):void{
+   popQrIdDetailsRpt(lastRecordCount: number, exportToExcel: boolean):void{
   
-    let exportToExcel: boolean = false;
 
     this.enableProgressBar=true;
     this.contactSearch='';
@@ -89,7 +90,19 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
     //console.log(qrIdDetailsRptReqObj);
 
-    this.qrIdServiceAPI.getQrIdDetailsRpt(qrIdDetailsRptReqObj)
+    if (exportToExcel){
+      let fileName: string = this.equipmentMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+      this.qrIdServiceAPI.getQrIdDetailsExportToExcel(qrIdDetailsRptReqObj)
+      .subscribe(data => {
+        saveAs(data, fileName + ".xls")
+        this.enableProgressBar=false;
+      }, error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.enableProgressBar=false;
+      });
+    }
+    else{
+      this.qrIdServiceAPI.getQrIdDetailsRpt(qrIdDetailsRptReqObj)
     .subscribe((data:IqrIdRptResponseStruct) => {
 //console.log(data);
      if (data.errorOccured){
@@ -195,7 +208,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
      this.enableProgressBar=false;
      this.toastService.error("Something went wrong while loading QR ID details list");
     });
-
+    }
 
   }
 
@@ -267,7 +280,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
     this.branchId=parseInt(this.route.snapshot.paramMap.get('branchId'));
 
-    this.popQrIdDetailsRpt(0);
+    this.popQrIdDetailsRpt(0, false);
 
     this.setBranchName(false);
   }

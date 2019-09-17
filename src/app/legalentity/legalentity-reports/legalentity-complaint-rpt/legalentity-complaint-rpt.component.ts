@@ -92,7 +92,7 @@ export class LegalentityComplaintRptComponent implements OnInit {
       this.complaintRtpServiceAPI.getQrIdAllComplaintsExportToExcel(qrIdComplaintArrRptReqObj)
       .subscribe(data => {
         let fileName: string = "All-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
-        saveAs(data, fileName);
+        saveAs(data, fileName + ".xls");
         this.enableProgressBar=false;
       }, error => {
         this.toastService.error("Something went wrong while downloading excel");

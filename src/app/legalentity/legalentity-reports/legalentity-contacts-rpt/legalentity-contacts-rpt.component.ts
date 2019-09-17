@@ -131,7 +131,7 @@ export class LegalentityContactsRptComponent implements OnInit {
       let fileName: string = "Contacts-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
       this.contactServiceAPI.getLegalEntityContactListExportToExcel(contactRptReqObj)
       .subscribe(data => {
-        saveAs(data, fileName);
+        saveAs(data, fileName + ".xls");
         this.enableProgressBar=false;
       }, error => {
         this.toastService.error("Something went wrong while downloading excel");
