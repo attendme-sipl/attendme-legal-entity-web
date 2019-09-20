@@ -79,6 +79,7 @@ import { LegalentityBranchQrDetailsRptComponent } from './legalentity/legalentit
 import { LegalentityUploadDocumentComponent } from './legalentity/legalentity-upload-document/legalentity-upload-document.component';
 import { LegalentityDocumentRptComponent } from './legalentity/legalentity-reports/legalentity-document-rpt/legalentity-document-rpt.component';
 import {LegalentityDocumentServiceService} from './legalentity/services/legalentity-document-service.service';
+import {MatExpansionModule} from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -150,7 +151,8 @@ import {LegalentityDocumentServiceService} from './legalentity/services/legalent
     MatTableModule,
     MatDialogModule,
     MatProgressSpinnerModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    MatExpansionModule
   ],
   providers: [
     LegalentityUser,

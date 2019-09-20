@@ -3,6 +3,7 @@ import { LegalentityUtilService } from './legalentity-util.service';
 import { HttpClient } from '@angular/common/http';
 import { IopenComplaintRtpReqStruct, IAssingTechnicianDialogData } from '../legalentity-reports/legalentity-open-compt-rpt/legalentity-open-compt-rpt.component';
 import { Observable } from 'rxjs';
+import { utils } from 'protractor';
 
 export interface IopenComplaintRptResponseStruct{
   errorOccured: boolean,
@@ -13,7 +14,8 @@ export interface IopenComplaintRptResponseStruct{
      qrId: string,
      qrCodeId: number,
      deviceUserName: string,
-     deviceUserMobileNumber: string
+     deviceUserMobileNumber: string,
+     complaintTrash: boolean
   }]
 };
 
@@ -330,6 +332,13 @@ export class LegalentityComplaintRptService {
           return blob;
         }
       );
+    }
+
+    trashComplaint(complaintId: number, trashComplaint: boolean): Observable<any>{
+      return this.httpClient.post(this.util.legalEntityRestApuURL + "/complaintTrash",{
+        complaintId: complaintId,
+        trashComplaint: trashComplaint
+      });
     }
     
 }

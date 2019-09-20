@@ -83,13 +83,16 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     "qrId",
     "registerBy",
     "complaintOpenDateTime",
-    "assginTechnician"
+    "assginTechnician",
+    "trashComplaint"
   ];
 
   complaintMenuName: string;
   equptMenuName: string;
   technicianMenuName: string;
   branchMenuName: string;
+ 
+  totalRecordCount: number;
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -106,7 +109,12 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     iconRegistry.addSvgIcon(
       'refreshIcon',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
-    )
+    );
+
+    iconRegistry.addSvgIcon(
+      'deleteIcon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-delete-24px.svg')
+    );
   }
 
   popOpenComplaintGrid(exportToExcel: boolean):void{
@@ -159,8 +167,22 @@ export class LegalentityOpenComptRptComponent implements OnInit {
         return false;
       }
 
-      this.openComplaintRecordCount = data.complaintList.length;
-      this.dataSource = new MatTableDataSource(data.complaintList);
+      const openComplaintFilterData = data.complaintList.map((value,index) => value ? {
+        complaintId: value['complaintId'],
+        complaintNumber: value['complaintNumber'],
+        complaintOpenDateTime: value['complaintOpenDateTime'],
+        qrId: value['qrId'],
+        qrCodeId: value['qrCodeId'],
+        deviceUserName: value['deviceUserName'],
+        deviceUserMobileNumber: value['deviceUserMobileNumber'],
+        complaintTrash: value['complaintTrash']
+      } : null)
+      .filter(value => value.complaintTrash == false);
+
+      this.totalRecordCount=openComplaintFilterData.length;
+
+      this.openComplaintRecordCount = openComplaintFilterData.length //data.complaintList.length;
+      this.dataSource = new MatTableDataSource(openComplaintFilterData);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
 
@@ -271,6 +293,53 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
   opendQrDetailsDialog(qrCodeId: number){
     const qrIdDialog = this.dialog.open(LegalentityQrDetailsComponent);
+  }
+
+  trashComplaint(complaintId: number){
+
+    const complaintNumberObj = this.openComplaintResponseArray.map((value,index) => value ? {
+      complaintId: value['complaintId'],
+      complaintNumber: value['complaintNumber']
+    } : null)
+    .filter(value => value.complaintId == complaintId);
+
+    let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
+
+    let confirmAlertData:IConfirmAlertStruct = {
+      alertMessage: "Are you sure you want to trash the " + this.complaintMenuName + " (" + complaintNumber + ")",
+      confirmBit:false
+     };
+
+     const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
+      data:confirmAlertData,
+      panelClass: 'custom-dialog-container'
+    });
+
+    alertDialogRef.afterClosed().subscribe(result => {
+      console.log(confirmAlertData.confirmBit);
+
+      if (confirmAlertData.confirmBit){
+        this.openComplaintProgressBar=true;
+
+        this.complaintRptServiceAPI.trashComplaint(complaintId, true)
+        .subscribe(data => {
+          if (data['errorOccured']){
+            this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+            this.openComplaintProgressBar=false;
+            return false;
+          }
+
+          this.openComplaintProgressBar = false;
+          this.toastService.success("" + this.complaintMenuName + " added to trash successfully");
+          this.popOpenComplaintGrid(false);
+        }, error => {
+          this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+          this.openComplaintProgressBar=false;
+        });
+      }
+
+    });
+
   }
 
 

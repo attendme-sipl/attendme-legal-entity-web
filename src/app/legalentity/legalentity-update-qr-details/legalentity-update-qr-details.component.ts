@@ -64,6 +64,9 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
 
   qrIdAttachedDocList: any[];
 
+  expandContactSection: boolean;
+  expandAttachDocSection: boolean;
+
   constructor(
     private router: Router,
     private utilServiceAPI: LegalentityUtilService,
@@ -263,6 +266,14 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
        this.editEquptProgressBar=false;
        this.toastService.error("Something went wrong while loading " + this.equptMenuName + " details");
        return false;
+     }
+
+     if (data.qrContactData.length > 0){
+       this.expandContactSection=true;
+     }
+
+     if (data.equptDocList.length > 0){
+       this.expandAttachDocSection=true;
      }
 
      this.qrIdAttachedDocList=data.equptDocList;
@@ -931,7 +942,7 @@ get qrIdDocumentListFormArray()
     this.menuModel = this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.equptMenuName = this.menuModel.equipmentMenuName;
 
-    this.utilServiceAPI.setTitle('Edit ' + this.equptMenuName + ' Details | Attendme');
+    this.utilServiceAPI.setTitle('Legalentity - Edit ' + this.equptMenuName + ' Details | Attendme');
 
     this.editEquptForm = this.equptEditFb.group({
       branchId: this.branchId,

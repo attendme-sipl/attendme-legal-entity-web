@@ -59,6 +59,7 @@ const routes: Routes = [
         {path:"assign/qr-branch", component: LegalentityAllotQrBranchComponent},
         {path:"info/qr", component: LegalentityQrDetailsComponent},
         {path:'add-branch', component:LegalentityBranchComponent},
+        //{path: 'add-branch', component: LegalentityAddBranchNewComponent},
         {path:'add-equipment',component: LegalentityEquipmentComponent}
       ]}
     ]

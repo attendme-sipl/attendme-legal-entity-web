@@ -20,6 +20,13 @@
             </mat-toolbar-row>
           </mat-toolbar>
 
+          <mat-toolbar style="background-color: transparent">
+            <mat-toolbar-row>
+              <label><b>Total Records:</b> {{totalRecordCount}}</label>
+            </mat-toolbar-row>
+            
+          </mat-toolbar>
+
           <!--<div class="clearfix">
               <h3 class="float-left">{{legalEntityMenuPrefModel.complaintMenuName}}  (Status: Open)</h3>
               <button type="button" mat-raised-button class="float-right">Download Excel</button>
@@ -89,6 +96,15 @@
                             Assign {{ legalEntityMenuPrefModel.technicianMenuName }}
                         </button>
                       </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="trashComplaint">
+                    <th mat-header-cell *matHeaderCellDef>Trash</th>
+                    <td mat-cell *matCellDef="let element">
+                      <button type="button" class="btn btn-default float-right">
+                        <mat-icon svgIcon="deleteIcon" (click)="trashComplaint(element.complaintId)"></mat-icon>
+                      </button>
+                    </td>
                   </ng-container>
     
                   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
