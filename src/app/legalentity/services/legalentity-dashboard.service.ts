@@ -79,10 +79,14 @@ export class LegalentityDashboardService {
     });
   }
 
-  getBranchUnreslovedComptRpt(branchId: number, unresolvedComptDayCount: number):Observable<any>{
+  getBranchUnreslovedComptRpt(
+    branchId: number, 
+    unresolvedComptDayCount: number,
+    complaintTrash: boolean):Observable<any>{
     return this.httpClient.post(this.util.legalEntityRestApuURL + "/unresolvedComplaintReport", {
        branchId: branchId,
-       unresolvedComptDayCount: unresolvedComptDayCount
+       unresolvedComptDayCount: unresolvedComptDayCount,
+       complaintTrash: complaintTrash
     });
   }
 

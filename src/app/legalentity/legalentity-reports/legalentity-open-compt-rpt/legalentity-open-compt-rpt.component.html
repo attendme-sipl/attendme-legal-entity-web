@@ -20,12 +20,33 @@
             </mat-toolbar-row>
           </mat-toolbar>
 
-          <mat-toolbar style="background-color: transparent">
-            <mat-toolbar-row>
-              <label><b>Total Records:</b> {{totalRecordCount}}</label>
-            </mat-toolbar-row>
+          <mat-card>
+
             
-          </mat-toolbar>
+              <div class="row">
+                  <div class="col-auto mr-auto">
+                    <label><b>Total Records:</b> {{totalRecordCount}}</label>
+                  </div>
+                  <div class="col-auto">
+                    <mat-form-field>
+                      <mat-label>Filter {{legalEntityMenuPrefModel.complaintMenuName}}</mat-label>
+                      <mat-select [(value)]="complaintFilterType" (selectionChange)="onFilterItemChange()">
+                        <mat-option value="0">Active {{legalEntityMenuPrefModel.complaintMenuName}}</mat-option>
+                        <mat-option value="1">Trash {{legalEntityMenuPrefModel.complaintMenuName}}</mat-option>
+                        <mat-option value="2">All {{legalEntityMenuPrefModel.complaintMenuName}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+              </div>
+
+              <mat-form-field>
+                  <input matInput (keyup) = "applyFilter($event.target.value)" 
+                  placeholder="Search" autocomplete="OFF" [(ngModel)] ="searchKey" />
+              </mat-form-field>  
+
+          </mat-card>
+
+          
 
           <!--<div class="clearfix">
               <h3 class="float-left">{{legalEntityMenuPrefModel.complaintMenuName}}  (Status: Open)</h3>
@@ -43,24 +64,23 @@
       <div class="row">
         <div class="col-sm-12">
 
-            <mat-form-field>
-                <input matInput (keyup) = "applyFilter($event.target.value)" placeholder="filter" autocomplete="OFF" />
-            </mat-form-field>
+           
 
           <div class="mat-elevation-z8">
 
               <table mat-table [dataSource]="dataSource" matSort>
 
-                  <ng-container matColumnDef="srNo">
+                  <ng-container matColumnDef="srNo" >
                       <th mat-header-cell *matHeaderCellDef>Sr. No.</th>
-                      <td mat-cell *matCellDef="let i=index">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
+                      <td mat-cell *matCellDef="let i=index; let element;"
+                      [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
                   </ng-container>
     
                   <ng-container matColumnDef="complaintNumber">
                       <th mat-header-cell *matHeaderCellDef>{{legalEntityMenuPrefModel.complaintMenuName}} Number</th>
                       <td mat-cell *matCellDef="let element">
                         <button type="button" class="btn btn-link" 
-                         (click) = "openComplaintDetailsDialog(element.complaintId)">
+                         (click) = "openComplaintDetailsDialog(element.complaintId)" [disabled] = "element.complaintTrash">
                         {{ element.complaintNumber }}
                       </button>
                       </td>
@@ -68,7 +88,7 @@
     
                   <ng-container matColumnDef="qrId">
                       <th mat-header-cell *matHeaderCellDef>QR ID</th>
-                      <td mat-cell *matCellDef="let element">
+                      <td mat-cell *matCellDef="let element" [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
                         <!--<button type="button" class="btn btn-link" (click)="opendQrDetailsDialog(element.qrCodeId)">
                             {{ element.qrId }}
                         </button>-->
@@ -79,12 +99,12 @@
 
                   <ng-container matColumnDef="registerBy">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Registered By</th>
-                    <td mat-cell *matCellDef="let element">{{ element.deviceUserName}} ( {{element.deviceUserMobileNumber}} ) </td>
+                    <td mat-cell *matCellDef="let element" [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">{{ element.deviceUserName}} ( {{element.deviceUserMobileNumber}} ) </td>
                  </ng-container>
                   
                   <ng-container matColumnDef="complaintOpenDateTime">
                       <th mat-header-cell *matHeaderCellDef mat-sort-header>Date-Time</th>
-                      <td mat-cell *matCellDef="let element">{{ element.complaintOpenDateTime | date:'medium'}}</td>
+                      <td mat-cell *matCellDef="let element" [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">{{ element.complaintOpenDateTime | date:'medium'}}</td>
                   </ng-container>
     
                   <ng-container matColumnDef="assginTechnician">
@@ -92,7 +112,7 @@
                       <th mat-header-cell *matHeaderCellDef>Action</th>
                       <td mat-cell *matCellDef="let element">
                         <button type="button" mat-stroked-button color="primary" 
-                         (click)="openAssingTechnicianDialog(element.complaintId)" >
+                         (click)="openAssingTechnicianDialog(element.complaintId)" [disabled]="element.complaintTrash">
                             Assign {{ legalEntityMenuPrefModel.technicianMenuName }}
                         </button>
                       </td>
@@ -101,8 +121,8 @@
                   <ng-container matColumnDef="trashComplaint">
                     <th mat-header-cell *matHeaderCellDef>Trash</th>
                     <td mat-cell *matCellDef="let element">
-                      <button type="button" class="btn btn-default float-right">
-                        <mat-icon svgIcon="deleteIcon" (click)="trashComplaint(element.complaintId)"></mat-icon>
+                      <button type="button" class="btn btn-default float-right" (click)="trashComplaint(element.complaintId)" [disabled]="element.complaintTrash">
+                        <mat-icon svgIcon="deleteIcon"  ></mat-icon>
                       </button>
                     </td>
                   </ng-container>

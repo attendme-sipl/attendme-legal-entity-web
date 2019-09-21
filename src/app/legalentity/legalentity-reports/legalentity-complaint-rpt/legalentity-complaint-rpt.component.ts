@@ -51,7 +51,10 @@ export class LegalentityComplaintRptComponent implements OnInit {
   ];
 
   qrIdCAllomplaintListDetailsObj:IqrIdAllcomplaintDetailsResponse[];
-  
+  searchKey;
+  totalRecordCount: number =0;
+  complaintFilterType: string = "0";
+
   constructor(
     private userModel: LegalentityUser,
     private utilServiceAPI: LegalentityUtilService,
@@ -71,6 +74,7 @@ export class LegalentityComplaintRptComponent implements OnInit {
 
   popQrIdAllComplaintRpt(exportToExcel: boolean):void{
     this.enableProgressBar=true;
+    this.searchKey='';
 
     const qrIdComplaintArrRptReqObj:IComplaintBodyStruct={
       allBranch: false,
@@ -83,7 +87,8 @@ export class LegalentityComplaintRptComponent implements OnInit {
       complaintMenuName: this.complaintMenuName,
       equptMenuName: this.equptMenuName,
       exportToExcel: exportToExcel,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      complaintTrash: false
     };
 
     //console.log(qrIdComplaintArrRptReqObj);
@@ -108,6 +113,8 @@ export class LegalentityComplaintRptComponent implements OnInit {
           this.enableProgressBar=false;
           return false;
         }
+
+        this.totalRecordCount=data.complaintList.length;
 
         this.qrIdCAllomplaintListDetailsObj=data.complaintList;
         this.qrIdAllComptListCount=data.complaintList.length;
@@ -152,6 +159,8 @@ export class LegalentityComplaintRptComponent implements OnInit {
     this.equptMenuName=this.menuModel.equipmentMenuName;
 
     this.utilServiceAPI.setTitle("Legalentity - Closed " + this.complaintMenuName + " Report | Attendme");
+
+    this.complaintFilterType="0";
 
     this.popQrIdAllComplaintRpt(false);
   }

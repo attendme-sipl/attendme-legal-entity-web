@@ -47,6 +47,9 @@ export class LegalentityClosedComptRptComponent implements OnInit {
   ];
 
   closedComplaintListDetailsObj: IclosedComplaintListDetailsResponse[];
+
+  searchKey;
+  totalRecordCount: number=0;
   
   constructor(
     private userModel: LegalentityUser,
@@ -80,6 +83,7 @@ export class LegalentityClosedComptRptComponent implements OnInit {
   popClosedComplaintRpt(exportToExcel: boolean):void{
 
     this.enableProgressBar=true;
+    this.searchKey='';
 
     const closedComplaintsReqObj:IComplaintBodyStruct={
       allBranch: false,
@@ -92,7 +96,8 @@ export class LegalentityClosedComptRptComponent implements OnInit {
       complaintMenuName: this.complaintMenuName,
       equptMenuName: this.equptMenuName,
       exportToExcel: exportToExcel,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      complaintTrash: false
     };
 
     if (exportToExcel){
@@ -116,6 +121,8 @@ export class LegalentityClosedComptRptComponent implements OnInit {
         }
   
         //console.log(data);
+
+        this.totalRecordCount=data.complaintList.length;
   
         this.closedComplaintListDetailsObj=data.complaintList;
   

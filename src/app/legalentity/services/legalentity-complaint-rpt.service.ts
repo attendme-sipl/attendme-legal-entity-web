@@ -76,7 +76,8 @@ export interface IComplaintBodyStruct
   complaintMenuName: string,
   technicianMenuName: string,
   equptMenuName: string,
-  branchMenuName: string
+  branchMenuName: string,
+  complaintTrash: boolean;
 };
 
 export interface IComplaintBodyStructForExcelRpt{

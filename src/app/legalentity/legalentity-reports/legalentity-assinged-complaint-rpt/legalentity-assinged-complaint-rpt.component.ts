@@ -59,6 +59,9 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
   pageSize:number = 10;
   pageSizeOption: number[] = [5,10,25,50,100];
 
+  totalRecordCount: number = 0;
+  searchKey;
+
   constructor(
     //private legalEntityModel: LegalentityLogin,
     private branchModel: LegalentityBranch,
@@ -125,10 +128,12 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
      complaintMenuName: this.complaintMenuName,
      equptMenuName: this.equipmentMenuName,
      exportToExcel: exportToExcel,
-     technicianMenuName: this.technicianMenuName
+     technicianMenuName: this.technicianMenuName,
+     complaintTrash: false
    };
 
    this.enableProgressBar = true;
+   this.searchKey="";
 
    if (exportToExcel){
 
@@ -155,6 +160,8 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
       this.enableProgressBar = false;
       return false;
     }
+
+    this.totalRecordCount=data.complaintList.length;
 
      this.complaintRecordCount = data.complaintList.length;
      this.dataSource = new MatTableDataSource(data.complaintList);

@@ -45,6 +45,8 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
   ];
 
   inprogressComptListObj:IinprogressComptListResponse[];
+  totalRecordCount: number = 0;
+  searchKey;
 
   constructor(
     private userModel: LegalentityUser,
@@ -66,6 +68,7 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
   popInprogressComplaintsRpt(exportToExcel: boolean):void{
     
     this.enableProgressBar=true;
+    this.searchKey='';
 
     const inprogressComplaintRtpReqObj: IComplaintBodyStruct={
       allBranch: false,
@@ -78,7 +81,8 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       complaintMenuName: this.complaintMenuName,
       equptMenuName: this.equptMenuName,
       exportToExcel: exportToExcel,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      complaintTrash: false
     };
 
     if (exportToExcel){
@@ -105,6 +109,8 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       }
 
       this.inprogressComptListObj=data.complaintList;
+
+      this.totalRecordCount=data.complaintList.length;
 
       this.inprogressComptListCount=data.complaintList.length;
       this.dataSource=new MatTableDataSource(data.complaintList);

@@ -20,3 +20,7 @@ table {
   .mat-row > td > button.btn-link {
     color: #bbb8b8;
   }*/
+
+  .row-cell-inactive{
+    color: #bbb8b8;
+  }

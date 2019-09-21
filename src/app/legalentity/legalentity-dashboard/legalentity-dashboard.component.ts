@@ -216,7 +216,7 @@ export class LegalentityDashboardComponent implements OnInit {
 
       this.unreslovedComptDayLimit = parseInt(unresolvedComptDaysData['unresolvedDaysCount']);
 
-      this.dashboardServiceAPI.getBranchUnreslovedComptRpt(this.branchId,this.unreslovedComptDayLimit)
+      this.dashboardServiceAPI.getBranchUnreslovedComptRpt(this.branchId,this.unreslovedComptDayLimit, false)
     .subscribe(data => {
       if (data['errorOccurred']){
         this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);

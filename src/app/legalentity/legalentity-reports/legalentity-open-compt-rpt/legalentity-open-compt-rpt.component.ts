@@ -51,7 +51,8 @@ export interface IopenComplaintListStruct{
    qrId: string,
    qrCodeId: number,
    deviceUserName: string,
-   deviceUserMobileNumber: string
+   deviceUserMobileNumber: string,
+   complaintTrash: boolean
 };
 
 @Component({
@@ -93,6 +94,10 @@ export class LegalentityOpenComptRptComponent implements OnInit {
   branchMenuName: string;
  
   totalRecordCount: number;
+
+  complaintFilterType: string = "0";
+
+  searchKey;
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -120,6 +125,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
   popOpenComplaintGrid(exportToExcel: boolean):void{
 
     this.openComplaintProgressBar=true;
+
+    this.searchKey='';
 
     const openComplaintReqObj: IopenComplaintRtpReqStruct ={
       allBranch: false, //true,
@@ -167,7 +174,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
         return false;
       }
 
-      const openComplaintFilterData = data.complaintList.map((value,index) => value ? {
+      
+      /*const openComplaintFilterData = data.complaintList.map((value,index) => value ? {
         complaintId: value['complaintId'],
         complaintNumber: value['complaintNumber'],
         complaintOpenDateTime: value['complaintOpenDateTime'],
@@ -177,12 +185,34 @@ export class LegalentityOpenComptRptComponent implements OnInit {
         deviceUserMobileNumber: value['deviceUserMobileNumber'],
         complaintTrash: value['complaintTrash']
       } : null)
-      .filter(value => value.complaintTrash == false);
+      .filter(value => value.complaintTrash == false);*/
 
-      this.totalRecordCount=openComplaintFilterData.length;
+      this.openComplaintResponseArray=data.complaintList;
 
-      this.openComplaintRecordCount = openComplaintFilterData.length //data.complaintList.length;
-      this.dataSource = new MatTableDataSource(openComplaintFilterData);
+      let openComplaintResponseArrayUpdated: IopenComplaintListStruct[];
+
+      
+
+      if (this.complaintFilterType == '0'){
+        const filteredComplaintListObj = this.getFilteredComplaintObj(data.complaintList, false);
+        openComplaintResponseArrayUpdated=filteredComplaintListObj;
+      }
+
+      if (this.complaintFilterType == '1'){
+        const filteredComplaintListObj = this.getFilteredComplaintObj(data.complaintList, true);
+        openComplaintResponseArrayUpdated=filteredComplaintListObj;
+      }
+
+      if (this.complaintFilterType == '2'){
+        openComplaintResponseArrayUpdated=data.complaintList;
+      }
+
+    //  this.openComplaintResponseArray=openComplaintFilterData;
+
+      this.totalRecordCount=openComplaintResponseArrayUpdated.length;
+
+      this.openComplaintRecordCount = openComplaintResponseArrayUpdated.length //data.complaintList.length;
+      this.dataSource = new MatTableDataSource(openComplaintResponseArrayUpdated);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
 
@@ -191,7 +221,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       this.sort.direction = sortState.direction;
       this.sort.sortChange.emit(sortState);
 
-      this.openComplaintResponseArray = data.complaintList;
+      //this.openComplaintResponseArray = data.complaintList;
 
       this.openComplaintProgressBar=false;
  
@@ -203,6 +233,22 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     }
 
     
+  }
+
+  getFilteredComplaintObj(complaintData: any, trashComplaint: boolean): IopenComplaintListStruct[]{
+    const openComplaintFilterData = complaintData.map((value,index) => value ? {
+      complaintId: value['complaintId'],
+      complaintNumber: value['complaintNumber'],
+      complaintOpenDateTime: value['complaintOpenDateTime'],
+      qrId: value['qrId'],
+      qrCodeId: value['qrCodeId'],
+      deviceUserName: value['deviceUserName'],
+      deviceUserMobileNumber: value['deviceUserMobileNumber'],
+      complaintTrash: value['complaintTrash']
+    } : null)
+    .filter(value => value.complaintTrash == trashComplaint);
+    
+    return openComplaintFilterData;
   }
 
   openComplaintDetailsDialog(complaintId: number):void{
@@ -364,9 +410,44 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
     this.utilService.setTitle("Legalentity - Open " + this.legalEntityMenuPrefModel.complaintMenuName + " Report | Attendme");
 
+    this.complaintFilterType="0";
+
     this.popOpenComplaintGrid(false);
       
     
+  }
+
+  onFilterItemChange(){
+    
+    let filteredObj: IopenComplaintListStruct[];
+
+  
+      if (this.complaintFilterType == '0'){
+        const filteredComplaintListObj = this.getFilteredComplaintObj(this.openComplaintResponseArray, false);
+        filteredObj=filteredComplaintListObj;
+      }
+
+      if (this.complaintFilterType == '1'){
+        const filteredComplaintListObj = this.getFilteredComplaintObj(this.openComplaintResponseArray, true);
+        filteredObj=filteredComplaintListObj;
+      }
+
+      if (this.complaintFilterType == '2'){
+        filteredObj=this.openComplaintResponseArray;
+      }
+
+      this.totalRecordCount=filteredObj.length;
+
+      this.openComplaintRecordCount = filteredObj.length //data.complaintList.length;
+      this.dataSource = new MatTableDataSource(filteredObj);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+
+      const sortState: Sort = {active: 'complaintOpenDateTime', direction: 'desc'};
+      this.sort.active = sortState.active;
+      this.sort.direction = sortState.direction;
+      this.sort.sortChange.emit(sortState);
+
   }
 
  
