@@ -108,7 +108,17 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
         return false;  
       }
 
-      this.inprogressComptListObj=data.complaintList;
+      this.inprogressComptListObj=data.complaintList.map((value,index) => value ? {
+        complaintId: value['complaintId'],
+        complaintNumber: value['complaintNumber'],
+        qrCodeId: value['qrCodeId'],
+        qrId: value['qrId'],
+        regsiteredByName: value['regsiteredByName'],
+        registeredByMobileNumber: value['registeredByMobileNumber'],
+        inprogressDateTime: value['inprogressDateTime'],
+        complaintTrash: value['complaintTrash']
+      } : null)
+      .filter(value => value.complaintTrash == false);
 
       this.totalRecordCount=data.complaintList.length;
 

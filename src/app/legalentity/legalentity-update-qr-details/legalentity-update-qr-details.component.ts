@@ -67,6 +67,8 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
   expandContactSection: boolean;
   expandAttachDocSection: boolean;
 
+  panelOpenState: boolean;
+
   constructor(
     private router: Router,
     private utilServiceAPI: LegalentityUtilService,

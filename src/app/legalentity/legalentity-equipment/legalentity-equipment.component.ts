@@ -133,6 +133,8 @@ export class LegalentityEquipmentComponent implements OnInit {
 
   documentRptResponseObj: IlegalEntityDocumentRptResponse;
   documentRptDetailsObj: IlegalEntityDocumentRptDetails[];
+
+  panelOpenState: boolean;
   
   constructor(
     private utilService: LegalentityUtilService,

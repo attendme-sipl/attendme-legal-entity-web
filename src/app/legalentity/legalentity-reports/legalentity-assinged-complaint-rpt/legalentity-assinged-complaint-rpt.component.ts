@@ -163,8 +163,23 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
     this.totalRecordCount=data.complaintList.length;
 
-     this.complaintRecordCount = data.complaintList.length;
-     this.dataSource = new MatTableDataSource(data.complaintList);
+    const assignedComplaintFiltered = data.complaintList.map((value,index) => value ? {
+      complaintId: value['complaintId'],
+      complaintNumber: value['complaintNumber'],
+      complaintOpenDateTime: value['complaintOpenDateTime'],
+      complaintAssignedDateTime: value['complaintAssignedDateTime'],
+      assingedToTechncianName: value['assingedToTechncianName'],
+      equipmentName: value['equipmentName'],
+      equipmentModel: value['equipmentModel'],
+      equipmentSerial: value['equipmentSerial'],
+      qrId: value['qrId'],
+      qrCodeId: value['qrCodeId'],
+      complaintTrash: value['complaintTrash']
+    } : null)
+    .filter(value => value.complaintTrash == false);
+
+     this.complaintRecordCount = assignedComplaintFiltered.length;
+     this.dataSource = new MatTableDataSource(assignedComplaintFiltered);
      this.dataSource.paginator = this.paginator;
      this.dataSource.sort = this.sort;
 
@@ -173,7 +188,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
      this.sort.direction = sortState.direction;
      this.sort.sortChange.emit(sortState);
  
-     this.complaintResponseData = data.complaintList;
+     this.complaintResponseData = assignedComplaintFiltered;
     
      this.enableProgressBar = false;
     

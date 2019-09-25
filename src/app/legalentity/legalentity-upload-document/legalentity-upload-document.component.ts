@@ -71,7 +71,7 @@ export class LegalentityUploadDocumentComponent implements OnInit {
 
       this.documentServiceAPI.uploadLegalEntityDocument(documentUploadObj)
       .subscribe(data => {
-        console.log(data);
+        //console.log(data);
         if (data['errorOccured']){
           this.toastService.error("Something went wrong while uploading document","");
           this.enableProgressBar=false;
@@ -83,7 +83,7 @@ export class LegalentityUploadDocumentComponent implements OnInit {
         this.toastService.success("Document upload successful");
         this.resetForm();
       }, error => {
-        console.log(error);
+        //console.log(error);
         this.toastService.error("Something went wrong while uploading document","");
         this.disableSubmitButton=false;
         this.enableProgressBar=false;

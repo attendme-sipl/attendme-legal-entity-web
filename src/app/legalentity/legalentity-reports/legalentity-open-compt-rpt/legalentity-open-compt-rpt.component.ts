@@ -41,7 +41,8 @@ export interface IopenComplaintRtpReqStruct{
    complaintMenuName: string,
    technicianMenuName: string,
    equptMenuName: string,
-   branchMenuName: string
+   branchMenuName: string,
+   complaintTrash: boolean
 };
 
 export interface IopenComplaintListStruct{
@@ -139,7 +140,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       complaintMenuName: this.complaintMenuName,
       equptMenuName: this.equptMenuName,
       exportToExcel: exportToExcel,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      complaintTrash: false
     };
 
     /*this.complaintRptServiceAPI.getOpenComplaintRtpToExcel(openComplaintReqObj)

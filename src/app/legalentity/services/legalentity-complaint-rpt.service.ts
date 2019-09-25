@@ -77,7 +77,7 @@ export interface IComplaintBodyStruct
   technicianMenuName: string,
   equptMenuName: string,
   branchMenuName: string,
-  complaintTrash: boolean;
+  complaintTrash: boolean
 };
 
 export interface IComplaintBodyStructForExcelRpt{
@@ -114,7 +114,8 @@ export interface IAssingnComplaintResponse {
      equipmentModel: string,
      equipmentSerial: string,
      qrId: string,
-     qrCodeId: number
+     qrCodeId: number,
+     complaintTrash: boolean
   }]
 };
 
@@ -136,7 +137,8 @@ export interface IinprogressComptRptResponse{
      qrId: string,
      regsiteredByName: string,
      registeredByMobileNumber: string,
-     inprogressDateTime: string
+     inprogressDateTime: string,
+     complaintTrash: boolean
   }]
 };
 
@@ -147,7 +149,8 @@ export interface IinprogressComptListResponse{
      qrId: string,
      regsiteredByName: string,
      registeredByMobileNumber: string,
-     inprogressDateTime: string
+     inprogressDateTime: string,
+     complaintTrash: boolean
 };
 
 export interface IclosedComplaintListRptResponse{
