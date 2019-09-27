@@ -53,7 +53,8 @@ export class LegalentityComplaintRptComponent implements OnInit {
   qrIdCAllomplaintListDetailsObj:IqrIdAllcomplaintDetailsResponse[];
   searchKey;
   totalRecordCount: number =0;
-  complaintFilterType: string = "0";
+  complaintFilterType;
+  
 
   constructor(
     private userModel: LegalentityUser,
@@ -107,19 +108,38 @@ export class LegalentityComplaintRptComponent implements OnInit {
     else{
       this.complaintRtpServiceAPI.getQrIdAllComplaintsRpt(qrIdComplaintArrRptReqObj)
     .subscribe((data: IqrIdAllcomplaintRptResponse) => {
-      //console.log(data);
+    
         if (data.errorOccurred){
           this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details report");
           this.enableProgressBar=false;
           return false;
         }
 
-        this.totalRecordCount=data.complaintList.length;
-
         this.qrIdCAllomplaintListDetailsObj=data.complaintList;
-        this.qrIdAllComptListCount=data.complaintList.length;
+        let complaintListObj: IqrIdAllcomplaintDetailsResponse[];
+        
 
-        this.dataSource=new MatTableDataSource(data.complaintList);
+        if (this.complaintFilterType == '0'){
+          const filteredComplaintListObj = this.getFilteredComplaintObj(data.complaintList, false);
+          complaintListObj=filteredComplaintListObj;
+        }
+
+        if (this.complaintFilterType == '1'){
+          const filteredComplaintListObj = this.getFilteredComplaintObj(data.complaintList, true);
+          complaintListObj=filteredComplaintListObj;
+        }
+
+        if (this.complaintFilterType == '2'){
+          
+          complaintListObj = data.complaintList;
+        }
+
+        this.totalRecordCount=complaintListObj.length;
+
+        this.qrIdCAllomplaintListDetailsObj=complaintListObj;
+        this.qrIdAllComptListCount=complaintListObj.length;
+
+        this.dataSource=new MatTableDataSource(complaintListObj);
         this.dataSource.paginator=this.paginator;
         this.dataSource.sort=this.sort
 
@@ -158,7 +178,7 @@ export class LegalentityComplaintRptComponent implements OnInit {
     this.branchMenuName=this.menuModel.branchMenuName;
     this.equptMenuName=this.menuModel.equipmentMenuName;
 
-    this.utilServiceAPI.setTitle("Legalentity - Closed " + this.complaintMenuName + " Report | Attendme");
+    this.utilServiceAPI.setTitle("Legalentity - " + this.complaintMenuName + " Report | Attendme");
 
     this.complaintFilterType="0";
 
@@ -196,6 +216,71 @@ export class LegalentityComplaintRptComponent implements OnInit {
    });
 
   }*/
+
+  onFilterItemChange(){
+
+    let complaintListObj: IqrIdAllcomplaintDetailsResponse[];
+       
+
+        if (this.complaintFilterType == '0'){
+          const filteredComplaintListObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, false);
+          complaintListObj=filteredComplaintListObj;
+        }
+
+        if (this.complaintFilterType == '1'){
+   
+          const filteredComplaintListObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, true);
+         
+          complaintListObj=filteredComplaintListObj;
+        }
+
+        if (this.complaintFilterType == '2'){
+          
+          complaintListObj = this.qrIdCAllomplaintListDetailsObj;
+        }
+
+        this.totalRecordCount=complaintListObj.length;
+
+        this.qrIdCAllomplaintListDetailsObj=complaintListObj;
+        this.qrIdAllComptListCount=complaintListObj.length;
+
+        this.dataSource=new MatTableDataSource(complaintListObj);
+        this.dataSource.paginator=this.paginator;
+        this.dataSource.sort=this.sort
+
+        const sortState: Sort = {active: 'openDateTime', direction: 'desc'};
+        this.sort.active = sortState.active;
+        this.sort.direction = sortState.direction;
+        this.sort.sortChange.emit(sortState);
+
+  }
   
+  getFilteredComplaintObj(complaintData: any, trashComplaint: boolean):IqrIdAllcomplaintDetailsResponse[]{
+
+    const allComplaintsFilterData = complaintData.map((value,index) => value ? {
+      complaintId: value['complaintId'],
+      complaintNumber: value['complaintNumber'],
+      qrCodeId: value['qrCodeId'],
+      qrId: value['qrId'],
+      regsiteredByName: value['regsiteredByName'],
+      registeredByMobileNumber: value['registeredByMobileNumber'],
+      assignedTechnicianName: value['assignedTechnicianName'],
+      asignedTechnicianMobile: value['asignedTechnicianMobile'], 
+      openDateTime: value['openDateTime'],
+      assignedDateTime: value['assignedDateTime'],
+      inProgressDateTime: value['inProgressDateTime'],
+      closedDateTime: value['closedDateTime'],
+      actionTaken: value['actionTaken'],
+      failureReason: value['failureReason'],
+      currentComplaintStatus: value['currentComplaintStatus'],
+      complaintTrash: value['complaintTrash']
+    } : null)
+    .filter(value => value.complaintTrash == trashComplaint);
+
+    console.log(allComplaintsFilterData);
+
+    return allComplaintsFilterData;
+
+  }
 
 }

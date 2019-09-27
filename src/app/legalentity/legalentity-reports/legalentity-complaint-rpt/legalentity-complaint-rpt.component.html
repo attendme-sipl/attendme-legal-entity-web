@@ -33,7 +33,7 @@
                       <div class="col-auto">
                           <mat-form-field>
                               <mat-label>Filter {{complaintMenuName}}</mat-label>
-                              <mat-select [(value)]="complaintFilterType" >
+                              <mat-select [(value)]="complaintFilterType" (selectionChange)="onFilterItemChange()">
                                 <mat-option value="0">Active {{complaintMenuName}}</mat-option>
                                 <mat-option value="1">Trash {{complaintMenuName}}</mat-option>
                                 <mat-option value="2">All {{complaintMenuName}}</mat-option>

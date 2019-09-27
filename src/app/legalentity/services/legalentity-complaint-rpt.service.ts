@@ -197,7 +197,8 @@ export interface IqrIdAllcomplaintRptResponse{
      closedDateTime: string,
      actionTaken: string,
      failureReason: string,
-     currentComplaintStatus: string
+     currentComplaintStatus: string,
+     complaintTrash: boolean
   }]
 };
 
@@ -216,7 +217,8 @@ export interface IqrIdAllcomplaintDetailsResponse{
   closedDateTime: string,
   actionTaken: string,
   failureReason: string,
-  currentComplaintStatus: string
+  currentComplaintStatus: string,
+  complaintTrash: boolean
 };
 
 @Injectable({
