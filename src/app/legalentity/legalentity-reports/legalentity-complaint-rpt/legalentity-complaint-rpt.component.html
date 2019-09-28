@@ -64,68 +64,101 @@
 
                             <ng-container matColumnDef="srNo">
                               <th mat-header-cell *matHeaderCellDef>Sr. No.</th>
-                              <td mat-cell *matCellDef="let i=index">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
+                              <td mat-cell *matCellDef="let i=index; let element;" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{ (paginator.pageSize * paginator.pageIndex) + i+1 }}
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="complaintNumber">
                               <th mat-header-cell *matHeaderCellDef>{{complaintMenuName}} Number</th>
                               <td mat-cell *matCellDef="let element">
-                                {{element.complaintNumber}}
-                                  <!--<button type="button" class="btn btn-link" 
-                                  (click) = "openComplaintDetailsDialog(element.complaintId)">
-                                 {{ element.complaintNumber }}
-                               </button>-->
+                               
+                                  <button type="button" class="btn btn-link" [disabled]="element.complaintTrash"
+                                   (click) = "openComplaintDetailsDialog(element.complaintId)">
+                                      {{ element.complaintNumber }}
+                                  </button>
                               </td>
                             </ng-container>
               
                             <ng-container matColumnDef="qrId">
                               <th mat-header-cell *matHeaderCellDef>QR ID</th>
-                              <td mat-cell *matCellDef="let element">{{element.qrId}}</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.qrId}}
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="regsiteredByName">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>{{complaintMenuName}} Registered By</th>
-                              <td mat-cell *matCellDef="let element">{{element.registeredByName}} ({{element.registeredByMobileNumber}})</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.registeredByName}} ({{element.registeredByMobileNumber}})
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="openDateTime">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>{{complaintMenuName}} Open Date</th>
-                              <td mat-cell *matCellDef="let element">{{element.openDateTime |  date:'medium'}}</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.openDateTime |  date:'medium'}}
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="assignedDateTime">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>{{complaintMenuName}} Assigned Date</th>
-                              <td mat-cell *matCellDef="let element">{{element.assignedDateTime |  date:'medium'}}</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.assignedDateTime |  date:'medium'}}
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="inProgressDateTime">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>{{complaintMenuName}} In Progress Date</th>
-                              <td mat-cell *matCellDef="let element">{{element.inProgressDateTime |  date:'medium'}}</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.inProgressDateTime |  date:'medium'}}
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="closedDateTime">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>{{complaintMenuName}} Closed Date</th>
-                              <td mat-cell *matCellDef="let element">{{element.closedDateTime |  date:'medium'}}</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.closedDateTime |  date:'medium'}}
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="assignedTechnicianName">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>Assigned {{technicianMenuName}}</th>
-                              <td mat-cell *matCellDef="let element">{{element.assignedTechnicianName != null ? element.assignedTechnicianName: '' }} {{element.assignedTechnicianMobile != null? "(" + element.assignedTechnicianMobile + ")" : ''}}</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.assignedTechnicianName != null ? element.assignedTechnicianName: '' }} {{element.assignedTechnicianMobile != null? "(" + element.assignedTechnicianMobile + ")" : ''}}
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="actionTaken">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>Action Taken</th>
-                              <td mat-cell *matCellDef="let element">{{element.actionTaken }}</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.actionTaken }}
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="failureReason">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>Failure Reason</th>
-                              <td mat-cell *matCellDef="let element">{{element.failureReason }}</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.failureReason }}
+                              </td>
                             </ng-container>
               
                             <ng-container matColumnDef="currentComplaintStatus">
                               <th mat-header-cell *matHeaderCellDef mat-sort-header>Current {{complaintMenuName}} Status</th>
-                              <td mat-cell *matCellDef="let element">{{element.currentComplaintStatus }}</td>
+                              <td mat-cell *matCellDef="let element" 
+                              [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                                {{element.currentComplaintStatus }}
+                              </td>
                             </ng-container>
               
                             <tr mat-header-row *matHeaderRowDef="displayedColumns;"></tr>

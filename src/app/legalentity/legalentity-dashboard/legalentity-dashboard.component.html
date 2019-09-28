@@ -63,6 +63,14 @@
                         <a style="text-align: left" routerLink="/legalentity/portal/rpt/closed">{{complaintConciseRptModel.closedComplaintCount == null ? 0 : complaintConciseRptModel.closedComplaintCount}}</a>
                     </mat-list-item>
 
+                    <mat-divider></mat-divider>
+
+                    <mat-list-item >
+                        <p style="margin-top: 1rem;" >Trash</p>
+                        <span style="flex: 1 1 auto;"></span>
+                        <a style="text-align: left" routerLink="/legalentity/portal/rpt/trash/complaint">{{complaintConciseRptModel.trashComplaint == null ? 0 : complaintConciseRptModel.trashComplaint}}</a>
+                    </mat-list-item>
+
                     <!--<mat-divider></mat-divider>
 
                     <mat-list-item > 

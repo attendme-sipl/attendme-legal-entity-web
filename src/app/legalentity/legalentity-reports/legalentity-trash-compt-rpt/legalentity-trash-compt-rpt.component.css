@@ -1,28 +1,14 @@
-.menu-toolbar-spacer{
-    flex: 1 1 auto;
-}
-
 table {
     width: 100%;
+    text-align: left;
   }
+  
 
   .mat-form-field {
     font-size: 14px;
     width: 100%;
   }
 
-
   th.mat-sort-header-sorted {
     color: black;
   }
-
-  td.mat-cell{
-    padding: 3px;
-  }
-
-  .row-cell-inactive{
-    color: #bbb8b8;
-  }
-
-
- 

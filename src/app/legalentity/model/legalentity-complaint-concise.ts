@@ -5,5 +5,6 @@ export class LegalentityComplaintConcise {
     assingedComplaintCount: number;
     inprogressComplaintCount: number;
     closedComplaintCount: number;
-    leadTimeComplaintCount: number; 
+    leadTimeComplaintCount: number;
+    trashComplaint: number; 
 }

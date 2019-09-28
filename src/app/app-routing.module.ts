@@ -29,6 +29,7 @@ import {LegalentityUpdateQrDetailsComponent} from './legalentity/legalentity-upd
 import {LegalentityBranchQrDetailsRptComponent} from './legalentity/legalentity-reports/legalentity-branch-qr-details-rpt/legalentity-branch-qr-details-rpt.component';
 import { LegalentityDocumentRptComponent } from './legalentity/legalentity-reports/legalentity-document-rpt/legalentity-document-rpt.component';
 import { LegalentityUploadDocumentComponent } from './legalentity/legalentity-upload-document/legalentity-upload-document.component';
+import {LegalentityTrashComptRptComponent} from './legalentity/legalentity-reports/legalentity-trash-compt-rpt/legalentity-trash-compt-rpt.component';
 
 const routes: Routes = [
   {
@@ -46,6 +47,7 @@ const routes: Routes = [
         {path:"rpt/open", component: LegalentityOpenComptRptComponent},
         {path:"rpt/assigned", component: LegalentityAssingedComplaintRptComponent},
         {path:"rpt/inprogress", component: LegalentityInprogressComptRptComponent},
+        {path: "rpt/trash/complaint", component: LegalentityTrashComptRptComponent},
         {path:"rpt/branch/qr-details/:branchId", component: LegalentityBranchQrDetailsRptComponent},
         {path:"rpt/document", component: LegalentityDocumentRptComponent},
         {path:"upload/document", component: LegalentityUploadDocumentComponent},

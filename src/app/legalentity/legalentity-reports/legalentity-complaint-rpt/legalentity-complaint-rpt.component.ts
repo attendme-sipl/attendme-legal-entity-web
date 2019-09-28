@@ -5,10 +5,11 @@ import { LegalentityUtilService } from '../../services/legalentity-util.service'
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { DomSanitizer } from '@angular/platform-browser';
-import { LegalentityComplaintRptService, IComplaintBodyStruct, IqrIdAllcomplaintDetailsResponse, IqrIdAllcomplaintRptResponse, IComplaintBodyStructForExcelRpt } from '../../services/legalentity-complaint-rpt.service';
+import { LegalentityComplaintRptService, IComplaintBodyStruct, IqrIdAllcomplaintDetailsResponse, IqrIdAllcomplaintRptResponse, IComplaintBodyStructForExcelRpt, IcomplaintIndivReqStruct } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 
 @Component({
   selector: 'app-legalentity-complaint-rpt',
@@ -115,31 +116,28 @@ export class LegalentityComplaintRptComponent implements OnInit {
           return false;
         }
 
+    
+       
+
         this.qrIdCAllomplaintListDetailsObj=data.complaintList;
-        let complaintListObj: IqrIdAllcomplaintDetailsResponse[];
-        
+
+        let filteredComplaintObj: IqrIdAllcomplaintDetailsResponse[];
 
         if (this.complaintFilterType == '0'){
-          const filteredComplaintListObj = this.getFilteredComplaintObj(data.complaintList, false);
-          complaintListObj=filteredComplaintListObj;
+          filteredComplaintObj=this.getFilteredComplaintObj(data.complaintList, false);
         }
 
         if (this.complaintFilterType == '1'){
-          const filteredComplaintListObj = this.getFilteredComplaintObj(data.complaintList, true);
-          complaintListObj=filteredComplaintListObj;
+          filteredComplaintObj=this.getFilteredComplaintObj(data.complaintList, true); 
         }
 
         if (this.complaintFilterType == '2'){
-          
-          complaintListObj = data.complaintList;
+          filteredComplaintObj = data.complaintList;
         }
 
-        this.totalRecordCount=complaintListObj.length;
-
-        this.qrIdCAllomplaintListDetailsObj=complaintListObj;
-        this.qrIdAllComptListCount=complaintListObj.length;
-
-        this.dataSource=new MatTableDataSource(complaintListObj);
+        this.totalRecordCount=filteredComplaintObj.length;
+        
+        this.dataSource=new MatTableDataSource(filteredComplaintObj);
         this.dataSource.paginator=this.paginator;
         this.dataSource.sort=this.sort
 
@@ -152,13 +150,77 @@ export class LegalentityComplaintRptComponent implements OnInit {
     }, error => {
         this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details report");
         this.enableProgressBar=false;
-    })
+    });
     }
 
     
   }
 
+  onFilterItemChange(){
+    
+    let filteredComplaintObj: IqrIdAllcomplaintDetailsResponse[];
 
+    if (this.complaintFilterType == 0){
+      filteredComplaintObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, false);
+    }
+
+    if (this.complaintFilterType == 1){
+      filteredComplaintObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, true);
+    }
+
+    if (this.complaintFilterType == 2){
+      filteredComplaintObj = this.qrIdCAllomplaintListDetailsObj;
+    }
+
+    this.totalRecordCount=filteredComplaintObj.length;
+        
+    this.dataSource=new MatTableDataSource(filteredComplaintObj);
+    this.dataSource.paginator=this.paginator;
+    this.dataSource.sort=this.sort
+
+    const sortState: Sort = {active: 'openDateTime', direction: 'desc'};
+    this.sort.active = sortState.active;
+    this.sort.direction = sortState.direction;
+    this.sort.sortChange.emit(sortState);
+
+  }
+
+getFilteredComplaintObj(allComplaintsObj: IqrIdAllcomplaintDetailsResponse[], complaintTrash: boolean){
+
+  const allComplaintsFilterObj = allComplaintsObj.map((value,index) => value ? {
+    complaintId: value['complaintId'],
+    complaintNumber: value['complaintNumber'],
+    qrCodeId: value['qrCodeId'],
+    qrId: value['qrId'],
+    regsiteredByName: value['regsiteredByName'],
+    registeredByMobileNumber: value['registeredByMobileNumber'],
+    assignedTechnicianName: value['asignedTechnicianMobile'],
+    asignedTechnicianMobile: value['assignedTechnicianName'], 
+    openDateTime: value['openDateTime'],
+    assignedDateTime: value['assignedDateTime'],
+    inProgressDateTime: value['inProgressDateTime'],
+    closedDateTime: value['closedDateTime'],
+    actionTaken: value['actionTaken'],
+    failureReason: value['failureReason'],
+    currentComplaintStatus: value['currentComplaintStatus'],
+    complaintTrash: value['complaintTrash']
+  } : null)
+  .filter(value => value.complaintTrash == complaintTrash);
+
+  return allComplaintsFilterObj;
+}
+
+openComplaintDetailsDialog(complaintId: number):void{
+
+  const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+    complaintId: complaintId
+  };
+  
+  const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
+    data: IndivComplaintReqObj
+  });
+
+}
 
   ngOnInit() {
 
@@ -217,70 +279,6 @@ export class LegalentityComplaintRptComponent implements OnInit {
 
   }*/
 
-  onFilterItemChange(){
-
-    let complaintListObj: IqrIdAllcomplaintDetailsResponse[];
-       
-
-        if (this.complaintFilterType == '0'){
-          const filteredComplaintListObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, false);
-          complaintListObj=filteredComplaintListObj;
-        }
-
-        if (this.complaintFilterType == '1'){
-   
-          const filteredComplaintListObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, true);
-         
-          complaintListObj=filteredComplaintListObj;
-        }
-
-        if (this.complaintFilterType == '2'){
-          
-          complaintListObj = this.qrIdCAllomplaintListDetailsObj;
-        }
-
-        this.totalRecordCount=complaintListObj.length;
-
-        this.qrIdCAllomplaintListDetailsObj=complaintListObj;
-        this.qrIdAllComptListCount=complaintListObj.length;
-
-        this.dataSource=new MatTableDataSource(complaintListObj);
-        this.dataSource.paginator=this.paginator;
-        this.dataSource.sort=this.sort
-
-        const sortState: Sort = {active: 'openDateTime', direction: 'desc'};
-        this.sort.active = sortState.active;
-        this.sort.direction = sortState.direction;
-        this.sort.sortChange.emit(sortState);
-
-  }
   
-  getFilteredComplaintObj(complaintData: any, trashComplaint: boolean):IqrIdAllcomplaintDetailsResponse[]{
-
-    const allComplaintsFilterData = complaintData.map((value,index) => value ? {
-      complaintId: value['complaintId'],
-      complaintNumber: value['complaintNumber'],
-      qrCodeId: value['qrCodeId'],
-      qrId: value['qrId'],
-      regsiteredByName: value['regsiteredByName'],
-      registeredByMobileNumber: value['registeredByMobileNumber'],
-      assignedTechnicianName: value['assignedTechnicianName'],
-      asignedTechnicianMobile: value['asignedTechnicianMobile'], 
-      openDateTime: value['openDateTime'],
-      assignedDateTime: value['assignedDateTime'],
-      inProgressDateTime: value['inProgressDateTime'],
-      closedDateTime: value['closedDateTime'],
-      actionTaken: value['actionTaken'],
-      failureReason: value['failureReason'],
-      currentComplaintStatus: value['currentComplaintStatus'],
-      complaintTrash: value['complaintTrash']
-    } : null)
-    .filter(value => value.complaintTrash == trashComplaint);
-
-    console.log(allComplaintsFilterData);
-
-    return allComplaintsFilterData;
-
-  }
 
 }

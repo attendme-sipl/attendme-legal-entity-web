@@ -80,6 +80,8 @@ import { LegalentityUploadDocumentComponent } from './legalentity/legalentity-up
 import { LegalentityDocumentRptComponent } from './legalentity/legalentity-reports/legalentity-document-rpt/legalentity-document-rpt.component';
 import {LegalentityDocumentServiceService} from './legalentity/services/legalentity-document-service.service';
 import {MatExpansionModule} from '@angular/material/expansion';
+import { LegalentityTrashComptRptComponent } from './legalentity/legalentity-reports/legalentity-trash-compt-rpt/legalentity-trash-compt-rpt.component';
+
 
 @NgModule({
   declarations: [
@@ -115,7 +117,8 @@ import {MatExpansionModule} from '@angular/material/expansion';
     LegalentityUpdateQrDetailsComponent,
     LegalentityBranchQrDetailsRptComponent,
     LegalentityUploadDocumentComponent,
-    LegalentityDocumentRptComponent
+    LegalentityDocumentRptComponent,
+    LegalentityTrashComptRptComponent
   ],
   imports: [
     BrowserModule,

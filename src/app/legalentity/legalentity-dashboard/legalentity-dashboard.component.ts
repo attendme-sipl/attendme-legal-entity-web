@@ -139,6 +139,7 @@ export class LegalentityDashboardComponent implements OnInit {
 
     this.dashboardServiceAPI.getComplaintConciseRtp(complaintConciseReqObj)
     .subscribe((data: LegalentityComplaintConcise) => {
+      //console.log(data);
       if (data.errorOccured){
         
         this.enableComptConciseRptProgressBar=false;
