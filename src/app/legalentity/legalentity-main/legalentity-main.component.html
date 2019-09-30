@@ -37,15 +37,15 @@
         <mat-divider style="border-top-color: #ffffff1f;"></mat-divider>
 
         <mat-list>
-            <mat-list-item>
-                    <a class="nav-link" *ngIf="headOffice" routerLink="rpt/contacts" style="width: 100%;">
+            <mat-list-item *ngIf="headOffice">
+                    <a class="nav-link"  routerLink="rpt/contacts" style="width: 100%;">
                       <mat-icon svgIcon="contact-icon"></mat-icon>
                       Contacts
                     </a>
             </mat-list-item>
 
-            <mat-list-item>
-                <a class="nav-link" *ngIf="headOffice" routerLink="assign/qr-branch" style="width: 100%;">
+            <mat-list-item *ngIf="headOffice">
+                <a class="nav-link" routerLink="assign/qr-branch" style="width: 100%;">
                   <mat-icon svgIcon="input-icon"></mat-icon>
                   Allot QR IDs
                 </a>

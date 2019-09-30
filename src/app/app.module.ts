@@ -81,7 +81,8 @@ import { LegalentityDocumentRptComponent } from './legalentity/legalentity-repor
 import {LegalentityDocumentServiceService} from './legalentity/services/legalentity-document-service.service';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { LegalentityTrashComptRptComponent } from './legalentity/legalentity-reports/legalentity-trash-compt-rpt/legalentity-trash-compt-rpt.component';
-
+import {MatTabsModule} from '@angular/material/tabs';
+import { LegalentityBranchComptConciseRptComponent } from './legalentity/legalentity-reports/legalentity-branch-compt-concise-rpt/legalentity-branch-compt-concise-rpt.component';
 
 @NgModule({
   declarations: [
@@ -118,7 +119,8 @@ import { LegalentityTrashComptRptComponent } from './legalentity/legalentity-rep
     LegalentityBranchQrDetailsRptComponent,
     LegalentityUploadDocumentComponent,
     LegalentityDocumentRptComponent,
-    LegalentityTrashComptRptComponent
+    LegalentityTrashComptRptComponent,
+    LegalentityBranchComptConciseRptComponent
   ],
   imports: [
     BrowserModule,
@@ -155,7 +157,8 @@ import { LegalentityTrashComptRptComponent } from './legalentity/legalentity-rep
     MatDialogModule,
     MatProgressSpinnerModule,
     MatAutocompleteModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatTabsModule
   ],
   providers: [
     LegalentityUser,

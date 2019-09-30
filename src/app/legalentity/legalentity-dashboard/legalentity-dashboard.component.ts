@@ -40,6 +40,8 @@ export class LegalentityDashboardComponent implements OnInit {
 
   enableBranchQrIdRtpProgressBar: boolean;
 
+  branchName: string;
+
   dataSource;
   allottedQrIdBranchListCount: number;
   pageSize: number = 10;
@@ -255,9 +257,12 @@ export class LegalentityDashboardComponent implements OnInit {
       this.userCurrentLoginDateTime = this.legalEntityUserModel.legalEntityUserDetails.currentLoginDateTime;
 
       this.headOffice=this.legalEntityUserModel.legalEntityBranchDetails.branchHeadOffice;
+
+      this.branchName=this.legalEntityUserModel.legalEntityBranchDetails.branchName;
     }
     else{
       this.router.navigate(['legalentity','login']);
+      return false;
     }
 
     this.complaintLeadTimeDays=7;

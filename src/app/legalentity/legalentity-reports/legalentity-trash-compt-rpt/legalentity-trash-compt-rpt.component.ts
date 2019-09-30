@@ -9,6 +9,8 @@ import { Router } from '@angular/router';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { IopenComplaintListStruct } from '../legalentity-open-compt-rpt/legalentity-open-compt-rpt.component';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 @Component({
   selector: 'app-legalentity-trash-compt-rpt',
@@ -80,48 +82,63 @@ export class LegalentityTrashComptRptComponent implements OnInit {
        toDate: null
      };
 
-     this.complaintServiceAPI.getOpenComplaintRtp(complaintReqObj)
+     if (exportToExcel){
+      let fileName: string = "Trash-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+      this.complaintServiceAPI.getOpenComplaintRtpToExcel(complaintReqObj)
+      .subscribe(data => {
+        saveAs(data, fileName);
+        this.trashComplaintProgressBar=false;
+      }, error => {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.trashComplaintProgressBar=false;
+      });
+     }
+     else{
+      this.complaintServiceAPI.getOpenComplaintRtp(complaintReqObj)
      
-     .subscribe((data: IopenComplaintRptResponseStruct ) => {
-
-     // console.log(data.complaintList);
-
-       if (data.errorOccured){
-         this.toastService.error("Something went wrong while loading trash " + this.complaintMenuName);
-         this.trashComplaintProgressBar=false;
-         return false;
-       }
-
-      const trashComplaintFilteredObj = data.complaintList.map((value,index) => value ? {
-        complaintId: value['complaintId'],
-        complaintNumber: value['complaintNumber'],
-        complaintOpenDateTime: value['complaintOpenDateTime'],
-        qrId: value['qrId'],
-        qrCodeId: value['qrCodeId'],
-        deviceUserName: value['deviceUserName'],
-        deviceUserMobileNumber: value['deviceUserMobileNumber'],
-        complaintTrash: value['complaintTrash']
-      } : null)
-      .filter(value => value.complaintTrash == true); 
-
-      this.totalRecordCount=trashComplaintFilteredObj.length;
-
-      this.trashComplaintCount=trashComplaintFilteredObj.length;
-
-      this.dataSource = new MatTableDataSource(trashComplaintFilteredObj);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;  
-    
-      const sortState: Sort = {active: 'complaintOpenDateTime', direction: 'desc'};
-      this.sort.active = sortState.active;
-      this.sort.direction = sortState.direction;
-      this.sort.sortChange.emit(sortState);
-
+      .subscribe((data: IopenComplaintRptResponseStruct ) => {
+ 
+      // console.log(data.complaintList);
+ 
+        if (data.errorOccured){
+          this.toastService.error("Something went wrong while loading trash " + this.complaintMenuName);
+          this.trashComplaintProgressBar=false;
+          return false;
+        }
+ 
+       const trashComplaintFilteredObj = data.complaintList.map((value,index) => value ? {
+         complaintId: value['complaintId'],
+         complaintNumber: value['complaintNumber'],
+         complaintOpenDateTime: value['complaintOpenDateTime'],
+         qrId: value['qrId'],
+         qrCodeId: value['qrCodeId'],
+         deviceUserName: value['deviceUserName'],
+         deviceUserMobileNumber: value['deviceUserMobileNumber'],
+         complaintTrash: value['complaintTrash']
+       } : null)
+       .filter(value => value.complaintTrash == true); 
+ 
+       this.totalRecordCount=trashComplaintFilteredObj.length;
+ 
+       this.trashComplaintCount=trashComplaintFilteredObj.length;
+ 
+       this.dataSource = new MatTableDataSource(trashComplaintFilteredObj);
+       this.dataSource.paginator = this.paginator;
+       this.dataSource.sort = this.sort;  
+     
+       const sortState: Sort = {active: 'complaintOpenDateTime', direction: 'desc'};
+       this.sort.active = sortState.active;
+       this.sort.direction = sortState.direction;
+       this.sort.sortChange.emit(sortState);
+ 
+        this.trashComplaintProgressBar=false;
+      }, error => {
+       this.toastService.error("Something went wrong while loading trash " + this.complaintMenuName);
        this.trashComplaintProgressBar=false;
-     }, error => {
-      this.toastService.error("Something went wrong while loading trash " + this.complaintMenuName);
-      this.trashComplaintProgressBar=false;
-     });
+      });
+     }
+
+     
 
    }
 

@@ -27,6 +27,7 @@ export class LegalentityDocumentRptComponent implements OnInit {
   uploadDocForm: FormGroup;
 
   legalEntityId: number;
+  branchHeadOffice: boolean;
 
   dataSource;
   documentRecordCount: number;
@@ -210,6 +211,7 @@ export class LegalentityDocumentRptComponent implements OnInit {
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
+      this.branchHeadOffice=this.userModel.legalEntityBranchDetails.branchHeadOffice;
     }
     else{
       this.router.navigate(['legalentity','login']);

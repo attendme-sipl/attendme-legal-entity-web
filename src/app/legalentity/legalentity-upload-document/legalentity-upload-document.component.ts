@@ -34,6 +34,8 @@ export class LegalentityUploadDocumentComponent implements OnInit {
 
   uploadedFileObj:File;
 
+  branchHeadOffice: boolean;
+
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private toastService: ToastrService,
@@ -145,6 +147,12 @@ export class LegalentityUploadDocumentComponent implements OnInit {
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
+      this.branchHeadOffice=this.userModel.legalEntityBranchDetails.branchHeadOffice;
+
+      if (this.branchHeadOffice){
+        this.router.navigate(['legalentity','portal','dashboard']);
+        return false;
+      }
     }
     else{
       this.router.navigate(['legalentity','login']);
