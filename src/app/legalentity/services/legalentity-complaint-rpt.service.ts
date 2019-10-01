@@ -221,6 +221,27 @@ export interface IqrIdAllcomplaintDetailsResponse{
   complaintTrash: boolean
 };
 
+export interface IbranchComplaintConciseReqStruct{
+   legalEntityId: number,
+   branchActiveStatus: boolean,
+   complaintTrash: boolean,
+   unresolvedComptDaysCount: number
+};
+
+export interface IbranchComplaintConciseResponse{
+  errorOccurred: boolean,
+  branchComptDetails: [{
+     branchId: number,
+     branchName: string,
+     openComplaintCount: number,
+     assignedComplaintCount: number,
+     inprogressComplaintCount: number,
+     closedComplaintCount: number,
+     unresolvedUptoCount: number,
+     unreslovedMoreThanCount: number
+  }]
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -345,6 +366,10 @@ export class LegalentityComplaintRptService {
         complaintId: complaintId,
         trashComplaint: trashComplaint
       });
+    }
+
+    getBranchComplaintConciseRpt(branchComptConciseReqObj: IbranchComplaintConciseReqStruct): Observable<IbranchComplaintConciseResponse>{
+      return this.httpClient.post<IbranchComplaintConciseResponse>(this.util.legalEntityRestApuURL + "/branchComplaintConciseDetailList", branchComptConciseReqObj);
     }
     
 }

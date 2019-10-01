@@ -53,7 +53,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     "complaintOpenDateTime",
     "complaintAssignedDateTime",
     "assingedToTechncianName"
-  ]
+  ];
   
   complaintRecordCount: number;
   pageSize:number = 10;
@@ -259,6 +259,11 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     this.technicianMenuName=this.menuModel.technicianMenuName;
     this.branchMenuName=this.menuModel.branchMenuName;
     this.equipmentMenuName=this.menuModel.equipmentMenuName;
+
+    const sortState: Sort = {active: 'complaintOpenDateTime', direction: 'desc'};
+    this.sort.active = sortState.active;
+    this.sort.direction = sortState.direction;
+    this.sort.sortChange.emit(sortState);
 
    /* if (localStorage.getItem('legalEntityUser') != null)
     {
