@@ -13,7 +13,7 @@
 
                   <mat-progress-bar *ngIf="enableProgressBar" mode="indeterminate"></mat-progress-bar>
 
-                  <form  [formGroup]="addDocumentFormGroup" (ngSubmit)="uploadDocument()">
+                  <form [formGroup]='addDocumentFormGroup' (ngSubmit)="uploadDocument()">
                   
                       <mat-card>
 
@@ -47,7 +47,7 @@
                             <button type="button" mat-raised-button color="default"  (click)="resetForm()">Reset</button>
                           </mat-card-actions>
       
-                        </mat-card>
+                      </mat-card>
                   </form>
       
                 </div>

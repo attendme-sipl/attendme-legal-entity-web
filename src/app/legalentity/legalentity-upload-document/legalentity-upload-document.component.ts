@@ -12,7 +12,7 @@ import {Http, ResponseContentType, ResponseType} from '@angular/http';
 import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map'; 
 import { saveAs } from 'file-saver';
-import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { LegalentityDocumentServiceService, IuploadDocumentReq } from '../services/legalentity-document-service.service';
 
 
@@ -149,7 +149,8 @@ export class LegalentityUploadDocumentComponent implements OnInit {
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
       this.branchHeadOffice=this.userModel.legalEntityBranchDetails.branchHeadOffice;
 
-      if (this.branchHeadOffice){
+     
+      if (!this.branchHeadOffice){
         this.router.navigate(['legalentity','portal','dashboard']);
         return false;
       }

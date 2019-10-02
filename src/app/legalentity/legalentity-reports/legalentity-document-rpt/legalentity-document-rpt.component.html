@@ -14,7 +14,7 @@
                 <h3 style="font-size: 1.75rem;">Documents</h3>
                 <span class="menu-toolbar-spacer"></span>
     
-                <button mat-raised-button color="primary" (click)="uploadDocument()">Upload Document</button>
+                <button mat-raised-button color="primary" *ngIf="branchHeadOffice" (click)="uploadDocument()">Upload Document</button>
     
                 <button type="button" class="btn btn-default float-right">
                     <mat-icon svgIcon="refresh-icon" (click)="popLegalEntityDocument()"></mat-icon>
