@@ -12,6 +12,7 @@ import { LegalentityMenuPref } from '../model/legalentity-menu-pref';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { LegalentityComplaintConcise } from '../model/legalentity-complaint-concise';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
+import { LegalentityBranchDataService } from '../services/legalentity-branch-data.service';
 
 @Component({
   selector: 'app-legalentity-dashboard',
@@ -74,7 +75,8 @@ export class LegalentityDashboardComponent implements OnInit {
     private dashboardServiceAPI: LegalentityDashboardService,
     private toastService: ToastrService,
     public legalEntityMenuPrefModel: LegalentityMenuPrefNames,
-    public complaintConciseRptModel: LegalentityComplaintConcise
+    public complaintConciseRptModel: LegalentityComplaintConcise,
+    private branchData: LegalentityBranchDataService
   ) { 
     commonModel.enableProgressbar=false;
     
@@ -243,6 +245,15 @@ export class LegalentityDashboardComponent implements OnInit {
     });
 
     
+  }
+
+  onOpenComplaintClick(){
+
+    this.branchData.branchDetails = {
+      branchId: this.branchId
+    };
+
+    this.router.navigate(['/legalentity','portal','rpt','open']);
   }
 
   ngOnInit() {

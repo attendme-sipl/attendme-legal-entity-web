@@ -38,7 +38,12 @@
                         <mat-list-item >
                           <p style="margin-top: 1rem;">Open</p>
                           <span style="flex: 1 1 auto;"></span>
-                          <a style="text-align: left" routerLink="/legalentity/portal/rpt/open">{{complaintConciseRptModel.openComplaintCount == null ? 0 : complaintConciseRptModel.openComplaintCount}}</a>
+                          <!--<a style="text-align: left" routerLink="/legalentity/portal/rpt/open">
+                            {{complaintConciseRptModel.openComplaintCount == null ? 0 : complaintConciseRptModel.openComplaintCount}}
+                          </a>-->
+                          <a style="text-align: left;" href="javascript: void(0)" (click)="onOpenComplaintClick()">
+                            {{complaintConciseRptModel.openComplaintCount == null ? 0 : complaintConciseRptModel.openComplaintCount}}
+                          </a>
                         </mat-list-item>
     
                         <mat-divider></mat-divider>

@@ -4,7 +4,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityUser } from '../../model/legalentity-user';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { LegalentityComplaintRptService, IopenComplaintRptResponseStruct, IcomplaintIndivReqStruct, IcomplaintIndivResponseStruct } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityCommons } from '../../model/legalentity-commons';
@@ -18,6 +18,9 @@ import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../leg
 import { LegalentityQrDetailsComponent } from '../../legalentity-qr-details/legalentity-qr-details.component';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { LegalentityBranchService, IbranchRptReqStruct, IbranchListReportResponse, IbranchListDetailsResponse } from '../../services/legalentity-branch.service';
+import { LegalentityBranch } from '../../model/legalentity-branch';
+import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 
 export interface IAssingTechnicianDialogData{
   complaintId: number,
@@ -99,6 +102,9 @@ export class LegalentityOpenComptRptComponent implements OnInit {
   complaintFilterType: string = "0";
 
   searchKey;
+
+  branchListArr: IbranchListDetailsResponse[];
+  userBranchId: number;
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -110,7 +116,10 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     public legalEntityMenuPrefModel: LegalentityMenuPrefNames,
     private complaintRptServiceAPI: LegalentityComplaintRptService,
     private progressbarObj: LegalentityCommons,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private branchServiceAPI: LegalentityBranchService,
+    private activatedroute:ActivatedRoute,
+    private branchData: LegalentityBranchDataService
   ) { 
     iconRegistry.addSvgIcon(
       'refreshIcon',
@@ -121,12 +130,27 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       'deleteIcon',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-delete-24px.svg')
     );
+
+    //this.activatedroute.queryParams.subscribe(param => {
+     // if(this.router.getCurrentNavigation().extras.state){
+
+     //   this.branchId=this.router.getCurrentNavigation().extras.state.branchId;
+       
+    //    this.popOpenComplaintGrid(false);
+        //console.log(this.router.getCurrentNavigation().extras.state.branchId);
+    //  }
+
+      
+    //});
+
+    //console.log(branchData.branchDetails);
+
   }
 
   popOpenComplaintGrid(exportToExcel: boolean):void{
 
     this.openComplaintProgressBar=true;
-
+//console.log(this.branchId);
     this.searchKey='';
 
     const openComplaintReqObj: IopenComplaintRtpReqStruct ={
@@ -195,7 +219,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
       
 
-      if (this.complaintFilterType == '0'){
+      /*if (this.complaintFilterType == '0'){
         const filteredComplaintListObj = this.getFilteredComplaintObj(data.complaintList, false);
         openComplaintResponseArrayUpdated=filteredComplaintListObj;
       }
@@ -207,9 +231,23 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
       if (this.complaintFilterType == '2'){
         openComplaintResponseArrayUpdated=data.complaintList;
-      }
+      }*/
 
     //  this.openComplaintResponseArray=openComplaintFilterData;
+
+    const filteredComplaint = data.complaintList.map((value,index) => value ? {
+      complaintId: value['complaintId'],
+      complaintNumber: value['complaintNumber'],
+      complaintOpenDateTime: value['complaintOpenDateTime'],
+      qrId: value['qrId'],
+      qrCodeId: value['qrCodeId'],
+      deviceUserName: value['deviceUserName'],
+      deviceUserMobileNumber: value['deviceUserMobileNumber'],
+      complaintTrash: value['complaintTrash']
+    } : null)
+    .filter(value => value.complaintTrash == false);
+
+    openComplaintResponseArrayUpdated=filteredComplaint;
 
       this.totalRecordCount=openComplaintResponseArrayUpdated.length;
 
@@ -237,7 +275,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     
   }
 
-  getFilteredComplaintObj(complaintData: any, trashComplaint: boolean): IopenComplaintListStruct[]{
+  /*getFilteredComplaintObj(complaintData: any, trashComplaint: boolean): IopenComplaintListStruct[]{
     const openComplaintFilterData = complaintData.map((value,index) => value ? {
       complaintId: value['complaintId'],
       complaintNumber: value['complaintNumber'],
@@ -251,7 +289,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     .filter(value => value.complaintTrash == trashComplaint);
     
     return openComplaintFilterData;
-  }
+  }*/
 
   openComplaintDetailsDialog(complaintId: number):void{
 
@@ -364,7 +402,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     });
 
     alertDialogRef.afterClosed().subscribe(result => {
-      console.log(confirmAlertData.confirmBit);
+      //console.log(confirmAlertData.confirmBit);
 
       if (confirmAlertData.confirmBit){
         this.openComplaintProgressBar=true;
@@ -390,13 +428,43 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
   }
 
+  popBranchList(){
+
+    //this.openComplaintProgressBar=true;
+
+    const branchListReqObj: IbranchRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: false,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    .subscribe((data: IbranchListReportResponse) => {
+      //console.log(data);
+      if (data.errorOccured){
+        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+        return false;
+      }
+
+      this.branchListArr=data.branchDetailsList;
+
+    }, error => {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+    });
+  }
+
 
   ngOnInit() {
 
     if(localStorage.getItem('legalEntityUserDetails') != null){
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId = this.legalEntityUserModel.legalEntityUserDetails.legalEntityId;
-      this.branchId = this.legalEntityUserModel.legalEntityBranchDetails.branchId;
+
+      
+      this.userBranchId = this.legalEntityUserModel.legalEntityBranchDetails.branchId;
       this.userId = this.legalEntityUserModel.legalEntityUserDetails.userId;  
     }
     else {
@@ -404,6 +472,15 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     }
 
     this.legalEntityMenuPrefModel = this.utilService.getLegalEntityMenuPrefNames();
+
+  //  console.log(this.branchData.branchDetails['branchId']);
+
+    if (this.branchData.branchDetails != null){
+      this.branchId=this.branchData.branchDetails['branchId'];
+    }
+    else{
+      this.branchId=this.userBranchId
+    }
     
     this.complaintMenuName = this.legalEntityMenuPrefModel.complaintMenuName;
     this.equptMenuName = this.legalEntityMenuPrefModel.equipmentMenuName;
@@ -414,12 +491,20 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
     this.complaintFilterType="0";
 
-    this.popOpenComplaintGrid(false);
-      
+    //this.activatedroute.data.subscribe(res => {
+      //console.log(res);
+    //});
+
+    
+
+   this.popOpenComplaintGrid(false);
+
+   this.popBranchList();
+    
     
   }
 
-  onFilterItemChange(){
+  /*onFilterItemChange(){
     
     let filteredObj: IopenComplaintListStruct[];
 
@@ -450,7 +535,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       this.sort.direction = sortState.direction;
       this.sort.sortChange.emit(sortState);
 
-  }
+  }*/
 
  
 

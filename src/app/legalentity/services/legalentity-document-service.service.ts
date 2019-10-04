@@ -70,7 +70,7 @@ export class LegalentityDocumentServiceService {
     formData.append("legalEntityId", uploadedFileObject.legalEntityId.toString());
     formData.append("docDesc", uploadedFileObject.docDesc);
     formData.append("specificToQr", String(uploadedFileObject.docActiveStatus));
-    formData.append("docActiveStatus", String(uploadedFileObject.docActiveStatus));
+    formData.append("docActiveStatus", String(uploadedFileObject.specificToQr));
 
     return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/uploadDocument", formData);
 

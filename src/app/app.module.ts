@@ -83,6 +83,7 @@ import {MatExpansionModule} from '@angular/material/expansion';
 import { LegalentityTrashComptRptComponent } from './legalentity/legalentity-reports/legalentity-trash-compt-rpt/legalentity-trash-compt-rpt.component';
 import {MatTabsModule} from '@angular/material/tabs';
 import { LegalentityBranchComptConciseRptComponent } from './legalentity/legalentity-reports/legalentity-branch-compt-concise-rpt/legalentity-branch-compt-concise-rpt.component';
+import {LegalentityBranchDataService} from './legalentity/services/legalentity-branch-data.service';
 
 @NgModule({
   declarations: [
@@ -178,7 +179,8 @@ import { LegalentityBranchComptConciseRptComponent } from './legalentity/legalen
     LegalentityBranchRulebook,
     LegalentityIndivComptDetails,
     DatePipe,
-    LegalentityDocumentServiceService
+    LegalentityDocumentServiceService,
+    LegalentityBranchDataService
   ],
   bootstrap: [AppComponent],
   entryComponents:[

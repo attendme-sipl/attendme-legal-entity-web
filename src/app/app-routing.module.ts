@@ -31,6 +31,7 @@ import { LegalentityDocumentRptComponent } from './legalentity/legalentity-repor
 import { LegalentityUploadDocumentComponent } from './legalentity/legalentity-upload-document/legalentity-upload-document.component';
 import {LegalentityTrashComptRptComponent} from './legalentity/legalentity-reports/legalentity-trash-compt-rpt/legalentity-trash-compt-rpt.component';
 import {LegalentityBranchComptConciseRptComponent} from './legalentity/legalentity-reports/legalentity-branch-compt-concise-rpt/legalentity-branch-compt-concise-rpt.component';
+import { LegalentityUser } from './legalentity/model/legalentity-user';
 
 const routes: Routes = [
   {

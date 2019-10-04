@@ -4,10 +4,12 @@ import { ToastrService } from 'ngx-toastr';
 import { MatIconRegistry, MatPaginator, MatSort, MatTableDataSource, Sort } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityUser } from '../../model/legalentity-user';
-import { Router } from '@angular/router';
+import { Router, NavigationExtras } from '@angular/router';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { LegalentityComplaintRptService, IbranchComplaintConciseReqStruct, IbranchComplaintConciseResponse } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityDashboardService } from '../../services/legalentity-dashboard.service';
+import { LegalentityBranch } from '../../model/legalentity-branch';
+import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 
 @Component({
   selector: 'app-legalentity-branch-compt-concise-rpt',
@@ -59,7 +61,9 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     private router: Router,
     private menuModel: LegalentityMenuPrefNames,
     private dashboardService: LegalentityDashboardService,
-    private complaintRptService: LegalentityComplaintRptService
+    private complaintRptService: LegalentityComplaintRptService,
+    private branchModel: LegalentityBranch,
+    private branchData: LegalentityBranchDataService
   ) {
     iconRegistry.addSvgIcon(
       "refresh-panel",
@@ -149,6 +153,26 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     
     this.popBranchComplaintConciseRpt();
 
+
+  }
+
+  openComplaintSection(branchId: number){
+  
+    //this.branchModel.branchId=branchId;
+    //let navigationDetails: NavigationExtras={
+    //  state: this.branchModel
+    //};
+
+    //this.router.navigate(
+    //  [
+     //   '/legalentity','portal','rpt','open'
+     // ], navigationDetails);
+
+     this.branchData.branchDetails = {
+       branchId: branchId
+      }
+
+     this.router.navigate(['/legalentity','portal','rpt','open']);
 
   }
 

@@ -27,13 +27,24 @@
                   <div class="col-auto mr-auto">
                     <label><b>Total Records:</b> {{totalRecordCount}}</label>
                   </div>
-                  <div class="col-auto">
+                  <!--<div class="col-auto">
                     <mat-form-field>
                       <mat-label>Filter {{legalEntityMenuPrefModel.complaintMenuName}}</mat-label>
                       <mat-select [(value)]="complaintFilterType" (selectionChange)="onFilterItemChange()">
                         <mat-option value="0">Active {{legalEntityMenuPrefModel.complaintMenuName}}</mat-option>
                         <mat-option value="1">Trash {{legalEntityMenuPrefModel.complaintMenuName}}</mat-option>
                         <mat-option value="2">All {{legalEntityMenuPrefModel.complaintMenuName}}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>-->
+
+                  <div class="col-auto">
+                    <mat-form-field>
+                      <mat-label>{{branchMenuName}}</mat-label>
+                      <mat-select [(value)] ="branchId" (selectionChange)="popOpenComplaintGrid(false)">
+                        <mat-option *ngFor="let indivBranchObj of branchListArr" [value]="indivBranchObj.branchId">
+                          {{indivBranchObj.branchName}}
+                        </mat-option>
                       </mat-select>
                     </mat-form-field>
                   </div>
@@ -72,15 +83,14 @@
 
                   <ng-container matColumnDef="srNo" >
                       <th mat-header-cell *matHeaderCellDef>Sr. No.</th>
-                      <td mat-cell *matCellDef="let i=index; let element;"
-                      [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
+                      <td mat-cell *matCellDef="let i=index; let element;">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
                   </ng-container>
     
                   <ng-container matColumnDef="complaintNumber">
                       <th mat-header-cell *matHeaderCellDef>{{legalEntityMenuPrefModel.complaintMenuName}} Number</th>
                       <td mat-cell *matCellDef="let element">
                         <button type="button" class="btn btn-link" 
-                         (click) = "openComplaintDetailsDialog(element.complaintId)" [disabled] = "element.complaintTrash">
+                         (click) = "openComplaintDetailsDialog(element.complaintId)" >
                         {{ element.complaintNumber }}
                       </button>
                       </td>
@@ -88,7 +98,7 @@
     
                   <ng-container matColumnDef="qrId">
                       <th mat-header-cell *matHeaderCellDef>QR ID</th>
-                      <td mat-cell *matCellDef="let element" [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
+                      <td mat-cell *matCellDef="let element" >
                         <!--<button type="button" class="btn btn-link" (click)="opendQrDetailsDialog(element.qrCodeId)">
                             {{ element.qrId }}
                         </button>-->
@@ -99,12 +109,12 @@
 
                   <ng-container matColumnDef="registerBy">
                     <th mat-header-cell *matHeaderCellDef mat-sort-header>Registered By</th>
-                    <td mat-cell *matCellDef="let element" [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">{{ element.deviceUserName}} ( {{element.deviceUserMobileNumber}} ) </td>
+                    <td mat-cell *matCellDef="let element" >{{ element.deviceUserName}} ( {{element.deviceUserMobileNumber}} ) </td>
                  </ng-container>
                   
                   <ng-container matColumnDef="complaintOpenDateTime">
                       <th mat-header-cell *matHeaderCellDef mat-sort-header>Date-Time</th>
-                      <td mat-cell *matCellDef="let element" [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">{{ element.complaintOpenDateTime | date:'medium'}}</td>
+                      <td mat-cell *matCellDef="let element" >{{ element.complaintOpenDateTime | date:'medium'}}</td>
                   </ng-container>
     
                   <ng-container matColumnDef="assginTechnician">
@@ -112,7 +122,7 @@
                       <th mat-header-cell *matHeaderCellDef>Action</th>
                       <td mat-cell *matCellDef="let element">
                         <button type="button" mat-stroked-button color="primary" 
-                         (click)="openAssingTechnicianDialog(element.complaintId)" [disabled]="element.complaintTrash">
+                         (click)="openAssingTechnicianDialog(element.complaintId)" >
                             Assign {{ legalEntityMenuPrefModel.technicianMenuName }}
                         </button>
                       </td>
@@ -121,7 +131,7 @@
                   <ng-container matColumnDef="trashComplaint">
                     <th mat-header-cell *matHeaderCellDef>Trash</th>
                     <td mat-cell *matCellDef="let element">
-                      <button type="button" class="btn btn-default float-right" (click)="trashComplaint(element.complaintId)" [disabled]="element.complaintTrash">
+                      <button type="button" class="btn btn-default float-right" (click)="trashComplaint(element.complaintId)" >
                         <mat-icon svgIcon="deleteIcon"  ></mat-icon>
                       </button>
                     </td>
