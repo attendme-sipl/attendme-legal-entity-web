@@ -38,7 +38,7 @@
                     </mat-form-field>
                   </div>-->
 
-                  <div class="col-auto">
+                  <div class="col-auto" *ngIf="branchHeadOffice">
                     <mat-form-field>
                       <mat-label>{{branchMenuName}}</mat-label>
                       <mat-select [(value)] ="branchId" (selectionChange)="popOpenComplaintGrid(false)">

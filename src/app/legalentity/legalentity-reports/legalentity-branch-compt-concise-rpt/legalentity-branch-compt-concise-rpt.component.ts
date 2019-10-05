@@ -45,7 +45,8 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     "inprogressComplaintCount",
     "closedComplaintCount",
     "unreslovedMoreThanCount",
-    "unresolvedUptoCount"
+    "unresolvedUptoCount",
+    "complaintTrashCount"
   ];
 
   branchRecordCount: number;
@@ -174,6 +175,38 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
 
      this.router.navigate(['/legalentity','portal','rpt','open']);
 
+  }
+
+  assignedComplaintSection(branchId: number){
+    this.branchData.branchDetails = {
+      branchId: branchId
+     }
+
+    this.router.navigate(['/legalentity','portal','rpt','assigned']);
+  }
+
+  inprogressComplaintSection(branchId: number){
+    this.branchData.branchDetails = {
+      branchId: branchId
+     }
+
+    this.router.navigate(['/legalentity','portal','rpt','inprogress']);
+  }
+
+  closedComplaintSection(branchId: number){
+    this.branchData.branchDetails = {
+      branchId: branchId
+     }
+
+    this.router.navigate(['/legalentity','portal','rpt','closed']);
+  }
+
+  trashComplaintSection(branchId: number){
+    this.branchData.branchDetails = {
+      branchId: branchId
+     }
+
+    this.router.navigate(['/legalentity','portal','rpt','trash','complaint']);
   }
 
   applyFilter(filterValue: string){

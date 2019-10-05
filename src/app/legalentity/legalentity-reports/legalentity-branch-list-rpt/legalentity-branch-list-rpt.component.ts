@@ -46,6 +46,8 @@ export class LegalentityBranchListRptComponent implements OnInit {
     "branchEmail"
   ];
 
+  totalRecordCount: number = 0;
+
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private toastService: ToastrService,
@@ -69,7 +71,7 @@ export class LegalentityBranchListRptComponent implements OnInit {
     iconRegistry.addSvgIcon(
       'refresh-icon',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
-    )
+    );
   }
 
   popBranchList(exportToExcel: boolean):void{
@@ -118,6 +120,8 @@ export class LegalentityBranchListRptComponent implements OnInit {
         branchActiveStatus: value['branchActiveStatus']
       }:null)
       .filter(value => value.branchHeadOffice == false);
+
+      this.totalRecordCount=this.branchDetailsArray.length;
 
       this.branchRecordCount = this.branchDetailsArray.length;
       this.dataSource=new MatTableDataSource(this.branchDetailsArray);

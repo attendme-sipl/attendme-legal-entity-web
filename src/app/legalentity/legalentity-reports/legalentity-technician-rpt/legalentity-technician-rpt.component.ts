@@ -55,6 +55,9 @@ export class LegalentityTechnicianRptComponent implements OnInit {
     "deleteTechnician"
   ];
 
+  totalRecordCount: number=0;
+  searchKey: string;
+
   constructor(
     private userModel: LegalentityUser,
     private utilServiceAPI: LegalentityUtilService,
@@ -85,6 +88,8 @@ export class LegalentityTechnicianRptComponent implements OnInit {
 
   popTechnicianListRpt(exportToExcel: boolean):void{
     this.enableProgressBar=true;
+
+    this.searchKey='';
 
     const technicianRptReqObj: ItechnicianRptReqStruct = {
       branchMenuName: this.branchMenuName,
@@ -125,6 +130,8 @@ export class LegalentityTechnicianRptComponent implements OnInit {
          technicianEmailId: value['technicianEmailId']
       }: null)
       .filter(value => value.technicianActiveStatus == true);
+
+      this.totalRecordCount=filteredTechnicianList.length;
 
       this.technicianRecordCount= filteredTechnicianList.length;//data.technicianList.length;
       this.dataSource=new MatTableDataSource(filteredTechnicianList);

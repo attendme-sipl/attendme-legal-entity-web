@@ -20,6 +20,8 @@ import { LegalentityUtilService } from '../../services/legalentity-util.service'
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { IbranchListDetailsResponse, IbranchRptReqStruct, IbranchListReportResponse, LegalentityBranchService } from '../../services/legalentity-branch.service';
+import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 
 @Component({
   selector: 'app-legalentity-assinged-complaint-rpt',
@@ -62,6 +64,11 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
   totalRecordCount: number = 0;
   searchKey;
 
+  branchHeadOffice: boolean;
+
+  branchListArr: IbranchListDetailsResponse[];
+  userBranchId: number;
+
   constructor(
     //private legalEntityModel: LegalentityLogin,
     private branchModel: LegalentityBranch,
@@ -73,7 +80,9 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     private complaintServiceAPI: LegalentityComplaintRptService,
     private dialog: MatDialog,
     private userModel: LegalentityUser,
-    private menuModel: LegalentityMenuPrefNames
+    private menuModel: LegalentityMenuPrefNames,
+    private branchServiceAPI: LegalentityBranchService,
+    private branchData: LegalentityBranchDataService
   ) { 
 
     iconRegistry.addSvgIcon(
@@ -161,7 +170,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
       return false;
     }
 
-    this.totalRecordCount=data.complaintList.length;
+    
 
     const assignedComplaintFiltered = data.complaintList.map((value,index) => value ? {
       complaintId: value['complaintId'],
@@ -177,6 +186,8 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
       complaintTrash: value['complaintTrash']
     } : null)
     .filter(value => value.complaintTrash == false);
+
+    this.totalRecordCount=assignedComplaintFiltered.length;
 
      this.complaintRecordCount = assignedComplaintFiltered.length;
      this.dataSource = new MatTableDataSource(assignedComplaintFiltered);
@@ -240,17 +251,54 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
   }
 
+  popBranchList(){
+
+    //this.openComplaintProgressBar=true;
+
+    const branchListReqObj: IbranchRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equipmentMenuName,
+      exportToExcel: false,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    .subscribe((data: IbranchListReportResponse) => {
+      //console.log(data);
+      if (data.errorOccured){
+        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+        return false;
+      }
+
+      this.branchListArr=data.branchDetailsList;
+
+    }, error => {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+    });
+  }
+
   ngOnInit() {
 
     if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
-      this.branchId=this.userModel.legalEntityBranchDetails.branchId;
+      this.userBranchId=this.userModel.legalEntityBranchDetails.branchId;
       this.userId-this.userModel.legalEntityUserDetails.userId;
+
+      this.branchHeadOffice=this.userModel.legalEntityBranchDetails.branchHeadOffice;
     }
     else{
       this.router.navigate(['legalentity','login']);
       return false;
+    }
+
+    if (this.branchData.branchDetails != null){
+      this.branchId=this.branchData.branchDetails['branchId'];
+    }
+    else{
+      this.branchId=this.userBranchId
     }
     
     this.menuModel = this.util.getLegalEntityMenuPrefNames();
@@ -289,6 +337,10 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     } */
 
     //this.setLegalEntityMenuPref();
+
+    if (this.branchHeadOffice){
+      this.popBranchList();
+    }
 
     this.popComplaintAssingRptGrid(false);
 

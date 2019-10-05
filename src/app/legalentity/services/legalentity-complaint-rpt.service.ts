@@ -164,7 +164,8 @@ export interface IclosedComplaintListRptResponse{
      registeredByMobileNumber: string,
      closedDateTime: string,
      actionTaken: string,
-     failureReason: string
+     failureReason: string,
+     complaintTrash: boolean
   }]
 };
 
@@ -238,7 +239,8 @@ export interface IbranchComplaintConciseResponse{
      inprogressComplaintCount: number,
      closedComplaintCount: number,
      unresolvedUptoCount: number,
-     unreslovedMoreThanCount: number
+     unreslovedMoreThanCount: number,
+     complaintTrashCount: number
   }]
 };
 

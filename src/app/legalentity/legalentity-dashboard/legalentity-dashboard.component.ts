@@ -256,6 +256,38 @@ export class LegalentityDashboardComponent implements OnInit {
     this.router.navigate(['/legalentity','portal','rpt','open']);
   }
 
+  onAssignedComplaintClick(){
+    this.branchData.branchDetails = {
+      branchId: this.branchId
+    };
+
+    this.router.navigate(['/legalentity','portal','rpt','assigned']);
+  }
+
+  onInprogressComplaintClick(){
+    this.branchData.branchDetails = {
+      branchId: this.branchId
+    };
+
+    this.router.navigate(['/legalentity','portal','rpt','inprogress']);
+  }
+
+  onClosedComplaintClick(){
+    this.branchData.branchDetails = {
+      branchId: this.branchId
+    };
+
+    this.router.navigate(['/legalentity','portal','rpt','closed']);
+  }
+
+  onTrashComplaintClick(){
+    this.branchData.branchDetails = {
+      branchId: this.branchId
+    };
+
+    this.router.navigate(['/legalentity','portal','rpt','trash','complaint']);
+  }
+
   ngOnInit() {
 
     if (localStorage.getItem('legalEntityUserDetails') != null)

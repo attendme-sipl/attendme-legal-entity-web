@@ -10,6 +10,8 @@ import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-name
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { IbranchListDetailsResponse, IbranchRptReqStruct, LegalentityBranchService, IbranchListReportResponse } from '../../services/legalentity-branch.service';
+import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 
 @Component({
   selector: 'app-legalentity-inprogress-compt-rpt',
@@ -48,6 +50,10 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
   totalRecordCount: number = 0;
   searchKey;
 
+  branchListArr: IbranchListDetailsResponse[];
+  userBranchId: number;
+  branchHeadOffice: boolean;
+
   constructor(
     private userModel: LegalentityUser,
     private utilServiceAPI: LegalentityUtilService,
@@ -57,7 +63,9 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     sanitizer: DomSanitizer,
     private complaintRtpServiceAPI: LegalentityComplaintRptService,
     private menuModel: LegalentityMenuPrefNames,
-    private dialog:MatDialog
+    private dialog:MatDialog,
+    private branchData: LegalentityBranchDataService,
+    private branchServiceAPI: LegalentityBranchService
   ) { 
     iconRegistry.addSvgIcon(
       'refresh-icon',
@@ -120,10 +128,10 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       } : null)
       .filter(value => value.complaintTrash == false);
 
-      this.totalRecordCount=data.complaintList.length;
+      this.totalRecordCount=this.inprogressComptListObj.length;
 
-      this.inprogressComptListCount=data.complaintList.length;
-      this.dataSource=new MatTableDataSource(data.complaintList);
+      this.inprogressComptListCount=this.inprogressComptListObj.length;
+      this.dataSource=new MatTableDataSource(this.inprogressComptListObj);
       this.dataSource.paginator=this.paginator;
       this.dataSource.sort=this.sort;
 
@@ -155,17 +163,55 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
 
   }
 
+  popBranchList(){
+
+    //this.openComplaintProgressBar=true;
+
+    const branchListReqObj: IbranchRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: false,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    .subscribe((data: IbranchListReportResponse) => {
+      //console.log(data);
+      if (data.errorOccured){
+        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+        return false;
+      }
+
+      this.branchListArr=data.branchDetailsList;
+
+    }, error => {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+    });
+  }
+
   ngOnInit() {
 
     if(localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
-      this.branchId=this.userModel.legalEntityBranchDetails.branchId;
+      this.userBranchId=this.userModel.legalEntityBranchDetails.branchId;
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
+
+      this.branchHeadOffice=this.userModel.legalEntityBranchDetails.branchHeadOffice;
     }
     else{
       this.router.navigate(['legalentity','login']);
       return false;
     }
+
+    if (this.branchData.branchDetails != null){
+      this.branchId=this.branchData.branchDetails['branchId'];
+    }
+    else{
+      this.branchId=this.userBranchId
+    }
+    
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.complaintMenuName=this.menuModel.complaintMenuName;
@@ -174,6 +220,10 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     this.technicianMenuName=this.menuModel.technicianMenuName;
 
     this.utilServiceAPI.setTitle("Legalentity - In Progress " + this.complaintMenuName + " Report | Attendme");
+
+    if (this.branchHeadOffice){
+      this.popBranchList();
+    }
 
     this.popInprogressComplaintsRpt(false);
     

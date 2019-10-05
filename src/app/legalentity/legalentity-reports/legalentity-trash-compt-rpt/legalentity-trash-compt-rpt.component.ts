@@ -11,6 +11,8 @@ import { IopenComplaintListStruct } from '../legalentity-open-compt-rpt/legalent
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { IbranchListDetailsResponse, LegalentityBranchService, IbranchRptReqStruct, IbranchListReportResponse } from '../../services/legalentity-branch.service';
+import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 
 @Component({
   selector: 'app-legalentity-trash-compt-rpt',
@@ -46,6 +48,11 @@ export class LegalentityTrashComptRptComponent implements OnInit {
     "complaintOpenDateTime"
   ];
 
+  branchListArr: IbranchListDetailsResponse[];
+  userBranchId: number;
+  branchHeadOffice: boolean;
+
+
   constructor(
     private userModel: LegalentityUser,
     private toastService: ToastrService,
@@ -55,7 +62,9 @@ export class LegalentityTrashComptRptComponent implements OnInit {
     private complaintServiceAPI: LegalentityComplaintRptService,
     private router: Router,
     private menuModel: LegalentityMenuPrefNames,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private branchData: LegalentityBranchDataService,
+    private branchServiceAPI: LegalentityBranchService
   ) {
     iconRegistry.addSvgIcon(
       'refreshIcon',
@@ -98,7 +107,7 @@ export class LegalentityTrashComptRptComponent implements OnInit {
      
       .subscribe((data: IopenComplaintRptResponseStruct ) => {
  
-      // console.log(data.complaintList);
+      //console.log(data.complaintList);
  
         if (data.errorOccured){
           this.toastService.error("Something went wrong while loading trash " + this.complaintMenuName);
@@ -154,6 +163,34 @@ export class LegalentityTrashComptRptComponent implements OnInit {
 
   }
 
+  popBranchList(){
+
+    //this.openComplaintProgressBar=true;
+
+    const branchListReqObj: IbranchRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: false,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    .subscribe((data: IbranchListReportResponse) => {
+      //console.log(data);
+      if (data.errorOccured){
+        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+        return false;
+      }
+
+      this.branchListArr=data.branchDetailsList;
+
+    }, error => {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+    });
+  }
+
   ngOnInit() {
 
     if (localStorage.getItem('legalEntityUserDetails') != null){
@@ -161,13 +198,22 @@ export class LegalentityTrashComptRptComponent implements OnInit {
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
-      this.branchId=this.userModel.legalEntityBranchDetails.branchId;
+      this.userBranchId=this.userModel.legalEntityBranchDetails.branchId;
+
+      this.branchHeadOffice=this.userModel.legalEntityBranchDetails.branchHeadOffice;
   
     }
     else{
       this.router.navigate(['legalentity','login']);
       return false;
     }
+
+    if (this.branchData.branchDetails != null){
+      this.branchId=this.branchData.branchDetails['branchId'];
+    }
+    else{
+      this.branchId=this.userBranchId
+    }    
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
 
@@ -177,6 +223,10 @@ export class LegalentityTrashComptRptComponent implements OnInit {
     this.complaintMenuName=this.menuModel.complaintMenuName;
 
     this.utilServiceAPI.setTitle('Legalentity - Trash ' + this.complaintMenuName + " Report | Attendme");
+
+    if (this.branchHeadOffice){
+      this.popBranchList();
+    }
 
     this.popTrashComplaintRpt(false);
 

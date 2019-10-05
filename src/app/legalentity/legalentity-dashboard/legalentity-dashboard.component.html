@@ -41,7 +41,7 @@
                           <!--<a style="text-align: left" routerLink="/legalentity/portal/rpt/open">
                             {{complaintConciseRptModel.openComplaintCount == null ? 0 : complaintConciseRptModel.openComplaintCount}}
                           </a>-->
-                          <a style="text-align: left;" href="javascript: void(0)" (click)="onOpenComplaintClick()">
+                          <a style="text-align: left;" href="javascript: void(0);" (click)="onOpenComplaintClick()">
                             {{complaintConciseRptModel.openComplaintCount == null ? 0 : complaintConciseRptModel.openComplaintCount}}
                           </a>
                         </mat-list-item>
@@ -51,7 +51,9 @@
                         <mat-list-item >
                             <p style="margin-top: 1rem;">Assigned</p>
                             <span style="flex: 1 1 auto;"></span>
-                            <a style="text-align: left" routerLink="/legalentity/portal/rpt/assigned">{{complaintConciseRptModel.assingedComplaintCount == null ? 0 : complaintConciseRptModel.assingedComplaintCount}}</a>
+                            <a style="text-align: left" href="javascript: void(0);" (click)="onAssignedComplaintClick()">
+                              {{complaintConciseRptModel.assingedComplaintCount == null ? 0 : complaintConciseRptModel.assingedComplaintCount}}
+                            </a>
                         </mat-list-item>
     
                         <mat-divider></mat-divider>
@@ -59,7 +61,9 @@
                         <mat-list-item >
                             <p style="margin-top: 1rem;">In Progress</p>
                             <span style="flex: 1 1 auto;"></span>
-                            <a style="text-align: left" routerLink="/legalentity/portal/rpt/inprogress">{{complaintConciseRptModel.inprogressComplaintCount == null ? 0 : complaintConciseRptModel.inprogressComplaintCount}}</a>
+                            <a style="text-align: left" href="javascript: void(0);" (click)="onInprogressComplaintClick()">
+                              {{complaintConciseRptModel.inprogressComplaintCount == null ? 0 : complaintConciseRptModel.inprogressComplaintCount}}
+                            </a>
                         </mat-list-item>
     
                         <mat-divider></mat-divider>
@@ -67,7 +71,9 @@
                         <mat-list-item >
                             <p style="margin-top: 1rem;" >Closed</p>
                             <span style="flex: 1 1 auto;"></span>
-                            <a style="text-align: left" routerLink="/legalentity/portal/rpt/closed">{{complaintConciseRptModel.closedComplaintCount == null ? 0 : complaintConciseRptModel.closedComplaintCount}}</a>
+                            <a style="text-align: left" href="javascript: void(0);" (click)="onClosedComplaintClick()">
+                              {{complaintConciseRptModel.closedComplaintCount == null ? 0 : complaintConciseRptModel.closedComplaintCount}}
+                            </a>
                         </mat-list-item>
     
                         <mat-divider></mat-divider>
@@ -75,7 +81,9 @@
                         <mat-list-item >
                             <p style="margin-top: 1rem;" >Trash</p>
                             <span style="flex: 1 1 auto;"></span>
-                            <a style="text-align: left" routerLink="/legalentity/portal/rpt/trash/complaint">{{complaintConciseRptModel.trashComplaint == null ? 0 : complaintConciseRptModel.trashComplaint}}</a>
+                            <a style="text-align: left" href="javascript: void(0);" (click)="onTrashComplaintClick()">
+                              {{complaintConciseRptModel.trashComplaint == null ? 0 : complaintConciseRptModel.trashComplaint}}
+                            </a>
                         </mat-list-item>
     
                         <!--<mat-divider></mat-divider>

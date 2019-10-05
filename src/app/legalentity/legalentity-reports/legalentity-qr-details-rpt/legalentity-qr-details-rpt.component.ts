@@ -10,6 +10,8 @@ import { LegalentityQrService, IqrIdRptReqStruct, IqrIdRptResponseStruct } from 
 import { DatePipe } from '@angular/common';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { IbranchRptReqStruct, IbranchListReportResponse, IbranchListDetailsResponse, LegalentityBranchService } from '../../services/legalentity-branch.service';
+import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 
 export interface IHashMap{
   [key:string]: string;
@@ -48,6 +50,12 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
   columnsTobeExcluded: string[] = ['srNo','QR ID','Edit'];
 
+  totalRecordCount: number=0;
+
+  branchHeadOffice: boolean;
+  userBranchId: number;
+  branchListArr: IbranchListDetailsResponse[];
+
   constructor(
     private utileServiceAPI: LegalentityUtilService,
     private router: Router,
@@ -57,7 +65,9 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
     sanitizer: DomSanitizer,
     private menuModel: LegalentityMenuPrefNames,
     private qrIdServiceAPI: LegalentityQrService,
-    private datePipe: DatePipe
+    private datePipe: DatePipe,
+    private branchData: LegalentityBranchDataService,
+    private branchServiceAPI: LegalentityBranchService
   ) {
     iconRegistry.addSvgIcon(
       "refresh-icon",
@@ -185,7 +195,7 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
         });
  
       
-        
+        this.totalRecordCount=qrRptUpdatedObj.length;
  
         this.qrRecordCount = qrRptUpdatedObj.length; //data.contactList.length;
            this.dataSource = new MatTableDataSource(qrRptUpdatedObj);
@@ -217,6 +227,35 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
    }
 
+
+   popBranchList(){
+
+    //this.openComplaintProgressBar=true;
+
+    const branchListReqObj: IbranchRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintManueName,
+      equptMenuName: this.equipmentMenuName,
+      exportToExcel: false,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName
+    };
+
+    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    .subscribe((data: IbranchListReportResponse) => {
+      //console.log(data);
+      if (data.errorOccured){
+        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+        return false;
+      }
+
+      this.branchListArr=data.branchDetailsList;
+
+    }, error => {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+    });
+  }
+
   ngOnInit() {
 
     if (localStorage.getItem('legalEntityUserDetails') != null){
@@ -225,11 +264,13 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
         this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
         this.branchId=this.userModel.legalEntityBranchDetails.branchId;
 
+        this.branchHeadOffice=this.userModel.legalEntityBranchDetails.branchHeadOffice;
     }
     else{
       this.router.navigate(['legalentity','login']);
       return false;
     }
+
 
     this.menuModel=this.utileServiceAPI.getLegalEntityMenuPrefNames();
 
@@ -241,6 +282,10 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
     this.displayedColumns.push(this.branchMenuName);
 
     this.utileServiceAPI.setTitle("Legalentity - " + this.equipmentMenuName + " | Attendme" );
+
+    if (this.branchHeadOffice){
+      this.popBranchList();
+    }
 
     this.popQrIdDetailsRpt(5, false);
   }

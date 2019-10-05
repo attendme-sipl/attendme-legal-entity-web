@@ -46,6 +46,9 @@ export class LegalentityDocumentRptComponent implements OnInit {
     "docDelete",
   ];
 
+  totalRecordCount: number=0;
+  searchKey;
+
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private toastService: ToastrService,
@@ -72,6 +75,7 @@ export class LegalentityDocumentRptComponent implements OnInit {
    popLegalEntityDocument(){
 
     this.enableProgressBar=true;
+    this.searchKey='';
 
      this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
      .subscribe((data: IlegalEntityDocumentRptResponse) => {
@@ -97,6 +101,7 @@ export class LegalentityDocumentRptComponent implements OnInit {
       .filter(value => value.docActiveStatus == true);
      
       this.legalEntityDocumentRptDetailsArr=documentRptFilteredList;
+      this.totalRecordCount=this.legalEntityDocumentRptDetailsArr.length;
       this.documentRecordCount=this.legalEntityDocumentRptDetailsArr.length;
 
       this.dataSource=new MatTableDataSource(this.legalEntityDocumentRptDetailsArr);

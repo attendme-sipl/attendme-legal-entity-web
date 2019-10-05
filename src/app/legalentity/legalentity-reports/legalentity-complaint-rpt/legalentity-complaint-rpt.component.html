@@ -27,10 +27,20 @@
 
               <mat-card>
                   <div class="row">
-                      <div class="col-auto mr-auto">
+                      <div class="col">
                           <label><b>Total Records:</b> {{totalRecordCount}}</label>
                       </div>
-                      <div class="col-auto">
+                      <div class="col-md-auto" *ngIf="branchHeadOffice">
+                          <mat-form-field>
+                            <mat-label>{{branchMenuName}}</mat-label>
+                            <mat-select [(value)] ="branchId" (selectionChange)="popQrIdAllComplaintRpt(false)">
+                              <mat-option *ngFor="let indivBranchObj of branchListArr" [value]="indivBranchObj.branchId">
+                                {{indivBranchObj.branchName}}
+                              </mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                        </div>
+                      <div class="col-md-auto">
                           <mat-form-field>
                               <mat-label>Filter {{complaintMenuName}}</mat-label>
                               <mat-select [(value)]="complaintFilterType" (selectionChange)="onFilterItemChange()">
@@ -54,8 +64,6 @@
   
         <div class="row">
           <div class="col-sm-12">
-  
-              
   
             <div class="mat-elevation-z8" >
   

@@ -20,13 +20,24 @@
                         <mat-icon svgIcon="refreshIcon" (click)="popTrashComplaintRpt(false)"></mat-icon>
                       </button>
                 </mat-toolbar-row>
-              </mat-toolbar>
+            </mat-toolbar>
 
               <mat-card>
 
                 <div class="row">
                   <div class="col-auto mr-auto">
                       <label><b>Total Records:</b> {{totalRecordCount}}</label>
+                  </div>
+
+                  <div class="col-auto" *ngIf="branchHeadOffice">
+                      <mat-form-field>
+                        <mat-label>{{branchMenuName}}</mat-label>
+                        <mat-select [(value)] ="branchId" (selectionChange)="popTrashComplaintRpt(false)">
+                          <mat-option *ngFor="let indivBranchObj of branchListArr" [value]="indivBranchObj.branchId">
+                            {{indivBranchObj.branchName}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field>
                   </div>
                 </div>
 

@@ -10,6 +10,7 @@ import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-name
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
+import { IbranchRptReqStruct, IbranchListReportResponse, IbranchListDetailsResponse, LegalentityBranchService } from '../../services/legalentity-branch.service';
 
 @Component({
   selector: 'app-legalentity-complaint-rpt',
@@ -56,6 +57,9 @@ export class LegalentityComplaintRptComponent implements OnInit {
   totalRecordCount: number =0;
   complaintFilterType;
   
+  branchHeadOffice: boolean;
+
+  branchListArr: IbranchListDetailsResponse[];
 
   constructor(
     private userModel: LegalentityUser,
@@ -66,7 +70,8 @@ export class LegalentityComplaintRptComponent implements OnInit {
     sanitizer: DomSanitizer,
     private complaintRtpServiceAPI: LegalentityComplaintRptService,
     private menuModel: LegalentityMenuPrefNames,
-    private dialog:MatDialog
+    private dialog:MatDialog,
+    private branchServiceAPI: LegalentityBranchService
   ) { 
     iconRegistry.addSvgIcon(
       'refresh-icon',
@@ -222,12 +227,42 @@ openComplaintDetailsDialog(complaintId: number):void{
 
 }
 
+popBranchList(){
+
+  //this.openComplaintProgressBar=true;
+
+  const branchListReqObj: IbranchRptReqStruct = {
+    branchMenuName: this.branchMenuName,
+    complaintMenuName: this.complaintMenuName,
+    equptMenuName: this.equptMenuName,
+    exportToExcel: false,
+    legalEntityId: this.legalEntityId,
+    technicianMenuName: this.technicianMenuName
+  };
+
+  this.branchServiceAPI.getBranchListReport(branchListReqObj)
+  .subscribe((data: IbranchListReportResponse) => {
+    //console.log(data);
+    if (data.errorOccured){
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+      return false;
+    }
+
+    this.branchListArr=data.branchDetailsList;
+
+  }, error => {
+    this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+  });
+}
+
   ngOnInit() {
 
     if(localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.branchId=this.userModel.legalEntityBranchDetails.branchId;
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
+
+      this.branchHeadOffice=this.userModel.legalEntityBranchDetails.branchHeadOffice;
     }
     else{
       this.router.navigate(['legalentity','login']);
@@ -243,6 +278,10 @@ openComplaintDetailsDialog(complaintId: number):void{
     this.utilServiceAPI.setTitle("Legalentity - " + this.complaintMenuName + " Report | Attendme");
 
     this.complaintFilterType="0";
+
+    if (this.branchHeadOffice){
+      this.popBranchList();
+    }
 
     this.popQrIdAllComplaintRpt(false);
   }

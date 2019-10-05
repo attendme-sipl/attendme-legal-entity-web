@@ -77,6 +77,8 @@ export class LegalentityContactsRptComponent implements OnInit {
   complaintMenuName: string;
   equptMenuName: string;
 
+  totalRecordCount: number = 0;
+
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private legalEntityUserModel: LegalentityUser,
@@ -156,6 +158,8 @@ export class LegalentityContactsRptComponent implements OnInit {
         specificToQrId: value['specificToQrId']
       } : null)
       .filter(value => value.specificToQrId == false);
+
+      this.totalRecordCount=this.contactListObj.length;
 
       this.contactRecordCount = this.contactListObj.length; //data.contactList.length;
       this.dataSource = new MatTableDataSource(this.contactListObj);

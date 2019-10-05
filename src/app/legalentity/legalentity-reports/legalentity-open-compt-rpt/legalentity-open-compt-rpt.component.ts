@@ -105,6 +105,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
   branchListArr: IbranchListDetailsResponse[];
   userBranchId: number;
+
+  branchHeadOffice: boolean;
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -466,6 +468,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       
       this.userBranchId = this.legalEntityUserModel.legalEntityBranchDetails.branchId;
       this.userId = this.legalEntityUserModel.legalEntityUserDetails.userId;  
+
+      this.branchHeadOffice=this.legalEntityUserModel.legalEntityBranchDetails.branchHeadOffice;
     }
     else {
       this.router.navigate(['legalentity','login']);
@@ -499,7 +503,11 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
    this.popOpenComplaintGrid(false);
 
-   this.popBranchList();
+   if (this.branchHeadOffice){
+     this.popBranchList();
+   }
+
+
     
     
   }
