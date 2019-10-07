@@ -84,6 +84,7 @@ import { LegalentityTrashComptRptComponent } from './legalentity/legalentity-rep
 import {MatTabsModule} from '@angular/material/tabs';
 import { LegalentityBranchComptConciseRptComponent } from './legalentity/legalentity-reports/legalentity-branch-compt-concise-rpt/legalentity-branch-compt-concise-rpt.component';
 import {LegalentityBranchDataService} from './legalentity/services/legalentity-branch-data.service';
+import { LegalentityImportDocumentComponent } from './legalentity/legalentity-import-document/legalentity-import-document.component';
 
 @NgModule({
   declarations: [
@@ -121,7 +122,8 @@ import {LegalentityBranchDataService} from './legalentity/services/legalentity-b
     LegalentityUploadDocumentComponent,
     LegalentityDocumentRptComponent,
     LegalentityTrashComptRptComponent,
-    LegalentityBranchComptConciseRptComponent
+    LegalentityBranchComptConciseRptComponent,
+    LegalentityImportDocumentComponent
   ],
   imports: [
     BrowserModule,

@@ -32,6 +32,7 @@ import { LegalentityUploadDocumentComponent } from './legalentity/legalentity-up
 import {LegalentityTrashComptRptComponent} from './legalentity/legalentity-reports/legalentity-trash-compt-rpt/legalentity-trash-compt-rpt.component';
 import {LegalentityBranchComptConciseRptComponent} from './legalentity/legalentity-reports/legalentity-branch-compt-concise-rpt/legalentity-branch-compt-concise-rpt.component';
 import { LegalentityUser } from './legalentity/model/legalentity-user';
+import {LegalentityImportDocumentComponent} from './legalentity/legalentity-import-document/legalentity-import-document.component';
 
 const routes: Routes = [
   {
@@ -65,7 +66,8 @@ const routes: Routes = [
         {path:"info/qr", component: LegalentityQrDetailsComponent},
         {path:'add-branch', component:LegalentityBranchComponent},
         //{path: 'add-branch', component: LegalentityAddBranchNewComponent},
-        {path:'add-equipment',component: LegalentityEquipmentComponent}
+        {path:'add-equipment',component: LegalentityEquipmentComponent},
+        {path:'document/import', component: LegalentityImportDocumentComponent}
       ]}
     ]
   },

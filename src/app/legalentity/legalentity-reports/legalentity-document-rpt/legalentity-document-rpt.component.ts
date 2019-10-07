@@ -209,6 +209,9 @@ export class LegalentityDocumentRptComponent implements OnInit {
 
   }
 
+  importDocument(){
+    this.router.navigate(['legalentity','portal','document','import']);
+  }
 
   ngOnInit() {
     

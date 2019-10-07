@@ -8,9 +8,12 @@
 
           <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
 
-          <mat-toolbar style="background-color: transparent;">
+          <!--<mat-toolbar style="background-color: transparent;">
             
               <mat-toolbar-row>
+
+                
+
                 <h3 style="font-size: 1.75rem;">Documents</h3>
                 <span class="menu-toolbar-spacer"></span>
     
@@ -22,7 +25,34 @@
     
               </mat-toolbar-row>
     
-          </mat-toolbar>
+          </mat-toolbar>-->
+
+          <mat-card>
+              <div class="row">
+                  <div class="col">
+                      <h3 style="font-size: 1.75rem;">Documents</h3>
+                  </div>
+                  
+                  <div class="col-sm-auto">
+                      <button mat-raised-button color="primary" *ngIf="branchHeadOffice" (click)="uploadDocument()">
+                        Upload Document
+                      </button>
+                  </div>
+
+                  <div class="col-sm-auto">
+                    <button type="button" mat-raised-button color="primary" *ngIf="branchHeadOffice" (click)="importDocument()">
+                      Import Document
+                    </button>
+                  </div>
+
+                  <div class="col-sm-auto">
+                      <button type="button" class="btn btn-default float-right">
+                          <mat-icon svgIcon="refresh-icon" (click)="popLegalEntityDocument()"></mat-icon>
+                      </button>
+                  </div>
+
+                </div>
+          </mat-card>
           
           <mat-card>
             <div class="row">

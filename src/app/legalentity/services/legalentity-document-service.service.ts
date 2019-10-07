@@ -85,12 +85,24 @@ export class LegalentityDocumentServiceService {
         var blob = new Blob([res], {type: 'application/vnd.ms-excel'} )
         return blob;
       }
-    )
+    );
   }
 
   deleteDocumentRequest(documentId: number):Observable<any>{
     return this.httpClient.patch(this.utilServiceAPI.legalEntityRestApuURL + "/deleteDocument", {
       documentId: documentId
     });
+  }
+
+  downloadEquptDocTemplate(legalEntityId: number):Observable<any>{
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/downloadDocument",{
+      legalEntityId: legalEntityId
+    }, {responseType: 'blob' as 'json'})
+    .map(
+      (res: Blob) => {
+        var blob = new Blob([res], {type: 'application/vnd.ms-excel'} )
+        return blob;
+      }
+    )
   }
 }

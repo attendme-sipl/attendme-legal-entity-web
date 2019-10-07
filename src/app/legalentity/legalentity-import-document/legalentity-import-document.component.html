@@ -1,0 +1,47 @@
+<div class="container-fluid">
+  
+  <div class="row">
+    <div class="col-sm-12">
+
+        <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+
+      <div class="row">
+        
+        <div class="col-sm-12">
+
+          <h3 style="font-size: 1.75rem;">Import Document</h3>
+
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col-sm-6">
+          
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                Download {{equptMenuName}} List
+              </mat-card-title>
+            </mat-card-header>
+
+            <mat-card-content>
+              <p>Download {{equptMenuName}} list document file (.xls file) which 
+                consists of all QR ID assigned {{equptMenuName}} list with all added document in each coloumn.
+                Select (Yes/No). Save the file and import the file. The selected documents will be attached to selected {{equptMenuName}}. 
+              </p>
+            </mat-card-content>
+            
+            <mat-card-actions align="right">
+              <button type="button" mat-raised-button color="primary" (click)="downloadEquptDocTemplate()">Download</button>
+            </mat-card-actions>
+          </mat-card>
+
+        </div>
+        <div class="col-sm-6"></div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
