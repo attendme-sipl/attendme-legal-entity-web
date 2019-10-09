@@ -50,7 +50,12 @@ export class LegalentityUploadDocumentComponent implements OnInit {
     iconRegistry.addSvgIcon(
       'refresh-icon',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
-    )
+    );
+
+    iconRegistry.addSvgIcon(
+      'back-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/keyboard_backspace-24px.svg')
+    );
   }
 
   uploadDocument(){
@@ -139,6 +144,11 @@ export class LegalentityUploadDocumentComponent implements OnInit {
 
     
     
+  }
+
+  backToDocumentRpt(){
+    this.router.navigate(['legalentity','portal','rpt','document']);
+    return false;
   }
 
   ngOnInit() {

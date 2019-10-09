@@ -66,11 +66,14 @@ export class LegalentityDocumentServiceService {
 
   uploadLegalEntityDocument(uploadedFileObject: IuploadDocumentReq):Observable<any>{
     const formData: FormData = new FormData();
+
+    
     formData.append("docData",uploadedFileObject.docData, uploadedFileObject.docData.name);
     formData.append("legalEntityId", uploadedFileObject.legalEntityId.toString());
     formData.append("docDesc", uploadedFileObject.docDesc);
-    formData.append("specificToQr", String(uploadedFileObject.docActiveStatus));
-    formData.append("docActiveStatus", String(uploadedFileObject.specificToQr));
+    formData.append("docActiveStatus", String(uploadedFileObject.docActiveStatus));
+    formData.append("specificToQr", String(uploadedFileObject.specificToQr));
+    
 
     return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/uploadDocument", formData);
 
@@ -95,7 +98,7 @@ export class LegalentityDocumentServiceService {
   }
 
   downloadEquptDocTemplate(legalEntityId: number):Observable<any>{
-    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/downloadDocument",{
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/qrIdExcelTemplate",{
       legalEntityId: legalEntityId
     }, {responseType: 'blob' as 'json'})
     .map(

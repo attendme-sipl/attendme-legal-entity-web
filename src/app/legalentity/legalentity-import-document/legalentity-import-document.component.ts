@@ -7,6 +7,8 @@ import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { MatIconRegistry } from '@angular/material';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-legalentity-import-document',
@@ -19,7 +21,9 @@ export class LegalentityImportDocumentComponent implements OnInit {
   branchHeadOffice: boolean;
 
   equptMenuName: string;
-  enableProgressBar: boolean;
+  enableDownloadProgressBar: boolean;
+
+  downloadButtonEnableDisable: boolean;
 
   constructor(
     private utilServiceAPI: LegalentityUtilService,
@@ -27,8 +31,15 @@ export class LegalentityImportDocumentComponent implements OnInit {
     private documenServiceAPI: LegalentityDocumentServiceService,
     private menuModel: LegalentityMenuPrefNames,
     private toastService: ToastrService,
-    private router: Router
-  ) { }
+    private router: Router,
+    private iconRegistry: MatIconRegistry,
+    sanitizer: DomSanitizer
+  ) {
+    iconRegistry.addSvgIcon(
+      'back-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/keyboard_backspace-24px.svg')
+    );
+   }
 
   ngOnInit() {
     if (localStorage.getItem('legalEntityUserDetails') != null){
@@ -54,16 +65,20 @@ export class LegalentityImportDocumentComponent implements OnInit {
   }
 
   downloadEquptDocTemplate(){
-    this.enableProgressBar=true;
+    this.enableDownloadProgressBar=true;
+    this.downloadButtonEnableDisable=true;
     let fileName: string = this.equptMenuName + "-Document-List" + moment().format("YYYY-MM-DD-HH-mm-SSS");
 
     this.documenServiceAPI.downloadEquptDocTemplate(this.legalEntityId)
     .subscribe(data => {
       saveAs(data, fileName + ".xls");
-      this.enableProgressBar=false;
+      this.enableDownloadProgressBar=false;
+      this.downloadButtonEnableDisable=false;
     }, error => {
+      
       this.toastService.error("Something went wrong while downloading excel file");
-      this.enableProgressBar=false;
+      this.enableDownloadProgressBar=false;
+      this.downloadButtonEnableDisable=false;
     });
   }
 
