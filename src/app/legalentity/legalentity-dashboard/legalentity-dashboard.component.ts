@@ -288,6 +288,14 @@ export class LegalentityDashboardComponent implements OnInit {
     this.router.navigate(['/legalentity','portal','rpt','trash','complaint']);
   }
 
+  onResolvedComplaintClick(moreThanUptoFlag: string){
+    this.branchData.branchDetails={
+      branchId: this.branchId
+    };
+
+    this.router.navigate(['/legalentity','portal','rpt','complaints','unresolved',moreThanUptoFlag]);
+  }
+
   ngOnInit() {
 
     if (localStorage.getItem('legalEntityUserDetails') != null)

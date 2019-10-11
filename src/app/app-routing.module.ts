@@ -33,6 +33,7 @@ import {LegalentityTrashComptRptComponent} from './legalentity/legalentity-repor
 import {LegalentityBranchComptConciseRptComponent} from './legalentity/legalentity-reports/legalentity-branch-compt-concise-rpt/legalentity-branch-compt-concise-rpt.component';
 import { LegalentityUser } from './legalentity/model/legalentity-user';
 import {LegalentityImportDocumentComponent} from './legalentity/legalentity-import-document/legalentity-import-document.component';
+import {LegalentityUnresolvedComptRptComponent} from "./legalentity/legalentity-reports/legalentity-unresolved-compt-rpt/legalentity-unresolved-compt-rpt.component";
 
 const routes: Routes = [
   {
@@ -58,6 +59,7 @@ const routes: Routes = [
         {path:"rpt/closed", component: LegalentityClosedComptRptComponent},
         {path:"rpt/contacts", component: LegalentityContactsRptComponent},
         {path:"rpt/branch/dashboard", component: LegalentityBranchComptConciseRptComponent},
+        {path:"rpt/complaints/unresolved/:term", component: LegalentityUnresolvedComptRptComponent},
         {path:"technician-add", component:LegalentityAddTechnicianNewComponent},
         {path:"qr-assinged/rpt", component: LegalentityAssignedQrRptComponent },
         {path:"edit/qr-details/:id", component: LegalentityUpdateQrDetailsComponent},

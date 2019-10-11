@@ -76,7 +76,7 @@ export class LegalentityDocumentRptComponent implements OnInit {
 
     this.enableProgressBar=true;
     this.searchKey='';
-
+//console.log(this.legalEntityId);
      this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
      .subscribe((data: IlegalEntityDocumentRptResponse) => {
        //console.log(data);

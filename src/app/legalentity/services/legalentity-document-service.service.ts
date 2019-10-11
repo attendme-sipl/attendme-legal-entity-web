@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LegalentityUtilService } from './legalentity-util.service';
 import { Observable } from 'rxjs';
+import { stringify } from '@angular/core/src/render3/util';
 
 export interface IlegalEntityDocumentRptResponse{
   errorOccurred: boolean,
@@ -48,6 +49,12 @@ export interface IuploadDocumentReq{
   docActiveStatus: boolean
 };
 
+export interface IimportDocumentQrIdReq{
+  legalEntityId: number,
+  docSpecificToQrId: boolean,
+  excelData: File
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -77,6 +84,16 @@ export class LegalentityDocumentServiceService {
 
     return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/uploadDocument", formData);
 
+  }
+
+  importDocumentQrIExcel(importDocumentQrIdExcelReqObj: IimportDocumentQrIdReq): Observable<any>{
+    const formData: FormData = new FormData();
+
+    formData.append("legalEntityId", importDocumentQrIdExcelReqObj.legalEntityId.toString());
+    formData.append("docSpecificToQrId", String(importDocumentQrIdExcelReqObj.docSpecificToQrId));
+    formData.append("excelData",importDocumentQrIdExcelReqObj.excelData, importDocumentQrIdExcelReqObj.excelData.name);
+
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/importEquipmentExcel", formData);
   }
 
   requestDocDownloadData(documentId: number): Observable<any>{

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityUser } from '../model/legalentity-user';
-import { LegalentityDocumentServiceService } from '../services/legalentity-document-service.service';
+import { LegalentityDocumentServiceService, IimportDocumentQrIdReq } from '../services/legalentity-document-service.service';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
@@ -9,6 +9,7 @@ import {saveAs} from 'file-saver';
 import *as moment from 'moment';
 import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-legalentity-import-document',
@@ -22,8 +23,16 @@ export class LegalentityImportDocumentComponent implements OnInit {
 
   equptMenuName: string;
   enableDownloadProgressBar: boolean;
+  enableImportProgressBar: boolean;
 
   downloadButtonEnableDisable: boolean;
+
+  importDocumentExcelFormGroup: FormGroup;
+  importButtonEnableDisable: boolean;
+
+  formSubmit: boolean;
+
+  uploadedFileObj:File;
 
   constructor(
     private utilServiceAPI: LegalentityUtilService,
@@ -33,7 +42,8 @@ export class LegalentityImportDocumentComponent implements OnInit {
     private toastService: ToastrService,
     private router: Router,
     private iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer
+    sanitizer: DomSanitizer,
+    private importDocExcelFormBuilder: FormBuilder
   ) {
     iconRegistry.addSvgIcon(
       'back-icon',
@@ -62,6 +72,17 @@ export class LegalentityImportDocumentComponent implements OnInit {
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.equptMenuName=this.menuModel.equipmentMenuName;
+
+    this.importDocumentExcelFormGroup=this.importDocExcelFormBuilder.group({
+      legalEntityId: this.legalEntityId,
+      docSpecificToQrId: false,
+      excelData: ['', [Validators.required]]
+    });
+  }
+
+  backToDocumentRpt(){
+    this.router.navigate(['legalentity','portal','rpt','document']);
+    return false;
   }
 
   downloadEquptDocTemplate(){
@@ -80,6 +101,56 @@ export class LegalentityImportDocumentComponent implements OnInit {
       this.enableDownloadProgressBar=false;
       this.downloadButtonEnableDisable=false;
     });
+  }
+
+  onFileChange(event){
+    this.uploadedFileObj=event.target.files[0];
+
+    if (this.uploadedFileObj != null){
+     // console.log(this.uploadedFileObj.type);
+      if (this.uploadedFileObj.type != 'application/vnd.ms-excel'){
+
+        this.importDocumentExcelFormGroup.patchValue({
+          excelData: ['']
+        });
+
+        this.toastService.error("Selected file type not supported");
+        return false;
+      }
+    }
+  }
+
+  onUploadClick(){
+    this.formSubmit=true;
+
+    if (this.importDocumentExcelFormGroup.valid){
+
+      this.enableImportProgressBar=true;
+      this.importButtonEnableDisable=true;
+
+     const importDocumentQrIdMapReqObj: IimportDocumentQrIdReq = {
+       docSpecificToQrId: this.importDocumentExcelFormGroup.get('docSpecificToQrId').value,
+       excelData: this.uploadedFileObj,
+       legalEntityId: this.importDocumentExcelFormGroup.get('legalEntityId').value
+     };
+
+     this.documenServiceAPI.importDocumentQrIExcel(importDocumentQrIdMapReqObj)
+     .subscribe(data => {
+
+      this.toastService.success("Excel sheet import successfull");
+      this.enableImportProgressBar=false;
+      this.importButtonEnableDisable=false;
+
+      this.importDocumentExcelFormGroup.patchValue({
+        excelData: ['']
+      });
+
+     }, error => {
+       this.toastService.error("Something went wrong while importing excel sheet");
+      this.enableImportProgressBar=false;
+      this.importButtonEnableDisable=false;
+     });
+    }
   }
 
 }

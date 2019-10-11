@@ -114,13 +114,13 @@
                           <mat-list-item >
                             <p style="margin-top: 1rem;">More than {{unreslovedComptDayLimit}} days</p>
                             <span style="flex: 1 1 auto;"></span>
-                            <span>{{unresolvedMoreCount}}</span>
+                            <a href="javascript: void(0)" (click)="onResolvedComplaintClick('moreThanCount')">{{unresolvedMoreCount}}</a>
                           </mat-list-item>
     
                           <mat-list-item >
                             <p style="margin-top: 1rem;">Up to {{unreslovedComptDayLimit}} days</p>
                             <span style="flex: 1 1 auto;"></span>
-                            <span>{{unresolvedUptoCount}}</span>
+                            <a href="javascript: void(0)" (click)="onResolvedComplaintClick('upToCount')">{{unresolvedUptoCount}}</a>
                           </mat-list-item>
                       </mat-list>
     

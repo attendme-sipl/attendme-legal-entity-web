@@ -6,6 +6,7 @@
       <div class="row">
         
         <div class="col-sm-12">
+          
 
             <button type="button" class="btn btn-default" >
                 <mat-icon svgIcon="back-icon" (click)="backToDocumentRpt()"></mat-icon>
@@ -46,11 +47,41 @@
 
         </div>
         <div class="col-sm-6">
-          <mat-card>
-            <mat-card-header>
-              <mat-card-title>Import Document</mat-card-title>
-            </mat-card-header>
-          </mat-card>
+            <mat-progress-bar mode="indeterminate" *ngIf="enableImportProgressBar"></mat-progress-bar>
+          <form [formGroup]="importDocumentExcelFormGroup" (ngSubmit)="onUploadClick()">
+              <mat-card>
+                  <mat-card-header>
+                    <mat-card-title>Import Document</mat-card-title>
+                  </mat-card-header>
+      
+                  <mat-card-content>
+                    <input type="file" formControlName="excelData" class="form-control" 
+                    accept="application/vnd.ms-excel"  (change)="onFileChange($event)"
+                    [ngClass]="{'is-invalid': (formSubmit || importDocumentExcelFormGroup.controls['excelData'].dirty) && importDocumentExcelFormGroup.controls['excelData'].hasError('required')}"
+                    />
+
+                    <small>
+                      <i>*Supported file format excel (.xls)</i>
+                    </small>
+
+                    <br/>
+
+                    <mat-error 
+                    *ngIf="(formSubmit || importDocumentExcelFormGroup.controls['excelData'].dirty) && importDocumentExcelFormGroup.controls['excelData'].hasError('required')">
+                     Plese select excel file to upload
+                    </mat-error>
+
+                  </mat-card-content>
+
+                  <mat-card-actions  align="right">
+                    <button type="submit" mat-raised-button color="primary" 
+                       [disabled]="importButtonEnableDisable">
+                      Import
+                    </button>
+                  </mat-card-actions>
+                </mat-card>
+          </form>
+          
         </div>
       </div>
 
