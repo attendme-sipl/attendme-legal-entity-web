@@ -59,7 +59,7 @@ const routes: Routes = [
         {path:"rpt/closed", component: LegalentityClosedComptRptComponent},
         {path:"rpt/contacts", component: LegalentityContactsRptComponent},
         {path:"rpt/branch/dashboard", component: LegalentityBranchComptConciseRptComponent},
-        {path:"rpt/complaints/unresolved/:term", component: LegalentityUnresolvedComptRptComponent},
+        {path:"rpt/complaints/unresolved/:moreThanUpto", component: LegalentityUnresolvedComptRptComponent},
         {path:"technician-add", component:LegalentityAddTechnicianNewComponent},
         {path:"qr-assinged/rpt", component: LegalentityAssignedQrRptComponent },
         {path:"edit/qr-details/:id", component: LegalentityUpdateQrDetailsComponent},

@@ -1,3 +1,147 @@
-<p>
-  legalentity-unresolved-compt-rpt works!
-</p>
+<div class="container-fluid">
+  
+  <div class="row">
+    <div class="col-sm-12">
+
+      <div class="row">
+        <div class="col-sm-12">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="unresolvedComplaintProgressBar"></mat-progress-bar>
+
+          <mat-toolbar style="background-color: transparent;">
+            <mat-toolbar-row>
+              <h3 style="font-size: 1.75rem;">Unresolved {{complaintMenuName}} ({{moreThanUptoPhrase}} {{moreThanUptoDays}} days)</h3>
+                  <span style="flex: 1 1 auto;"></span>
+
+                  <button type="button" mat-raised-button color="primary" (click)="popUnresolvedComplaint(true)">Download Excel</button>
+        
+                  <button type="button" class="btn btn-default float-right">
+                    <mat-icon svgIcon="refreshIcon" (click)="popUnresolvedComplaint(false)"></mat-icon>
+                  </button>
+            </mat-toolbar-row>
+          </mat-toolbar>
+
+          <mat-card>
+            <div class="row">
+
+              <div class="col">
+                <label><b>Total Records:</b> {{totalRecordCount}}</label>
+              </div>
+
+              <div class="col-md-auto">
+                <mat-form-field>
+                  <mat-label>{{complaintMenuName}} Status</mat-label>
+                  <mat-select [(value)]="complaintStatus">
+                    <mat-option 
+                    *ngFor="let indivComplaintStatus of complaintStatusListArr" 
+                    [value]="indivComplaintStatus">
+                      {{indivComplaintStatus | titlecase }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-md-auto" *ngIf="branchHeadOffice">
+                <mat-form-field>
+                  <mat-label>{{branchMenuName}}</mat-label>
+                  <mat-select [(value)] ="branchId" (selectionChange)="popUnresolvedComplaint(false)">
+                    <mat-option *ngFor="let indivBranchObj of branchListArr" [value]="indivBranchObj.branchId">
+                      {{indivBranchObj.branchName}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+            </div>
+
+            <mat-form-field>
+                  <input matInput (keyup) = "applyFilter($event.target.value)" 
+                  placeholder="Search" autocomplete="OFF" [(ngModel)] ="searchKey" />
+            </mat-form-field>
+          </mat-card>
+
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm-12">
+
+          <div class="mat-elevation-z8">
+
+            <div style=" overflow: scroll;">
+            
+                <table mat-table [dataSource]="dataSource" matSort style="min-width: 1500px; width: 100%;">
+
+                    <ng-container matColumnDef="srNo" >
+                        <th mat-header-cell *matHeaderCellDef>Sr. No.</th>
+                        <td mat-cell *matCellDef="let i=index; let element;">{{ (paginator.pageSize * paginator.pageIndex) + i+1 }}</td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="complaintNumber">
+                        <th mat-header-cell *matHeaderCellDef>{{complaintMenuName}} Number</th>
+                        <td mat-cell *matCellDef="let element" >{{ element.complaintNumber}} </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="qrId">
+                        <th mat-header-cell *matHeaderCellDef>QR ID</th>
+                        <td mat-cell *matCellDef="let element" >{{ element.qrId}} </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="regsiteredByName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Registered By</th>
+                        <td mat-cell *matCellDef="let element" >{{ element.regsiteredByName}} ({{element.registeredByMobileNumber}})</td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="assignedTechnicianName">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Assigned {{technicianMenuName}}</th>
+                        <td mat-cell *matCellDef="let element" >
+                          {{element.assignedTechnicianName != null ? element.assignedTechnicianName: '' }} {{element.assignedTechnicianMobile != null? "(" + element.assignedTechnicianMobile + ")" : ''}}
+                        </td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="openDateTime">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Open Date</th>
+                        <td mat-cell *matCellDef="let element" >{{ element.openDateTime | date:'medium'}}</td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="assignedDateTime">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Assigned Date</th>
+                        <td mat-cell *matCellDef="let element" >{{ element.assignedDateTime | date:'medium'}}</td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="inprogressDateTime">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>In Progress Date</th>
+                        <td mat-cell *matCellDef="let element" >{{ element.inprogressDateTime | date:'medium'}}</td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="currentComplaintStatus">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Current Status</th>
+                        <td mat-cell *matCellDef="let element" >{{ element.currentComplaintStatus | titlecase}}</td>
+                    </ng-container>
+    
+                    <ng-container matColumnDef="action">
+                        <th mat-header-cell *matHeaderCellDef>Action</th>
+                        <td mat-cell *matCellDef="let element" >Action</td>
+                    </ng-container>
+    
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    
+                </table>
+
+            </div>
+
+            <mat-paginator 
+                 [length] = "unresolvedComplaintRecordCount" 
+                 [pageSize] = "pageSize"
+                 [pageSizeOptions] = "pageSizeOption">
+            </mat-paginator>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

@@ -244,6 +244,39 @@ export interface IbranchComplaintConciseResponse{
   }]
 };
 
+export interface IunresolvedComplaintReqStruct{
+  allBranch: boolean,
+  branchId: number,
+  legalEntityId: number,
+  unresolvedDayCount: number,
+  exportToExcel: boolean,
+  complaintMenuName: string,
+  technicianMenuName: string,
+  equptMenuName: string,
+  branchMenuName: string,
+  complaintTrash: boolean,
+  unresolvedMoreThanUpToDays: boolean
+};
+
+export interface IunresolvedComplaintResponseStruct{
+  errorOccurred: boolean,
+  complaintList: [{
+    complaintId: number,
+    complaintNumber: string,
+    qrCodeId: number,
+    qrId: string,
+    regsiteredByName: string,
+    registeredByMobileNumber: string,
+    assignedTechnicianName: string,
+    asignedTechnicianMobile: string, 
+    openDateTime: string,
+    assignedDateTime: string,
+    inprogressDateTime: string,
+    currentComplaintStatus: string,
+    complaintTrash: boolean
+  }]
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -372,6 +405,10 @@ export class LegalentityComplaintRptService {
 
     getBranchComplaintConciseRpt(branchComptConciseReqObj: IbranchComplaintConciseReqStruct): Observable<IbranchComplaintConciseResponse>{
       return this.httpClient.post<IbranchComplaintConciseResponse>(this.util.legalEntityRestApuURL + "/branchComplaintConciseDetailList", branchComptConciseReqObj);
+    }
+
+    getUnresolvedComplaintRpt(unresolvedComplaintReqObj: IunresolvedComplaintReqStruct): Observable<IunresolvedComplaintResponseStruct>{
+      return this.httpClient.post<IunresolvedComplaintResponseStruct>(this.util.legalEntityRestApuURL + "/legalEntityUnresolvedComplaintReport", unresolvedComplaintReqObj);
     }
     
 }
