@@ -28,7 +28,7 @@
                 <label><b>Total Records:</b> {{totalRecordCount}}</label>
               </div>
 
-              <div class="col-md-auto">
+              <!--<div class="col-md-auto">
                 <mat-form-field>
                   <mat-label>{{complaintMenuName}} Status</mat-label>
                   <mat-select [(value)]="complaintStatus">
@@ -39,7 +39,7 @@
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
-              </div>
+              </div>-->
 
               <div class="col-md-auto" *ngIf="branchHeadOffice">
                 <mat-form-field>
@@ -79,7 +79,12 @@
     
                     <ng-container matColumnDef="complaintNumber">
                         <th mat-header-cell *matHeaderCellDef>{{complaintMenuName}} Number</th>
-                        <td mat-cell *matCellDef="let element" >{{ element.complaintNumber}} </td>
+                        <td mat-cell *matCellDef="let element" >
+                          <button type="button" class="btn btn-link" 
+                           (click) = "openComplaintDetailsDialog(element.complaintId)" >
+                           {{ element.complaintNumber }}
+                          </button>
+                        </td>
                     </ng-container>
     
                     <ng-container matColumnDef="qrId">
@@ -119,10 +124,10 @@
                         <td mat-cell *matCellDef="let element" >{{ element.currentComplaintStatus | titlecase}}</td>
                     </ng-container>
     
-                    <ng-container matColumnDef="action">
+                    <!--<ng-container matColumnDef="action">
                         <th mat-header-cell *matHeaderCellDef>Action</th>
                         <td mat-cell *matCellDef="let element" >Action</td>
-                    </ng-container>
+                    </ng-container>-->
     
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>

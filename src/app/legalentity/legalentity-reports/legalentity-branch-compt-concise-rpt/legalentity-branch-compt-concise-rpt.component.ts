@@ -209,6 +209,14 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     this.router.navigate(['/legalentity','portal','rpt','trash','complaint']);
   }
 
+  onResolvedComplaintClick(moreThanUptoFlag: string){
+    this.branchData.branchDetails={
+      branchId: this.branchId
+    };
+
+    this.router.navigate(['/legalentity','portal','rpt','complaints','unresolved',moreThanUptoFlag]);
+  }
+
   applyFilter(filterValue: string){
     this.dataSource.filter = filterValue.trim().toLocaleLowerCase();
   }

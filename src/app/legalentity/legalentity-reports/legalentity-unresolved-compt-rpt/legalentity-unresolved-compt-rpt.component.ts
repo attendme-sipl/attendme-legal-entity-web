@@ -4,14 +4,15 @@ import { LegalentityUser } from '../../model/legalentity-user';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { LegalentityUtilService } from '../../services/legalentity-util.service';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MatIconRegistry, MatPaginator, MatSort, MatTableDataSource, Sort } from '@angular/material';
+import { MatIconRegistry, MatPaginator, MatSort, MatTableDataSource, Sort, MatDialog } from '@angular/material';
 import { _MatMenuItemMixinBase } from '@angular/material/menu/typings/menu-item';
-import { LegalentityComplaintRptService, IunresolvedComplaintReqStruct, IunresolvedComplaintResponseStruct } from '../../services/legalentity-complaint-rpt.service';
+import { LegalentityComplaintRptService, IunresolvedComplaintReqStruct, IunresolvedComplaintResponseStruct, IcomplaintIndivReqStruct } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityBranchService, IbranchListReportResponse, IbranchRptReqStruct, IbranchListDetailsResponse } from '../../services/legalentity-branch.service';
 import { LegalentityBranch } from '../../model/legalentity-branch';
 import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 import { ToastrService } from 'ngx-toastr';
 import { LegalentityDashboardService } from '../../services/legalentity-dashboard.service';
+import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 
 @Component({
   selector: 'app-legalentity-unresolved-compt-rpt',
@@ -65,8 +66,8 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     "assignedDateTime",
     "inprogressDateTime",
     "assignedTechnicianName",
-    "currentComplaintStatus",
-    "action"
+    "currentComplaintStatus"
+    //"action"
   ];
 
   constructor(
@@ -81,7 +82,8 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     private branchData: LegalentityBranchDataService,
     private activateRoute: ActivatedRoute,
     private toastService: ToastrService,
-    private dashboardServiceAPI: LegalentityDashboardService
+    private dashboardServiceAPI: LegalentityDashboardService,
+    private dialog: MatDialog
   ) { 
     iconRegistry.addSvgIcon(
       'refreshIcon',
@@ -168,6 +170,18 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
       this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
       this.unresolvedComplaintProgressBar=false;
     });
+  }
+
+  openComplaintDetailsDialog(complaintId: number):void{
+
+    const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+      complaintId: complaintId
+    };
+    
+    const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
+      data: IndivComplaintReqObj
+    });
+
   }
 
   popBranchList(){

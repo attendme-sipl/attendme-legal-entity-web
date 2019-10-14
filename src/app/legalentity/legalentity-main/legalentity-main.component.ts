@@ -64,6 +64,11 @@ export class LegalentityMainComponent implements OnInit {
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/document-24px.svg')
     );
 
+    iconRegistry.addSvgIcon(
+      'new-release-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/new_releases-24px.svg')
+    );
+
     this.commonModel.enableProgressbar =false;
   }
 
