@@ -127,7 +127,7 @@ export class LegalentityImportDocumentComponent implements OnInit {
 
       this.enableImportProgressBar=true;
       this.importButtonEnableDisable=true;
-
+    
      const importDocumentQrIdMapReqObj: IimportDocumentQrIdReq = {
        docSpecificToQrId: this.importDocumentExcelFormGroup.get('docSpecificToQrId').value,
        excelData: this.uploadedFileObj,

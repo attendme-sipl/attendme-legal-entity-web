@@ -7,6 +7,8 @@ import { LegalentityMenuPref } from '../model/legalentity-menu-pref';
 import {OrderByPipe} from 'ngx-pipes'
 import { Router } from '@angular/router';
 import { LegalentityCommons } from '../model/legalentity-commons';
+import { LegalentityVersionFeatureListComponent } from '../legalentity-version-feature-list/legalentity-version-feature-list.component';
+import { LegalentityAppVersionFeatureService, IversionFeatureResponseStruct } from '../services/legalentity-app-version-feature.service';
 
 
 
@@ -37,7 +39,8 @@ export class LegalentityMainComponent implements OnInit {
     private iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
     private router:Router,
-    public commonModel: LegalentityCommons
+    public commonModel: LegalentityCommons,
+    private versionFeatureServiceAPI: LegalentityAppVersionFeatureService
   ) { 
     iconRegistry.addSvgIcon(
       "attendme-logo",
@@ -71,6 +74,13 @@ export class LegalentityMainComponent implements OnInit {
 
     this.commonModel.enableProgressbar =false;
   }
+
+  /*getVersionFeatureList(){
+    this.versionFeatureServiceAPI.getActiveVersionDetails(true)
+    .subscribe((data: IversionFeatureResponseStruct) => {
+      console.log(data);
+    });
+  }*/
 
   ngOnInit() {
 
@@ -108,7 +118,7 @@ export class LegalentityMainComponent implements OnInit {
           .filter(value => value.enableToBranch == true)
         }
         
-
+        //this.getVersionFeatureList(); 
       }
 
       
@@ -128,10 +138,13 @@ export class LegalentityMainComponent implements OnInit {
 
        }
 
+
+
     }
     else
     {
       this.router.navigate(['legalentity','login']);
+      return false;
     }
 
    

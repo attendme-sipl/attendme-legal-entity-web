@@ -86,6 +86,8 @@ import { LegalentityBranchComptConciseRptComponent } from './legalentity/legalen
 import {LegalentityBranchDataService} from './legalentity/services/legalentity-branch-data.service';
 import { LegalentityImportDocumentComponent } from './legalentity/legalentity-import-document/legalentity-import-document.component';
 import { LegalentityUnresolvedComptRptComponent } from './legalentity/legalentity-reports/legalentity-unresolved-compt-rpt/legalentity-unresolved-compt-rpt.component';
+import { LegalentityVersionFeatureListComponent } from './legalentity/legalentity-version-feature-list/legalentity-version-feature-list.component';
+import {LegalentityAppVersionFeatureService} from './legalentity/services/legalentity-app-version-feature.service';
 
 @NgModule({
   declarations: [
@@ -125,7 +127,8 @@ import { LegalentityUnresolvedComptRptComponent } from './legalentity/legalentit
     LegalentityTrashComptRptComponent,
     LegalentityBranchComptConciseRptComponent,
     LegalentityImportDocumentComponent,
-    LegalentityUnresolvedComptRptComponent
+    LegalentityUnresolvedComptRptComponent,
+    LegalentityVersionFeatureListComponent
   ],
   imports: [
     BrowserModule,
@@ -184,7 +187,9 @@ import { LegalentityUnresolvedComptRptComponent } from './legalentity/legalentit
     LegalentityIndivComptDetails,
     DatePipe,
     LegalentityDocumentServiceService,
-    LegalentityBranchDataService
+    LegalentityBranchDataService,
+    LegalentityAppVersionFeatureService
+
   ],
   bootstrap: [AppComponent],
   entryComponents:[
