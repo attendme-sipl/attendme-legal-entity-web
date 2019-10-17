@@ -20,6 +20,20 @@ export interface IversionFeatureResponseStruct{
   }]
 };
 
+export interface IversionUserCheckHistoryReqStruct{
+  userId: number,
+  allCheckHistory: boolean,
+  featureActiveStatus: boolean
+};
+
+export interface IversionUserCheckHistoryResponseStruct{
+  errorOccured: boolean,
+  userCheckHistoryList:[{
+    featureId: number,
+    checkDateTime: string
+  }]
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -32,5 +46,9 @@ export class LegalentityAppVersionFeatureService {
 
   getActiveVersionDetails(versionActiveStatus: boolean):Observable<IversionFeatureResponseStruct>{
     return this.httpClient.get<IversionFeatureResponseStruct>(this.utilServiceAPI.legalEntityRestApuURL + "/versionFeatureDetail/" + versionActiveStatus);
+  }
+
+  getUserVersionCheckHistory(userVersionCheckHistoryObj: IversionUserCheckHistoryReqStruct): Observable<IversionUserCheckHistoryResponseStruct>{
+    return this.httpClient.post<IversionUserCheckHistoryResponseStruct>(this.utilServiceAPI.legalEntityRestApuURL + "/checkVersionHistory", userVersionCheckHistoryObj);
   }
 }

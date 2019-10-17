@@ -40,6 +40,27 @@ export interface IverifyOtpResponse{
    newPasswordSet: boolean
 };
 
+export interface IUserLoginResponseStruct{
+  currentLoginDateTime: string,
+  lastUpdateDateTime: string,
+  legalEntityId: number,
+  passwordChange: boolean,
+  userActiveStatus: boolean,
+  userEmailId: string,
+  userFullName: string,
+  userId: number
+  userMobileNumer:string,
+  userRole: string
+};
+
+export interface ItechnicianDetailsReponse{
+  errorOccured: boolean,
+  technicianId: number,
+  technicianName: string,
+  technicianCreationDateTime: string,
+  technicianActiveStatus: boolean
+};
+
 @Injectable({
   providedIn: 'root'
 })

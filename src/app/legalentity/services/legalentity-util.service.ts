@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment.prod';
+import { environment } from 'src/environments/environment';
 import {LegalentityMenuPref} from '../model/legalentity-menu-pref';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 
