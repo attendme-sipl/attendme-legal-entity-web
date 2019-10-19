@@ -99,6 +99,8 @@ export class LegalentityMainComponent implements OnInit {
     {
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
+      
+
       this.legalEntityName = this.legalEntityUserModel.legalEntityUserDetails.legalEntityName;
       this.userFullName = this.legalEntityUserModel.legalEntityUserDetails.userFullName;
 

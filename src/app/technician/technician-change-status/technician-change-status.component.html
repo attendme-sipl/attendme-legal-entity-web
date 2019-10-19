@@ -1,0 +1,88 @@
+<form #technicianChangeStatus="ngForm" (ngSubmit)="onSubmitClick(technicianChangeStatus)">
+
+<div class="modal-dialog">
+  
+  <div class="modal-content">
+
+    <div class="modal-header">
+      <h5 class="modal-title">
+        Change {{complaintMenuName}}
+      </h5>
+
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+      (click)="onNoClick()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <div class="modal-body">
+   
+      <div class="form-group">
+
+            <label>
+                {{complaintMenuName}} Number: <b>{{complaintNumber}}</b>
+              </label>
+      
+                <mat-form-field class="formFieldStyle">
+                    <mat-label>{{complaintMenuName}} Status</mat-label>
+                    <mat-select 
+                     required
+                     [(ngModel)] = "complaintStatus" name="complaintStatusName" #complaintStatusModel="ngModel" 
+                    >
+                        <mat-option value="inprogress">
+                          INPROGRESS
+                        </mat-option>
+                        <mat-option value="closed">
+                         CLOSED    
+                        </mat-option>
+                      </mat-select>
+
+                      <mat-error
+                       *ngIf="(technicianChangeStatus.submitted || complaintStatusModel.touched) && complaintStatusModel.invalid" 
+                      >
+                       Please select {{ complaintMenuName }} status
+                      </mat-error>
+
+                  </mat-form-field>
+      
+                  <mat-form-field class="formFieldStyle">
+                    <textarea matInput placeholder="Failure Reason"
+                     required
+                     [(ngModel)] = "failureReason" name="failureReasonName" #failureReasonModel="ngModel"
+                    ></textarea>
+
+                    <mat-error 
+                     *ngIf="(technicianChangeStatus.submitted || failureReasonModel.touched) &&  failureReasonModel.invalid"
+                    >
+                     Please enter failure reason
+                    </mat-error>
+                  </mat-form-field>
+      
+                  <mat-form-field class="formFieldStyle">
+                    <textarea matInput placeholder="Action Taken"
+                    required
+                    [(ngModel)]="txtActionTaken" name="actionTakenName" #txtActionTakenModel="ngModel"
+                    ></textarea>
+
+                    <mat-error
+                     *ngIf="(technicianChangeStatus.submitted || txtActionTakenModel.touched) && txtActionTakenModel.invalid"
+                    >
+                     Please enter action taken details
+                    </mat-error>
+
+                  </mat-form-field>
+  
+      </div>        
+
+    </div>
+
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary" [disabled]="technicianChangeStatus.invalid">Submit</button>
+      <button type="button" class="btn btn-secondary"(click)="onNoClick()" >Close</button>
+    </div>
+
+  </div>
+
+</div>
+
+</form>

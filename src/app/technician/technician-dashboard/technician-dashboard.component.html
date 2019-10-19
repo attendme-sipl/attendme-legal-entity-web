@@ -1,0 +1,99 @@
+<div class="container-fluid">
+  
+  <!--Dashboard heading-->
+
+  <div class="row">
+    <div class="col-sm-12">
+
+      <div class="row">
+        <div class="col-sm-12">
+          <h3>Dashboard</h3>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!--Dashboard main content-->
+
+  <div class="row">
+    <!--Concise complaints panel-->
+    <div class="col-sm-4">
+      <mat-progress-bar mode="indeterminate" *ngIf="complaintsProgressBar"></mat-progress-bar>
+      <div class="card">
+
+          <mat-toolbar>
+              <span>{{complaintMenuName}} Details</span>
+              <span style="flex: 1 1 auto;"></span>
+              <button mat-icon-button class="float-right" style="line-height: 0px;" (click)="popConciseComplaintRpt()">
+                  <mat-icon svgIcon="refresh-panel"></mat-icon>
+              </button>
+          </mat-toolbar>
+
+
+        <div class="card-body">
+        
+          <mat-list>
+            <mat-list-item>
+                <p style="margin-top: 1rem;">Assigned</p>
+                <span style="flex: 1 1 auto;"></span>
+                <a routerLink="/technician/portal/rpt/assigned">{{ assignedComplaintCount }}</a>
+            </mat-list-item>
+
+            <mat-list-item>
+                <p style="margin-top: 1rem;">In Progress</p>
+                <span style="flex: 1 1 auto;"></span>
+                <a routerLink="/technician/portal/rpt/inprogress">{{inProgressComplaintCount}}</a>
+            </mat-list-item>
+
+            <mat-list-item>
+                <p style="margin-top: 1rem;">Closed</p>
+                <span style="flex: 1 1 auto;"></span>
+                <a routerLink="/technician/portal/rpt/closed">{{closedComplaintCount}}</a>
+            </mat-list-item>
+          </mat-list>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-sm-4">
+        <mat-progress-bar mode="indeterminate" *ngIf="unresolvedComplaintProgressBar"></mat-progress-bar>
+        <div class="card">
+  
+            <mat-toolbar>
+                <span>Unresolved {{complaintMenuName}}</span>
+                <span style="flex: 1 1 auto;"></span>
+                <button mat-icon-button class="float-right" style="line-height: 0px;" (click)="popTechnicianUnResolvedComptRpt()">
+                    <mat-icon svgIcon="refresh-panel"></mat-icon>
+                </button>
+            </mat-toolbar>
+  
+  
+          <div class="card-body">
+          
+            <mat-list>
+
+              <mat-list-item>
+                  <p style="margin-top: 1rem;">More Than {{unresolvedComptDayCount}} Days</p>
+                  <span style="flex: 1 1 auto;"></span>
+                  <p>{{unreslovedComptMoreThanDaysCount}}</p>
+              </mat-list-item>
+
+              <mat-list-item>
+                  <p style="margin-top: 1rem;">Upto {{unresolvedComptDayCount}} Days</p>
+                  <span style="flex: 1 1 auto;"></span>
+                  <p>{{ unreslovedComptUptoDaysCount }}</p>
+              </mat-list-item>
+
+  
+            </mat-list>
+          </div>
+  
+        </div>
+    </div>
+    <div class="col-sm-4"></div>
+  </div>
+
+</div>
+

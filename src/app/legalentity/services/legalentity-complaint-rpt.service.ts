@@ -64,6 +64,17 @@ export interface IassignComplaintStructure {
   equipmentSerial: string
 };
 
+export interface IComplaintReportStruct{
+
+  complaintId: number,
+  complaintNumber: string,
+  complaintOpenDateTime: string,
+  equipmentName: string,
+  equipmentModel: string,
+  equipmentSerial: string
+
+};
+
 export interface IComplaintBodyStruct
 {
   allBranch: boolean,

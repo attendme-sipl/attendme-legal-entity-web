@@ -8,3 +8,7 @@
     padding: 0px;
 }
 
+.toolBarSpacing{
+    flex: 1 1 auto;
+}
+

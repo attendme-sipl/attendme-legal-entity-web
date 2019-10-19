@@ -1,0 +1,99 @@
+<div class="conatiner-fluid">
+
+  <div class="row">
+
+    <div class="col-sm-12 ">
+  
+        <nav class="navbar navbar-dark bg-dark fixed-top">
+  
+            <a class="navbar-brand" href="technician">
+                <img src="../assets/images/attendmeLogo.png" width="10%" height="10%" class="d-inline-block align-top" alt="">
+            </a>
+  
+        </nav>
+  
+    </div>
+  
+  </div>
+
+
+
+  <form #technicianLoginForm = "ngForm" (ngSubmit)="submitLogin(technicianLoginForm)">
+ 
+  <div class="row">
+
+    <div class="col-sm-12">
+
+      <div class="centered" style="width:30%">
+
+          <mat-progress-bar mode="indeterminate" *ngIf="loginLoad"></mat-progress-bar>
+          <mat-card>
+             
+            <mat-card-header >
+              
+              <mat-card-title>
+               
+                Attendme User Login
+              </mat-card-title>
+            </mat-card-header>
+
+            <mat-error *ngIf="invalidUser">
+              {{errorMessage}}
+            </mat-error>
+
+            <mat-card-content style="font-size: 18px;">
+
+              <mat-form-field class="inputTxtWidth">
+                <input type="email" matInput placeholder="Email ID"  
+                 required
+                 [(ngModel)] = "emailId" name ="userEmail" #emailIdModel ="ngModel"
+                />
+
+                <mat-error *ngIf="(technicianLoginForm.submitted || emailIdModel.touched) && emailIdModel.invalid">
+                 Please enter email id
+                </mat-error>
+            
+              </mat-form-field>
+
+             
+
+              <mat-form-field class="inputTxtWidth">
+                <input type="password" matInput placeholder="Password" 
+                 required
+                 [(ngModel)] ="userPwd" name="userPwd" #userPwdModel = "ngModel"
+                 /> 
+
+                 <mat-error *ngIf="(technicianLoginForm.submitted || userPwdModel.touched) && userPwdModel.invalid">
+                  Please enter password
+                 </mat-error>
+              </mat-form-field>
+
+            </mat-card-content>
+
+            <mat-card-actions align="end">
+
+              <a mat-button routerLink="/technician/forgot-password" color="primary">
+                Forgot Password
+              </a>
+
+             <span style="flex: 1 1 auto;"></span>
+
+             <button type="submit" mat-raised-button color="primary"
+               [disabled] ="technicianLoginForm.invalid" >
+                Login
+              </button>
+
+            </mat-card-actions>
+
+            
+
+        </mat-card>
+      </div>
+      
+    </div>
+
+  </div>
+
+</form>
+
+</div>

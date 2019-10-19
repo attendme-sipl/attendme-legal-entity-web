@@ -1,0 +1,80 @@
+<mat-sidenav-container class="mainContainer">
+
+     <mat-sidenav  mode="side" opened style="background-color: #343a40; width:250px;">
+
+
+      
+      <mat-toolbar style="background-color: #343a40;">
+        
+            <a [routerLink]="['dashboard']" style="text-decoration: none;"> 
+          <mat-icon svgIcon="attendme-logo"
+          style="font-size:30px; height:30px; width:30px;"></mat-icon>
+          Attendme 
+            </a>
+      </mat-toolbar>
+
+      <mat-divider style="border-top-color: #ffffff1f;"></mat-divider>
+
+        <mat-list>
+            <mat-list-item>
+                    <a class="nav-link" routerLink="dashboard" style="width: 100%;">
+                      <mat-icon svgIcon="home-icon"></mat-icon>
+                      Dashboard
+                    </a>
+            </mat-list-item>
+        </mat-list>
+                   
+        <mat-divider style="border-top-color: #ffffff1f;"></mat-divider>
+     
+      <!--<ul class="nav flex-column">
+
+          <mat-list>
+              <mat-list-item >
+                  <a class="nav-link" routerLink="." style="width: 100%;">{{ complaintsMenuName }}</a>
+              </mat-list-item>
+
+              <mat-list-item >
+                  <a class="nav-link" routerLink="." style="width: 100%;">{{ serviceMenuName }}</a>
+              </mat-list-item>
+          </mat-list>
+
+        
+      </ul>-->
+
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+
+     
+     <mat-toolbar color="default" >
+            <mat-toolbar-row>
+                
+                    <span>{{technicianMenuName | titlecase}} Portal</span>
+                    <span class="example-spacer"></span>
+                
+                    
+                    <div class="btn-group">
+                      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{userFullName}}
+                      </button>
+                      <div class="dropdown-menu">
+                        <button class="dropdown-item button-link" style="cursor: pointer;" (click)="logOut()">
+                          Logout
+                        </button>
+                        
+                      </div>
+                    </div>
+                    
+
+                  </mat-toolbar-row>
+     </mat-toolbar>   
+     
+     <div class="contentPanel">
+      <router-outlet></router-outlet>
+     </div>
+
+    
+    </mat-sidenav-content>
+
+</mat-sidenav-container>
+

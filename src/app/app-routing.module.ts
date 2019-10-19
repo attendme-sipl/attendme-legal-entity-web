@@ -34,6 +34,8 @@ import {LegalentityBranchComptConciseRptComponent} from './legalentity/legalenti
 import { LegalentityUser } from './legalentity/model/legalentity-user';
 import {LegalentityImportDocumentComponent} from './legalentity/legalentity-import-document/legalentity-import-document.component';
 import {LegalentityUnresolvedComptRptComponent} from "./legalentity/legalentity-reports/legalentity-unresolved-compt-rpt/legalentity-unresolved-compt-rpt.component";
+import { TechnicianMainComponent } from './technician/technician-main/technician-main.component';
+import { TechnicianDashboardComponent } from './technician/technician-dashboard/technician-dashboard.component';
 
 const routes: Routes = [
   {
@@ -74,6 +76,13 @@ const routes: Routes = [
     ]
   },
   {path:"", redirectTo:"legalentity/login", pathMatch:"full"}
+  /*{path:"technician", children:[
+    {path:"portal", component: TechnicianMainComponent, children:
+    [
+      {path:"dashboard", component: TechnicianDashboardComponent}
+    ]
+  }
+  ]}*/
 ];
 
 @NgModule({

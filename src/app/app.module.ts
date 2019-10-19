@@ -88,6 +88,7 @@ import { LegalentityImportDocumentComponent } from './legalentity/legalentity-im
 import { LegalentityUnresolvedComptRptComponent } from './legalentity/legalentity-reports/legalentity-unresolved-compt-rpt/legalentity-unresolved-compt-rpt.component';
 import { LegalentityVersionFeatureListComponent } from './legalentity/legalentity-version-feature-list/legalentity-version-feature-list.component';
 import {LegalentityAppVersionFeatureService} from './legalentity/services/legalentity-app-version-feature.service';
+import { TechnicianModule } from './technician/technician.module';
 
 @NgModule({
   declarations: [
@@ -166,7 +167,8 @@ import {LegalentityAppVersionFeatureService} from './legalentity/services/legale
     MatProgressSpinnerModule,
     MatAutocompleteModule,
     MatExpansionModule,
-    MatTabsModule
+    MatTabsModule,
+    TechnicianModule
   ],
   providers: [
     LegalentityUser,

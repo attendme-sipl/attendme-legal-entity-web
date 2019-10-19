@@ -135,6 +135,8 @@ export class LegalentityEquipmentComponent implements OnInit {
   documentRptDetailsObj: IlegalEntityDocumentRptDetails[];
 
   panelOpenState: boolean;
+
+  mobileNumberPattern: string = "^[0-9]*$";
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -605,7 +607,7 @@ export class LegalentityEquipmentComponent implements OnInit {
         //Validators.minLength(10),
         //Validators.maxLength(10)
       //])
-      contactMobileNumber: [''],
+      contactMobileNumber: ['',[Validators.pattern(this.mobileNumberPattern)]],
       contactToBeDisplayed: false,
       smsRequired:false,
       emailRequired: false,
@@ -824,6 +826,9 @@ export class LegalentityEquipmentComponent implements OnInit {
 
         if (mobileNumTxt != ''){
 
+          indivFormControl['controls']['contactMobileNumber'].setValidators([Validators.pattern(new RegExp(this.mobileNumberPattern))]);
+          indivFormControl['controls']['contactMobileNumber'].updateValueAndValidity({emitEvent: false});
+
           let contactPeronName: string = indivFormControl['controls']['contactPersonName'].value;
           let contactEmailId: string = indivFormControl['controls']['contactEmailId'].value;
 
@@ -879,6 +884,9 @@ export class LegalentityEquipmentComponent implements OnInit {
       .subscribe(emailTxt => {
 
         if (emailTxt != ''){
+
+          indivFormControl['controls']['contactEmailId'].setValidators([Validators.email]);
+          indivFormControl['controls']['contactEmailId'].updateValueAndValidity({emitEvent: false}); 
 
           let contactPeronName: string = indivFormControl['controls']['contactPersonName'].value;
           let contactMobileNumber: string = indivFormControl['controls']['contactMobileNumber'].value;
@@ -946,7 +954,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     this.qrIdDocumentListFormArray.removeAt(0);
   }
 
-  console.log(this.qrIdDocumentListFormArray.length);
+  //console.log(this.qrIdDocumentListFormArray.length);
 
    this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
    .subscribe((data: IlegalEntityDocumentRptResponse) => {

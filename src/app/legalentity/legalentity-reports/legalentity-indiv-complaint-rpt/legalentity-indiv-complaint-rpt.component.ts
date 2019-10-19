@@ -101,7 +101,7 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
         this.qrIdFormFieldsObj=data.formFieldDetails;
       }
 
-      console.log(this.qrIdFormFieldsObj);
+      //console.log(this.qrIdFormFieldsObj);
 
       //this.qrIdFormFieldsObj=data.formFieldDetails;
 

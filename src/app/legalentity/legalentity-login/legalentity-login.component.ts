@@ -4,12 +4,13 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NgForm } from '@angular/forms';
 import { LegalentityUtilService } from '../services/legalentity-util.service';
-import { LegalentityUserService, IuserLoginReqStruct, IbranchReqStruct } from '../services/legalentity-user.service';
+import { LegalentityUserService, IuserLoginReqStruct, IbranchReqStruct, ItechnicianDetailsReponse } from '../services/legalentity-user.service';
 import *as md5 from "md5";
 import { LegalentityUser } from '../model/legalentity-user';
 //import { stringify } from '@angular/core/src/util';
 import { LegalentityMenuPref } from '../model/legalentity-menu-pref';
 import { HttpClient } from '@angular/common/http';
+import {TehnicianUtilService} from '../../technician/services/tehnician-util.service';
 
 @Component({
   selector: 'app-legalentity-login',
@@ -34,7 +35,8 @@ export class LegalentityLoginComponent implements OnInit {
     private utilServiceAPI: LegalentityUtilService,
     private userLoginServiceAPI: LegalentityUserService,
     private userLoginModel: LegalentityUser,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private technicianUtilAPI: TehnicianUtilService
   ) {
     icontRegistry.addSvgIcon(
       "attendme-logo",
@@ -92,12 +94,19 @@ export class LegalentityLoginComponent implements OnInit {
           return false;
         }
 
-        if (this.userLoginModel.legalEntityUserDetails.userRole=='technician'){
-          this.enableProgressBar = false;
-          this.errorOccured = true;
-          this.errorText = "Please enter valid user email id or password.";
-          return false;
-        }
+       
+
+       // if (this.userLoginModel.legalEntityUserDetails.userRole=='technician'){
+
+          //localStorage.setItem("technicianUserDetails",JSON.stringify(this.userLoginModel.legalEntityUserDetails));
+         // window.location.href = 'http://localhost:4201';
+         // return false;
+
+         // this.enableProgressBar = false;
+         // this.errorOccured = true;
+         // this.errorText = "Please enter valid user email id or password.";
+         // return false;
+       // }
 
        // if (this.userLoginModel.legalEntityUserDetails.passwordChange)
      //   {
@@ -118,7 +127,14 @@ export class LegalentityLoginComponent implements OnInit {
 
             this.userLoginModel.legalEntityBranchDetails = data;
 
-            localStorage.setItem("legalEntityUserDetails", JSON.stringify(this.userLoginModel));
+            if (this.userLoginModel.legalEntityUserDetails.userRole=='technician'){
+              localStorage.setItem("technicianUserDetails", JSON.stringify(this.userLoginModel.legalEntityUserDetails));
+            }
+            else{
+              localStorage.setItem("legalEntityUserDetails", JSON.stringify(this.userLoginModel));
+            }
+
+            
 
             // code to set legal entity menu preference trans
 
@@ -129,8 +145,35 @@ export class LegalentityLoginComponent implements OnInit {
 
               this.enableProgressBar = false;
 
+              if (this.userLoginModel.legalEntityUserDetails.userRole=='technician'){
+
+                this.technicianUtilAPI.getTechnicicianDetails(this.userLoginModel.legalEntityUserDetails.userId)
+                .subscribe((data:ItechnicianDetailsReponse) => {
+                  if (data.errorOccured){
+                    this.enableProgressBar = false;
+                    this.errorOccured = true;
+                    this.errorText = "Something went wrong while login to the portal. Please try later.";
+                    return false;  
+                  }
+
+                  localStorage.setItem('technicianDetails', JSON.stringify(data));
+                  this.router.navigate(['technician/portal/dashboard']);
+
+                }, error => {
+                  this.enableProgressBar = false;
+                    this.errorOccured = true;
+                    this.errorText = "Something went wrong while login to the portal. Please try later.";
+                });
+
+               
+                //return false;
+              }
+              else{
+                this.router.navigate(['legalentity/portal/dashboard']);
+                return false;
+              }
               
-              this.router.navigate(['legalentity/portal/dashboard']);
+              
 
             }, error => {
               this.enableProgressBar = false;
@@ -177,6 +220,12 @@ export class LegalentityLoginComponent implements OnInit {
     if (localStorage.getItem('legalEntityUserDetails') != null)
     {
       this.router.navigate(['legalentity/portal/dashboard']);
+      return false;
+    }
+
+    if (localStorage.getItem('technicianUserDetails') != null){
+      this.router.navigate(['technician/portal/dashboard']);
+      return false;
     }
    
   }

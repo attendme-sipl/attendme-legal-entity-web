@@ -1,0 +1,92 @@
+<mat-progress-bar mode="indeterminate" *ngIf="indivComplaintProgressBar"></mat-progress-bar>
+
+
+<h3 mat-dialog-title>
+  {{complaintMenuName}} Details (No:- {{technicainIndivComplaintModel.complaintNumber}})
+</h3>
+
+<mat-dialog-content class="mat-typography">
+
+  <table class="table">
+    <tr>
+        <th>Number</th>
+        <td>{{technicainIndivComplaintModel.complaintNumber}}</td>
+    </tr>
+
+    <tr *ngFor="let indivFormFieldObj of qrIdFormFieldsObj">
+      <th>{{indivFormFieldObj.formFieldTitle}}</th>
+      <td>{{indivFormFieldObj.formFieldValue}}</td>
+    </tr>
+
+    <tr>
+        <th>Open Date and Time</th>
+        <td>{{technicainIndivComplaintModel.complaintDate | date:'medium'}}</td>
+    </tr>
+
+    <tr>
+        <th>Details</th>
+        <td>{{technicainIndivComplaintModel.complaintDescription}}</td>
+    </tr>
+
+    <tr>
+        <th>Documents</th>
+        <td>
+          <mat-list role="list">
+              <mat-list-item role="listitem"
+               *ngFor="let indivDocData of indivComplaintDocLinkArr"
+              >
+                <a href="{{indivDocData.imageLink}}" target="_blank">
+                  {{indivDocData.imageName}}
+                </a>
+              
+            </mat-list-item>
+          </mat-list>
+        </td>
+    </tr>
+
+    <tr>
+      <th>Registered By</th>
+      <td>{{technicainIndivComplaintModel.operatorName}} ({{ technicainIndivComplaintModel.operatorContactNumber }})</td>
+    </tr>
+
+    <tr>
+      <th>Assigned Date-Time</th>
+      <td>{{technicainIndivComplaintModel.assignedDate | date:'medium'}}</td>
+    </tr>
+
+    <!--<tr>
+      <th>Assinged To</th>
+      <td>
+        <span *ngIf="indivComplaintDetailsObj.assignTechnicianName != null">{{indivComplaintDetailsObj.assignTechnicianName}} ({{indivComplaintDetailsObj.assignTechnicianContactNumber}})</span>
+      </td>
+    </tr>-->
+
+    <tr>
+      <th>Inprogress Date-Time</th>
+      <td>{{technicainIndivComplaintModel.inprogressDate | date:'medium'}}</td>
+    </tr>
+
+    <tr>
+      <th>Closed Date-Time</th>
+      <td>{{technicainIndivComplaintModel.closedDate | date:'medium'}}</td>
+    </tr>
+
+    <tr>
+      <th>Failure Reason</th>
+      <td>{{technicainIndivComplaintModel.failureReason}}</td>
+    </tr>
+
+    <tr>
+      <th>Action Taken</th>
+      <td>{{technicainIndivComplaintModel.actionTaken}}</td>
+    </tr>
+
+    
+
+  </table>
+
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close] = "true" cdkFocusInitial>Close</button>
+</mat-dialog-actions>

@@ -29,13 +29,13 @@ export const environment = {
 
       // AWS New Demo Instance (https)
 
-        superAdminAPIURL: "http://demo-sa.attendme.in/api",
-        legalEntityAPIURL: "http://demo-le.attendme.in/api",
-        mobileServiceAPIURL: "http://demo-android.attendme.in/api"
+        //superAdminAPIURL: "http://demo-sa.attendme.in/api",
+        //legalEntityAPIURL: "http://demo-le.attendme.in/api",
+        //mobileServiceAPIURL: "http://demo-android.attendme.in/api"
 
         // AWS New Production Instance (https)
 
-        //superAdminAPIURL: "https://attendme-le.attendme.in/api",
-        //legalEntityAPIURL: "https://attendme-le.attendme.in/api",
-        //mobileServiceAPIURL: "https://attendme-android.attendme.in/api"
+        superAdminAPIURL: "https://attendme-le.attendme.in/api",
+        legalEntityAPIURL: "https://attendme-le.attendme.in/api",
+        mobileServiceAPIURL: "https://attendme-android.attendme.in/api"
 };

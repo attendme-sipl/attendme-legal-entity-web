@@ -1,0 +1,126 @@
+<div class="container-fluid">
+  <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+  <div class="row">
+    <div class="col-sm-12">
+
+      <!--Report Heading-->
+
+      <div class="row">
+        <div class="col-sm-12">
+
+          <mat-toolbar style="background-color: transparent;">
+            <mat-toolbar-row>
+              <h3 style="font-size: 1.75rem;">{{complaintMenuName}} Report (Status: In Progress)</h3>
+              <span class="toolBarSpacing"></span>
+
+              <button type="button" mat-raised-button color="primary" (click)="popInprogressComplaintList(true)">Downlaod Excel</button>
+
+              <button type="button" class="btn btn-default" style="margin-left: 5px;">
+                <mat-icon svgIcon="refresh-panel" (click)="popInprogressComplaintList(false)" ></mat-icon>
+              </button>
+            </mat-toolbar-row>
+          </mat-toolbar>
+
+          <mat-card>
+            <div class="row">
+              <div class="col-auto mr-auto">
+                <label><b>Total Records:</b> {{totalRecordCount}}</label>
+              </div>
+            </div>
+
+            <mat-form-field>
+              <input matInput (keyup) ="applyFilter($event.target.value)" 
+               placeholder="Search" [(ngModel)]="searchKey" autocomplete="OFF"/>
+            </mat-form-field>
+          </mat-card>
+
+          
+
+          <!--<div class="clearfix">
+            <h3 class="float-left">
+              {{complaintMenuName}} Report (Status: In Progress)
+            </h3>
+            <button type="button" class="btn btn-default float-right">
+              <mat-icon svgIcon="refresh-panel" (click)="popInprogressComplaintList()"></mat-icon>
+            </button>
+          </div>-->
+        </div>
+      </div>
+
+      <!--Report grid-->
+
+      <div class="row">
+        <div class="col-sm-12">
+
+
+          <div class="mat-elevation-z8">
+
+            <table mat-table [dataSource] ="dataSource" matSort>
+
+              <ng-container matColumnDef="srNo">
+                <th mat-header-cell *matHeaderCellDef>Sr No.</th>
+                <td mat-cell *matCellDef="let i=index">
+                  {{ (paginator.pageSize * paginator.pageIndex) + i+1 }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="complaintNumber">
+                <th mat-header-cell *matHeaderCellDef>{{ complaintMenuName }} Number</th>
+                <td mat-cell *matCellDef="let element">
+                  <button type="button" class="btn btn-link" (click)="openComplaintDetailsDialog(element.complaintId)">
+                      {{ element.complaintNumber }}
+                  </button>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="qrId">
+                <th mat-header-cell *matHeaderCellDef>QR ID</th>
+                <td mat-cell *matCellDef="let element">{{ element.qrId }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="complaintOpenDateTime">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ complaintMenuName }} Date</th>
+                <td mat-cell *matCellDef="let element">{{ element.complaintOpenDateTime | date:'medium' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="complaintInprogressDateTime">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ complaintMenuName }} In Progress Date</th>
+                <td mat-cell *matCellDef="let element">{{ element.complaintInprogressDateTime | date:'medium' }}</td>
+              </ng-container>
+
+              <ng-container matColumnDef="complaintRegisterByName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>{{ complaintMenuName }} Registered By</th>
+                <td mat-cell *matCellDef="let element">{{ element.complaintRegisterByName }} ({{element.compalaintRegisterByMobile}})</td>
+              </ng-container>
+
+              <ng-container matColumnDef="changeStatus">
+                <th mat-header-cell *matHeaderCellDef>Change Status</th>
+                <td mat-cell *matCellDef="let element">
+                  <button type="button" mat-stroked-button color="primary" 
+                    (click) = "openChangeStatusDialog(element.complaintId)" >
+                   Change Status
+                  </button>
+                </td>
+            </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="displayedColumn"></tr>
+              <tr mat-row *matRowDef="let row; columns: displayedColumn"></tr>
+
+            </table>
+            
+            <mat-paginator 
+             [length] = "complaintRecordCount" 
+             [pageSize] = "pageSize"
+             [pageSizeOptions] = "pageSizeOption">
+            </mat-paginator>
+
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>

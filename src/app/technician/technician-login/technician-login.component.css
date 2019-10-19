@@ -1,0 +1,15 @@
+.centered {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+  }
+
+  .mat-card-title {
+    font-size: 20px;
+  }
+
+  .inputTxtWidth {
+    width: 100%;
+  }
