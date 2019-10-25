@@ -11,6 +11,7 @@ import { LegalentityUser } from '../model/legalentity-user';
 import { LegalentityMenuPref } from '../model/legalentity-menu-pref';
 import { HttpClient } from '@angular/common/http';
 import {TehnicianUtilService} from '../../technician/services/tehnician-util.service';
+import { LegalentityAppVersionFeatureService } from '../services/legalentity-app-version-feature.service';
 
 @Component({
   selector: 'app-legalentity-login',
@@ -36,7 +37,8 @@ export class LegalentityLoginComponent implements OnInit {
     private userLoginServiceAPI: LegalentityUserService,
     private userLoginModel: LegalentityUser,
     private httpClient: HttpClient,
-    private technicianUtilAPI: TehnicianUtilService
+    private technicianUtilAPI: TehnicianUtilService,
+    private appVersionFeatureServiceAPI: LegalentityAppVersionFeatureService
   ) {
     icontRegistry.addSvgIcon(
       "attendme-logo",
@@ -208,6 +210,8 @@ export class LegalentityLoginComponent implements OnInit {
     }
 
   }
+
+  
 
   ngOnInit() {
 

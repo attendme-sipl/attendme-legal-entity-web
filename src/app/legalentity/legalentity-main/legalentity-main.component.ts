@@ -8,8 +8,9 @@ import {OrderByPipe} from 'ngx-pipes'
 import { Router } from '@angular/router';
 import { LegalentityCommons } from '../model/legalentity-commons';
 import { LegalentityVersionFeatureListComponent } from '../legalentity-version-feature-list/legalentity-version-feature-list.component';
-import { LegalentityAppVersionFeatureService, IversionFeatureResponseStruct } from '../services/legalentity-app-version-feature.service';
+import { LegalentityAppVersionFeatureService, IversionFeatureResponseStruct, IversionUserCheckHistoryReqStruct, IversionUserCheckHistoryResponseStruct } from '../services/legalentity-app-version-feature.service';
 import { ToastrService } from 'ngx-toastr';
+import { MatDialog } from '@angular/material';
 
 
 
@@ -33,6 +34,7 @@ export class LegalentityMainComponent implements OnInit {
   headOffice: boolean;
 
   branchName: string;
+  userId: number;
 
   constructor(
     private utilAPI: LegalentityUtilService,
@@ -42,7 +44,8 @@ export class LegalentityMainComponent implements OnInit {
     private router:Router,
     public commonModel: LegalentityCommons,
     private versionFeatureServiceAPI: LegalentityAppVersionFeatureService,
-    private toastService: ToastrService
+    private toastService: ToastrService,
+    private dialog: MatDialog
   ) { 
     iconRegistry.addSvgIcon(
       "attendme-logo",
@@ -77,7 +80,7 @@ export class LegalentityMainComponent implements OnInit {
     this.commonModel.enableProgressbar =false;
   }
 
-  getVersionFeatureList(){
+  displayNewVersionData(){
     this.versionFeatureServiceAPI.getActiveVersionDetails(true)
     .subscribe((data: IversionFeatureResponseStruct) => {
       if (data.errorOccured){
@@ -87,8 +90,26 @@ export class LegalentityMainComponent implements OnInit {
 
       if (data.versionFeatureList.length > 0){
         let versionId: number = data.versionFeatureList[0].featureId;
-
         
+        const userVersionCheckHistoryReq: IversionUserCheckHistoryReqStruct = {
+          allCheckHistory: false,
+          featureActiveStatus: true,
+          userId: this.userId
+        };
+
+        this.versionFeatureServiceAPI.getUserVersionCheckHistory(userVersionCheckHistoryReq)
+        .subscribe((data: IversionUserCheckHistoryResponseStruct) => {
+          
+          if (data.errorOccured){
+            this.toastService.error("Something went wrong while showing What's New feature");
+            return false;
+          }
+
+          console.log(data.userCheckHistoryList.length > 0 );
+
+          if (data.userCheckHistoryList == null){}
+
+        });
       }
     }, error => {this.toastService.error("Soemthing went wrong while getting latest version list");});
   }
@@ -107,6 +128,9 @@ export class LegalentityMainComponent implements OnInit {
       this.headOffice=this.legalEntityUserModel.legalEntityBranchDetails.branchHeadOffice;
 
       this.branchName=this.legalEntityUserModel.legalEntityBranchDetails.branchName;
+
+      this.userId=this.legalEntityUserModel.legalEntityUserDetails.userId;
+      
 
       if (localStorage.getItem('legalEntityMenuPref') != null)
       {
@@ -131,7 +155,7 @@ export class LegalentityMainComponent implements OnInit {
           .filter(value => value.enableToBranch == true)
         }
         
-        this.getVersionFeatureList(); 
+        this.displayNewVersionData(); 
       }
 
       

@@ -94,6 +94,7 @@ export class LegalentityAssignTechnicianComponent implements OnInit {
     }
     else {
       this.router.navigate(['legalentity','login']);
+      return false;
     }
 
    /* if (localStorage.getItem('legalEntityUser') != null)

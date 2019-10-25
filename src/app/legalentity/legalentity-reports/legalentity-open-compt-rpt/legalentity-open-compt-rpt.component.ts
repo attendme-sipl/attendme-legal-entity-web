@@ -21,6 +21,7 @@ import *as moment from 'moment';
 import { LegalentityBranchService, IbranchRptReqStruct, IbranchListReportResponse, IbranchListDetailsResponse } from '../../services/legalentity-branch.service';
 import { LegalentityBranch } from '../../model/legalentity-branch';
 import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
+import { LegalentityComplaintActionComponent } from '../../legalentity-complaint-action/legalentity-complaint-action.component';
 
 export interface IAssingTechnicianDialogData{
   complaintId: number,
@@ -302,7 +303,6 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
       data: IndivComplaintReqObj
     });
-
   }
 
   openAssingTechnicianDialog(complaintId: number):void{
@@ -326,7 +326,9 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       technicianId:null
     };
 
-    const dialogRef = this.dialog.open(LegalentityAssignTechnicianComponent, {
+    const dialogRef = this.dialog.open(LegalentityComplaintActionComponent);
+
+    /*const dialogRef = this.dialog.open(LegalentityAssignTechnicianComponent, {
       data: complaintDetailsData,
       width: '500px',
       panelClass: 'custom-dialog-container'
@@ -373,7 +375,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
         });
 
       }
-    });
+    }); */
 
   }
 

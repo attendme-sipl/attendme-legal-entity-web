@@ -33,7 +33,6 @@ export class LegalentityUploadDocumentComponent implements OnInit {
   disableSubmitButton:boolean;
 
   uploadedFileObj:File;
-
   branchHeadOffice: boolean;
 
   constructor(

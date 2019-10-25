@@ -89,6 +89,7 @@ import { LegalentityUnresolvedComptRptComponent } from './legalentity/legalentit
 import { LegalentityVersionFeatureListComponent } from './legalentity/legalentity-version-feature-list/legalentity-version-feature-list.component';
 import {LegalentityAppVersionFeatureService} from './legalentity/services/legalentity-app-version-feature.service';
 import { TechnicianModule } from './technician/technician.module';
+import { LegalentityComplaintActionComponent } from './legalentity/legalentity-complaint-action/legalentity-complaint-action.component';
 
 @NgModule({
   declarations: [
@@ -129,7 +130,8 @@ import { TechnicianModule } from './technician/technician.module';
     LegalentityBranchComptConciseRptComponent,
     LegalentityImportDocumentComponent,
     LegalentityUnresolvedComptRptComponent,
-    LegalentityVersionFeatureListComponent
+    LegalentityVersionFeatureListComponent,
+    LegalentityComplaintActionComponent
   ],
   imports: [
     BrowserModule,
@@ -191,7 +193,7 @@ import { TechnicianModule } from './technician/technician.module';
     LegalentityDocumentServiceService,
     LegalentityBranchDataService,
     LegalentityAppVersionFeatureService
-
+    
   ],
   bootstrap: [AppComponent],
   entryComponents:[
@@ -199,7 +201,9 @@ import { TechnicianModule } from './technician/technician.module';
     LegalentityAssignTechnicianComponent,
     LegalentityConfirmAlertComponent,
     LegalentityAddContactComponent,
-    LegalentityQrDetailsComponent
+    LegalentityQrDetailsComponent,
+    LegalentityVersionFeatureListComponent,
+    LegalentityComplaintActionComponent
   ]
 })
 export class AppModule { }
