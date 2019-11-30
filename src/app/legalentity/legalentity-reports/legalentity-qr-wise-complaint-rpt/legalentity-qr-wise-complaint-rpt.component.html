@@ -1,0 +1,51 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12">
+
+      <div class="row">
+        <div class="col-sm-12">
+          <mat-progress-bar mode="indeterminate" *ngIf="enableProgressBar"></mat-progress-bar>
+
+          
+            <div class="row">
+
+              <div class="col">
+                <h3 style="font-size: 1.75rem;">QR ID Wise {{ComplaintMenuName}} Report</h3>
+              </div>
+
+              <div class="col-sm-auto">
+                <button type="button" mat-raised-button color="primary" (click)="popQrIdAllComplaintRpt(true)">Download Excel</button>
+              </div>
+
+              <div class="col-sm-auto">
+                <button type="button" class="btn btn-default float-right">
+                  <mat-icon svgIcon="refresh-icon" (click)="popQrIdAllComplaintRpt(false)"></mat-icon>
+                </button>
+              </div>
+
+            </div>
+            
+            <div class="row">
+              <div class="col-sm-12">
+
+                <mat-card>
+                  <div class="row justify-content-start">
+                    <div class="col-3">
+                      <label><b>Total Records:</b> {{totalRecordCount}}</label>
+                    </div>
+
+                    <div class="col-3">
+                      <label><b>QR ID:</b>{{qrId}}</label>
+                    </div>
+                  </div>
+                </mat-card>
+
+              </div>
+            </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

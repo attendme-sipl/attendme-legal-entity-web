@@ -90,6 +90,7 @@ import { LegalentityVersionFeatureListComponent } from './legalentity/legalentit
 import {LegalentityAppVersionFeatureService} from './legalentity/services/legalentity-app-version-feature.service';
 import { TechnicianModule } from './technician/technician.module';
 import { LegalentityComplaintActionComponent } from './legalentity/legalentity-complaint-action/legalentity-complaint-action.component';
+import { LegalentityQrWiseComplaintRptComponent } from './legalentity/legalentity-reports/legalentity-qr-wise-complaint-rpt/legalentity-qr-wise-complaint-rpt.component';
 
 @NgModule({
   declarations: [
@@ -131,7 +132,8 @@ import { LegalentityComplaintActionComponent } from './legalentity/legalentity-c
     LegalentityImportDocumentComponent,
     LegalentityUnresolvedComptRptComponent,
     LegalentityVersionFeatureListComponent,
-    LegalentityComplaintActionComponent
+    LegalentityComplaintActionComponent,
+    LegalentityQrWiseComplaintRptComponent
   ],
   imports: [
     BrowserModule,

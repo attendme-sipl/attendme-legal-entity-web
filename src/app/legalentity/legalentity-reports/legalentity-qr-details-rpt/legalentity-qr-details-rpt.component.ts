@@ -56,6 +56,8 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
   userBranchId: number;
   branchListArr: IbranchListDetailsResponse[];
 
+  complaintCountColName: string;
+
   constructor(
     private utileServiceAPI: LegalentityUtilService,
     private router: Router,
@@ -116,12 +118,14 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
          return false;
        }
  
+       //console.log(this.complaintCountColName);
         this.displayedColumns = [];
  
         this.displayedColumns = [
           "srNo",
           "QR ID",
           "Edit",
+          this.complaintCountColName,
           "Assigned Date"
          ];
         
@@ -163,10 +167,11 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
            myMap['qrCodeFileLink']=indivQrDetails.qrCodeFileLink;
            myMap['qrCodeId']=indivQrDetails.qrCodeId;
            let assignDate:string = this.datePipe.transform(indivQrDetails.qrAssignDateTime, 'yyyy-MM-dd hh:mm:ss');
- 
+           
            myMap['Assigned Date'] = assignDate;
            
- 
+           myMap[this.complaintCountColName] = indivQrDetails.complaintCount;
+
            let qrIdFieldsObj: any[] = indivQrDetails.formFieldDetails;
  
            qrIdFieldsObj.forEach(indivFormFieldObj => {
@@ -256,6 +261,10 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
     });
   }
 
+  openQrIdComplaints(qrId: number){
+    this.router.navigate(['legalentity/portal/rpt/complaints/qr/' + qrId]);
+  }
+
   ngOnInit() {
 
     if (localStorage.getItem('legalEntityUserDetails') != null){
@@ -278,6 +287,10 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
     this.branchMenuName=this.menuModel.branchMenuName;
     this.complaintManueName=this.menuModel.complaintMenuName;
     this.technicianMenuName=this.menuModel.technicianMenuName;
+
+    this.complaintCountColName = this.complaintManueName + " Count"
+
+    this.columnsTobeExcluded.push(this.complaintCountColName);
 
     this.displayedColumns.push(this.branchMenuName);
 

@@ -82,7 +82,8 @@ export interface IqrIdRptResponseStruct{
      formFieldDetails:[{
        formFieldId: number,
        formFieldValue: string
-     }]
+     }],
+     complaintCount
   }]
 };
 

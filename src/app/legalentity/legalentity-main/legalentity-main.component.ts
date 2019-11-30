@@ -105,7 +105,7 @@ export class LegalentityMainComponent implements OnInit {
             return false;
           }
 
-          console.log(data.userCheckHistoryList.length > 0 );
+          //console.log(data.userCheckHistoryList.length > 0 );
 
           if (data.userCheckHistoryList == null){}
 

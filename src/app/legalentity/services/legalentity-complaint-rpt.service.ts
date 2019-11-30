@@ -318,7 +318,7 @@ export class LegalentityComplaintRptService {
 
   getIndivComplaintDetails(indivComplaintReqObj: IcomplaintIndivReqStruct):Observable<IcomplaintIndivResponseStruct>{
    
-    return this.httpClient.post<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail", indivComplaintReqObj);
+    return this.httpClient.get<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail/" + indivComplaintReqObj);
   }
 
   assignTechnicianToComplaint(complaintDetails:IAssingTechnicianDialogData):Observable<any>{
@@ -420,6 +420,21 @@ export class LegalentityComplaintRptService {
 
     getUnresolvedComplaintRpt(unresolvedComplaintReqObj: IunresolvedComplaintReqStruct): Observable<IunresolvedComplaintResponseStruct>{
       return this.httpClient.post<IunresolvedComplaintResponseStruct>(this.util.legalEntityRestApuURL + "/legalEntityUnresolvedComplaintReport", unresolvedComplaintReqObj);
+    }
+
+    exportToExcelUnresolvedComplaintRpt(unresolvedComplaintReqObj: IunresolvedComplaintReqStruct): Observable<any>{
+      //return this.httpClient.post<IunresolvedComplaintResponseStruct>(this.util.legalEntityRestApuURL + "/legalEntityUnresolvedComplaintReport", unresolvedComplaintReqObj);
+
+      return this.httpClient.post(this.util.legalEntityRestApuURL + "/legalEntityUnresolvedComplaintReport",
+      unresolvedComplaintReqObj,
+      {responseType: 'blob' as 'json'}
+      )
+      .map(
+        (res: Blob) => {
+          var blob = new Blob([res], {type: 'application/vnd.ms-excel'} );
+          return blob;
+        }
+      );
     }
     
 }

@@ -81,8 +81,29 @@ export class LegalentityDocumentServiceService {
     formData.append("docActiveStatus", String(uploadedFileObject.docActiveStatus));
     formData.append("specificToQr", String(uploadedFileObject.specificToQr));
     
+    formData.append("complaintStatusDocument", uploadedFileObject.docData, uploadedFileObject.docData.name);
+    
+    const formDataNew: FormData = new FormData();
+    
+    formDataNew.append("complaintStatusDocument",uploadedFileObject.docData);
+    formDataNew.append("complaintId","1814");
+    formDataNew.append("technicianId","4");
+    formDataNew.append("complaintStatus","closed");
+    formDataNew.append("complaintMenuName","Complaint");
+    formDataNew.append("technicianMenuName","Engineer");
+    formDataNew.append("equipmentMenuName","Machine");
+    formDataNew.append("legalEntityUserId","7");
+    formDataNew.append("androidPortalKey","false");
+    formDataNew.append("complaintStageCount","4");
+    formDataNew.append("failureReason","NA");
+    formDataNew.append("actionTaken","NA");
+    formDataNew.append("userId","7");
 
-    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/uploadDocument", formData);
+
+   // return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/uploadDocument", formData);
+
+    
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/techChangeCompStatus", formDataNew);
 
   }
 

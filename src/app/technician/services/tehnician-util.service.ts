@@ -80,9 +80,7 @@ export class TehnicianUtilService {
 
   getTechnicicianDetails(userId: number):Observable<ItechnicianDetailsReponse>{
     
-    return this.httpClient.post<ItechnicianDetailsReponse>(this.api_url + "/technicianInfo", {
-      userId: userId
-    });
+    return this.httpClient.get<ItechnicianDetailsReponse>(this.api_url + "/technicianInfo/" + userId);
   }
 
   getMenuDetails(): TechnicianMenuModel{

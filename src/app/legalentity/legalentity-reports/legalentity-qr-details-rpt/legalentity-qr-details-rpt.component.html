@@ -74,7 +74,7 @@
                           <button mat-button color="primary" (click)="editLinkClick(element.qrCodeId)">Edit</button>
                         </td>
                     </ng-container>-->
-    
+                    
                     <div *ngFor="let indivColumnHeader of displayedColumns">
     
                       <ng-container *ngIf="!columnsTobeExcluded.includes(indivColumnHeader)" matColumnDef="{{indivColumnHeader}}" >
@@ -85,17 +85,31 @@
                       <ng-container *ngIf="indivColumnHeader=='Edit'" matColumnDef="Edit">
                         <th mat-header-cell *matHeaderCellDef>Edit</th>
                         <td mat-cell *matCellDef="let element">
-                          <button mat-button color="primary" (click)="editLinkClick(element.qrCodeId)">Edit</button>
+                          <!--<button mat-button color="primary" (click)="editLinkClick(element.qrCodeId)">
+                            Edit
+                          </button>-->
+                          <a href="javascript: void(0);" (click)="editLinkClick(element.qrCodeId)">
+                            Edit
+                          </a>
                         </td>
                       </ng-container>
     
                       <ng-container *ngIf="indivColumnHeader=='QR ID'" matColumnDef="{{indivColumnHeader}}" >
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>{{indivColumnHeader}}</th>
                         <td mat-cell *matCellDef="let element">
-                          <a  mat-button color="primary" href="{{element['qrCodeFileLink']}}" target="_blank">
+                          <a href="{{element['qrCodeFileLink']}}" target="_blank">
                           {{ element[indivColumnHeader]  }}
                           </a>
                         </td>
+                      </ng-container>
+                     
+                      <ng-container *ngIf="indivColumnHeader== complaintCountColName" matColumnDef="{{indivColumnHeader}}" >
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{indivColumnHeader}}</th>
+                          <td mat-cell *matCellDef="let element" style="text-align: center;">
+                            <a href="javascript: void(0);" (click)="openQrIdComplaints(element.qrCodeId)">
+                            {{ element[complaintCountColName]  }}
+                            </a>
+                          </td>
                       </ng-container>
     
                     </div>

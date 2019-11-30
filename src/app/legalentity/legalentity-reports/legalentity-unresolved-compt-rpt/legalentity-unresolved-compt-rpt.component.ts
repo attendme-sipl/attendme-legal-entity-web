@@ -13,6 +13,8 @@ import { LegalentityBranchDataService } from '../../services/legalentity-branch-
 import { ToastrService } from 'ngx-toastr';
 import { LegalentityDashboardService } from '../../services/legalentity-dashboard.service';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
+import {saveAs} from 'file-saver';
+import *as moment from 'moment';
 
 @Component({
   selector: 'app-legalentity-unresolved-compt-rpt',
@@ -92,7 +94,7 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
   }
 
   popUnresolvedComplaint(exportToExcel: boolean){
-
+    
     this.unresolvedComplaintProgressBar=true;
     this.searchKey='';
 
@@ -103,7 +105,7 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
         this.unresolvedComplaintProgressBar=false;
         return false;
       }
-
+      
       this.moreThanUptoDays=parseInt(data['unresolvedDaysCount']);
       this.unresolvedComplaintProgressBar=false;
 
@@ -120,8 +122,22 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
         unresolvedDayCount: this.moreThanUptoDays,
         unresolvedMoreThanUpToDays: this.moreThanUptoFlag
       };
-
-      this.complaintRptServiceAPI.getUnresolvedComplaintRpt(unresolvedComplaintReqObj)
+      //console.log(exportToExcel);
+      if (exportToExcel){
+        let fileName: string = "Un-Resolved-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+        this.complaintRptServiceAPI.exportToExcelUnresolvedComplaintRpt(unresolvedComplaintReqObj)
+        .subscribe(data => {
+          console.log(data);
+          console.log("samop");
+          saveAs(data, fileName);
+        }, error => {
+          console.log(error);
+          this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
+          this.unresolvedComplaintProgressBar=false;
+        });
+      }
+      else{
+        this.complaintRptServiceAPI.getUnresolvedComplaintRpt(unresolvedComplaintReqObj)
       .subscribe((data: IunresolvedComplaintResponseStruct) => {
 
         if (data.errorOccurred){
@@ -165,6 +181,9 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
         this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
         this.unresolvedComplaintProgressBar=false;
       });
+      }
+
+      
 
     }, error => {
       this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
