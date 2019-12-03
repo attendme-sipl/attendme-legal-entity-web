@@ -12,6 +12,8 @@ import { LegalentityMenuPref } from '../model/legalentity-menu-pref';
 import { HttpClient } from '@angular/common/http';
 import {TehnicianUtilService} from '../../technician/services/tehnician-util.service';
 import { LegalentityAppVersionFeatureService } from '../services/legalentity-app-version-feature.service';
+import { AuthService, IauthUserLoginReqStruct,  } from 'src/app/Auth/auth.service';
+import { AuthUserModel } from 'src/app/Common_Model/auth-user-model';
 
 @Component({
   selector: 'app-legalentity-login',
@@ -38,7 +40,8 @@ export class LegalentityLoginComponent implements OnInit {
     private userLoginModel: LegalentityUser,
     private httpClient: HttpClient,
     private technicianUtilAPI: TehnicianUtilService,
-    private appVersionFeatureServiceAPI: LegalentityAppVersionFeatureService
+    private appVersionFeatureServiceAPI: LegalentityAppVersionFeatureService,
+    private authServiceAPI: AuthService
   ) {
     icontRegistry.addSvgIcon(
       "attendme-logo",
@@ -51,7 +54,23 @@ export class LegalentityLoginComponent implements OnInit {
     
     if(loginFormModel.valid)
     {
-     this.enableProgressBar = true;
+
+      const userReqObj: IauthUserLoginReqStruct = {
+       deviceIpAddress: '192.168.0.1',
+       loginActivity: 'login',
+       password: md5(loginFormModel.value['txtUserPassword']),
+       username: loginFormModel.value['txtEmailId']
+      };
+
+      this.authServiceAPI.authUser(userReqObj)
+      .subscribe((data: AuthUserModel) => {
+        console.log(data);
+      }, error => {
+        
+
+      });
+
+    /* this.enableProgressBar = true;
 
      this.errorOccured = false;
      this.errorText ="";
@@ -205,7 +224,7 @@ export class LegalentityLoginComponent implements OnInit {
       this.enableProgressBar = false;
       this.errorOccured = true;
       this.errorText = "Something went wrong while login to the portal. Please try later.";
-     })
+     }) */
 
     }
 

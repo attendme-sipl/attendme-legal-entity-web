@@ -9,7 +9,7 @@ import { LegalentityMainComponent } from './legalentity/legalentity-main/legalen
 import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatIconModule} from '@angular/material/icon';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
 import {MatCardModule} from '@angular/material/card';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -91,6 +91,11 @@ import {LegalentityAppVersionFeatureService} from './legalentity/services/legale
 import { TechnicianModule } from './technician/technician.module';
 import { LegalentityComplaintActionComponent } from './legalentity/legalentity-complaint-action/legalentity-complaint-action.component';
 import { LegalentityQrWiseComplaintRptComponent } from './legalentity/legalentity-reports/legalentity-qr-wise-complaint-rpt/legalentity-qr-wise-complaint-rpt.component';
+import {AuthGuardService} from './Auth/auth-guard.service';
+import {AuthService} from './Auth/auth.service';
+import {AuthInterceptorService} from './Auth/auth-interceptor.service';
+import {CookieService} from 'ngx-cookie-service';
+
 
 @NgModule({
   declarations: [
@@ -194,7 +199,15 @@ import { LegalentityQrWiseComplaintRptComponent } from './legalentity/legalentit
     DatePipe,
     LegalentityDocumentServiceService,
     LegalentityBranchDataService,
-    LegalentityAppVersionFeatureService
+    LegalentityAppVersionFeatureService,
+    AuthGuardService,
+    AuthService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptorService,
+      multi: true
+    },
+    CookieService,
     
   ],
   bootstrap: [AppComponent],
