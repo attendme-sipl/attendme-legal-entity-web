@@ -95,7 +95,7 @@ import {AuthGuardService} from './Auth/auth-guard.service';
 import {AuthService} from './Auth/auth.service';
 import {AuthInterceptorService} from './Auth/auth-interceptor.service';
 import {CookieService} from 'ngx-cookie-service';
-
+import {ErrorHandlerService} from './Auth/error-handler.service';
 
 @NgModule({
   declarations: [
@@ -208,7 +208,7 @@ import {CookieService} from 'ngx-cookie-service';
       multi: true
     },
     CookieService,
-    
+    ErrorHandlerService
   ],
   bootstrap: [AppComponent],
   entryComponents:[

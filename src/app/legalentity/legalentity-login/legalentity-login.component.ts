@@ -14,6 +14,10 @@ import {TehnicianUtilService} from '../../technician/services/tehnician-util.ser
 import { LegalentityAppVersionFeatureService } from '../services/legalentity-app-version-feature.service';
 import { AuthService, IauthUserLoginReqStruct,  } from 'src/app/Auth/auth.service';
 import { AuthUserModel } from 'src/app/Common_Model/auth-user-model';
+import { ErrorHandlerService } from 'src/app/Auth/error-handler.service';
+import { ToastrService } from 'ngx-toastr';
+import { CookieService } from 'ngx-cookie-service';
+import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 
 @Component({
   selector: 'app-legalentity-login',
@@ -41,7 +45,10 @@ export class LegalentityLoginComponent implements OnInit {
     private httpClient: HttpClient,
     private technicianUtilAPI: TehnicianUtilService,
     private appVersionFeatureServiceAPI: LegalentityAppVersionFeatureService,
-    private authServiceAPI: AuthService
+    private authServiceAPI: AuthService,
+    private errorHanderAPI: ErrorHandlerService,
+    private toastService: ToastrService,
+    private cookieService: CookieService
   ) {
     icontRegistry.addSvgIcon(
       "attendme-logo",
@@ -55,20 +62,53 @@ export class LegalentityLoginComponent implements OnInit {
     if(loginFormModel.valid)
     {
 
-      const userReqObj: IauthUserLoginReqStruct = {
-       deviceIpAddress: '192.168.0.1',
-       loginActivity: 'login',
-       password: md5(loginFormModel.value['txtUserPassword']),
-       username: loginFormModel.value['txtEmailId']
-      };
+      try {
 
-      this.authServiceAPI.authUser(userReqObj)
-      .subscribe((data: AuthUserModel) => {
-        console.log(data);
-      }, error => {
+        this.enableProgressBar=true;
+        this.errorOccured=false;
+
+        const userReqObj: IauthUserLoginReqStruct = {
+          deviceIpAddress: '192.168.0.1',
+          loginActivity: 'login',
+          password: md5(loginFormModel.value['txtUserPassword']),
+          username: loginFormModel.value['txtEmailId']
+         };
+   
+         this.authServiceAPI.authUser(userReqObj)
+         .subscribe((data: AuthUserModel) => {
+
+          if (data.userNotFound){
+            this.enableProgressBar = false;
+            this.errorOccured = true;
+            this.errorText = "Please enter valid user email id or password.";
+            return false;
+          }
+         
+          let userMenuDef:string = JSON.stringify(data.menuDetails);
+
+           this.cookieService.set('auth',data.token,2,'localhost','localhost',false, "Strict");
+           this.cookieService.set('userdef_menu',userMenuDef,2,'localhost','localhost',false,'Strict');
+
+           let menuModel: LegalentityMenuPref[] = JSON.parse(this.cookieService.get('userdef_menu'));
+
+           this.enableProgressBar=false;
+
+         }, error => {
+
+            this.enableProgressBar = false;
+            this.errorOccured = true;
+            this.errorText = this.errorHanderAPI.getErrorStatusMessage(error.error.status);
+            return false;
+   
+         });
         
+      } catch (error) {
+        this.enableProgressBar = false;
+        this.errorOccured = true;
+        this.errorText = "Something went wrong. Please try again.";
+      }
 
-      });
+     
 
     /* this.enableProgressBar = true;
 

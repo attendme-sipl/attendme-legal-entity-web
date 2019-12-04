@@ -12,15 +12,5 @@ export class AuthUserModel {
         menuParameterPath: string
     }]
 
-    erroHandler(errorStatus: number): string{
-    
-        try {
-         switch(errorStatus){
-             case 401: return "Access denied"
-         }
-        } catch (error) {
-            
-        }
 
-    }
 }
