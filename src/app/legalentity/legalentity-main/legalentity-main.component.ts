@@ -11,8 +11,8 @@ import { LegalentityVersionFeatureListComponent } from '../legalentity-version-f
 import { LegalentityAppVersionFeatureService, IversionFeatureResponseStruct, IversionUserCheckHistoryReqStruct, IversionUserCheckHistoryResponseStruct } from '../services/legalentity-app-version-feature.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material';
-
-
+import { CookieService } from 'ngx-cookie-service';
+import *as jwt_token from 'jwt-decode';
 
 @Component({
   selector: 'app-legalentity-main',
@@ -45,7 +45,8 @@ export class LegalentityMainComponent implements OnInit {
     public commonModel: LegalentityCommons,
     private versionFeatureServiceAPI: LegalentityAppVersionFeatureService,
     private toastService: ToastrService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private cookeService: CookieService
   ) { 
     iconRegistry.addSvgIcon(
       "attendme-logo",
@@ -80,7 +81,7 @@ export class LegalentityMainComponent implements OnInit {
     this.commonModel.enableProgressbar =false;
   }
 
-  displayNewVersionData(){
+  /*displayNewVersionData(){
     this.versionFeatureServiceAPI.getActiveVersionDetails(true)
     .subscribe((data: IversionFeatureResponseStruct) => {
       if (data.errorOccured){
@@ -112,15 +113,19 @@ export class LegalentityMainComponent implements OnInit {
         });
       }
     }, error => {this.toastService.error("Soemthing went wrong while getting latest version list");});
-  }
+  } */
 
   ngOnInit() {
+
+    const jwtToken = jwt_token(this.cookeService.get('auth'));
+
+    console.log(jwtToken);
 
     if (localStorage.getItem('legalEntityUserDetails') != null)
     {
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
-      
+     
 
       this.legalEntityName = this.legalEntityUserModel.legalEntityUserDetails.legalEntityName;
       this.userFullName = this.legalEntityUserModel.legalEntityUserDetails.userFullName;
@@ -155,7 +160,7 @@ export class LegalentityMainComponent implements OnInit {
           .filter(value => value.enableToBranch == true)
         }
         
-        this.displayNewVersionData(); 
+        //this.displayNewVersionData(); 
       }
 
       
@@ -180,8 +185,8 @@ export class LegalentityMainComponent implements OnInit {
     }
     else
     {
-      this.router.navigate(['legalentity','login']);
-      return false;
+     // this.router.navigate(['legalentity','login']);
+      //return false;
     }
 
    
@@ -189,8 +194,12 @@ export class LegalentityMainComponent implements OnInit {
   }
 
   legalEntityLogout():void{
-    localStorage.removeItem('legalEntityUserDetails');
-    localStorage.removeItem('legalEntityMenuPref');
+   /// localStorage.removeItem('legalEntityUserDetails');
+    //localStorage.removeItem('legalEntityMenuPref');
+
+    this.cookeService.delete('auth');
+    this.cookeService.delete('userdef_menu');
+
     this.router.navigate(['legalentity','login']);
   }
 

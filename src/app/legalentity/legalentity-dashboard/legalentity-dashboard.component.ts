@@ -298,7 +298,7 @@ export class LegalentityDashboardComponent implements OnInit {
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null)
+    /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId = this.legalEntityUserModel.legalEntityUserDetails.legalEntityId;
@@ -314,7 +314,7 @@ export class LegalentityDashboardComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    } */
 
     this.complaintLeadTimeDays=7;
 

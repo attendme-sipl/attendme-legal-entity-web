@@ -93,6 +93,8 @@ export class LegalentityLoginComponent implements OnInit {
 
            this.enableProgressBar=false;
 
+           this.router.navigate(['legalentity','portal','dashboard']);
+
          }, error => {
 
             this.enableProgressBar = false;
