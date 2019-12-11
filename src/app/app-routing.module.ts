@@ -37,6 +37,7 @@ import {LegalentityUnresolvedComptRptComponent} from "./legalentity/legalentity-
 import { TechnicianMainComponent } from './technician/technician-main/technician-main.component';
 import { TechnicianDashboardComponent } from './technician/technician-dashboard/technician-dashboard.component';
 import {LegalentityQrWiseComplaintRptComponent} from './legalentity/legalentity-reports/legalentity-qr-wise-complaint-rpt/legalentity-qr-wise-complaint-rpt.component';
+import { AuthGuardService } from './Auth/auth-guard.service';
 
 const routes: Routes = [
   {
@@ -45,13 +46,13 @@ const routes: Routes = [
       {path:"forgot-password", component: LegalentityForgotPasswordComponent},
       {path:"reset-password", component: LegalentityResetPasswordComponent},
       {path:"add-head-office", component: LegalentityHeadofficeComponent},
-      {path:"portal",component:LegalentityMainComponent, children:[
-        {path:"dashboard",component:LegalentityDashboardComponent},
+      {path:"portal",component:LegalentityMainComponent, canActivate: [AuthGuardService] ,children:[
+        {path:"dashboard", canActivate: [AuthGuardService],component:LegalentityDashboardComponent},
         {path:"branch", component: LegalentityBranchListRptComponent},
         //{path:"branch", component: LegalentityBranchComponent},
         {path:"complaints", component: LegalentityComplaintRptComponent},
         {path:"equipment", component:LegalentityQrDetailsRptComponent},
-        {path:"rpt/open", component: LegalentityOpenComptRptComponent},
+        {path:"rpt/open", canActivate: [AuthGuardService], component: LegalentityOpenComptRptComponent},
         {path:"rpt/assigned", component: LegalentityAssingedComplaintRptComponent},
         {path:"rpt/inprogress", component: LegalentityInprogressComptRptComponent},
         {path: "rpt/trash/complaint", component: LegalentityTrashComptRptComponent},

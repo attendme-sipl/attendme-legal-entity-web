@@ -83,7 +83,7 @@ export class LegalentityLoginComponent implements OnInit {
             this.errorText = "Please enter valid user email id or password.";
             return false;
           }
-         
+         console.log(data.menuDetails);
           let userMenuDef:string = JSON.stringify(data.menuDetails);
 
            this.cookieService.set('auth',data.token,2,'localhost','localhost',false, "Strict");

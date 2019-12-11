@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import {LegalentityMenuPref} from '../model/legalentity-menu-pref';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
+import { CookieService } from 'ngx-cookie-service';
 
 export interface IcountryCallingCodeResponse{
   countryShortName: String,
@@ -26,7 +27,8 @@ export class LegalentityUtilService {
   constructor(
   private titleService: Title,
   private httpClient: HttpClient,
-  private menuPrefNameModel: LegalentityMenuPrefNames
+  private menuPrefNameModel: LegalentityMenuPrefNames,
+  private cookieService: CookieService
   ) { }
 
   setTitle(titleString: string):void{
@@ -46,9 +48,11 @@ export class LegalentityUtilService {
   getLegalEntityMenuPrefNames():LegalentityMenuPrefNames{
     
    
-    if (localStorage.getItem('legalEntityMenuPref') != null){
+    if (this.cookieService.get('userdef_menu') != ''){
 
-      const menuPrefObj:LegalentityMenuPref[] = JSON.parse(localStorage.getItem('legalEntityMenuPref'));
+      const menuPrefObj:LegalentityMenuPref[] = JSON.parse(this.cookieService.get('userdef_menu'));
+
+      //console.log(menuPrefObj);
 
     const equipmentMenuNameObj = menuPrefObj.map((value,index) => value?{
       userDefMenuName: value['menuName'],

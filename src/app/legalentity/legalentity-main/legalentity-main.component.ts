@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material';
 import { CookieService } from 'ngx-cookie-service';
 import *as jwt_token from 'jwt-decode';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-main',
@@ -46,7 +47,7 @@ export class LegalentityMainComponent implements OnInit {
     private versionFeatureServiceAPI: LegalentityAppVersionFeatureService,
     private toastService: ToastrService,
     private dialog: MatDialog,
-    private cookeService: CookieService
+    private cookieService: CookieService
   ) { 
     iconRegistry.addSvgIcon(
       "attendme-logo",
@@ -117,15 +118,44 @@ export class LegalentityMainComponent implements OnInit {
 
   ngOnInit() {
 
-    const jwtToken = jwt_token(this.cookeService.get('auth'));
+    const jwtToken = jwt_token(this.cookieService.get('auth'));
 
-    console.log(jwtToken);
+    let tokenModel: TokenModel=jwtToken;
 
-    if (localStorage.getItem('legalEntityUserDetails') != null)
+    this.legalEntityName = tokenModel.legalEntityName;
+    this.userFullName = tokenModel.userFullName;
+    this.headOffice = tokenModel.branchHeadOffice;
+    this.branchName = tokenModel.branchName;
+    this.userId = tokenModel.userId;
+
+    if (this.cookieService.get('userdef_menu') != ''){
+      const menuModel: LegalentityMenuPref[] = JSON.parse(this.cookieService.get('userdef_menu'));
+
+      if (this.headOffice){
+        this.updatedLegalEntityMenuPrefObj = menuModel;
+      }
+      else{
+        this.updatedLegalEntityMenuPrefObj=menuModel.map((value,index) => value? {
+          enableToBranch: value['enableToBranch'],
+          legalEntityId: value['legalEntityId'],
+          legalEntityMenuId: value['legalEntityMenuId'],
+          menuName: value['menuName'],
+          menuParamId: value['menuParamId'],
+          menuParameterName: value['menuParameterName'],
+          menuParameterPath: value['menuParameterPath'],
+          menuPlaceholder: value['menuPlaceholder'],
+          ngModelPropName: value['ngModelPropName'],
+          ngmodelProp: value['ngmodelProp']
+        }:null)
+        .filter(value => value.enableToBranch == true)
+      }
+      
+
+    }
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
-
-     
 
       this.legalEntityName = this.legalEntityUserModel.legalEntityUserDetails.legalEntityName;
       this.userFullName = this.legalEntityUserModel.legalEntityUserDetails.userFullName;
@@ -135,7 +165,8 @@ export class LegalentityMainComponent implements OnInit {
       this.branchName=this.legalEntityUserModel.legalEntityBranchDetails.branchName;
 
       this.userId=this.legalEntityUserModel.legalEntityUserDetails.userId;
-      
+     
+    
 
       if (localStorage.getItem('legalEntityMenuPref') != null)
       {
@@ -180,14 +211,12 @@ export class LegalentityMainComponent implements OnInit {
 
        }
 
-
-
     }
     else
     {
      // this.router.navigate(['legalentity','login']);
       //return false;
-    }
+    } */
 
    
 
@@ -197,8 +226,8 @@ export class LegalentityMainComponent implements OnInit {
    /// localStorage.removeItem('legalEntityUserDetails');
     //localStorage.removeItem('legalEntityMenuPref');
 
-    this.cookeService.delete('auth');
-    this.cookeService.delete('userdef_menu');
+    this.cookieService.delete('auth');
+    this.cookieService.delete('userdef_menu');
 
     this.router.navigate(['legalentity','login']);
   }

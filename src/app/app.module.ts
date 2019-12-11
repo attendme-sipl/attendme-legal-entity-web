@@ -96,6 +96,8 @@ import {AuthService} from './Auth/auth.service';
 import {AuthInterceptorService} from './Auth/auth-interceptor.service';
 import {CookieService} from 'ngx-cookie-service';
 import {ErrorHandlerService} from './Auth/error-handler.service';
+import {TokenModel} from './Common_Model/token-model';
+import {JwtHelperService} from '@auth0/angular-jwt';
 
 @NgModule({
   declarations: [
@@ -208,7 +210,8 @@ import {ErrorHandlerService} from './Auth/error-handler.service';
       multi: true
     },
     CookieService,
-    ErrorHandlerService
+    ErrorHandlerService,
+    JwtHelperService
   ],
   bootstrap: [AppComponent],
   entryComponents:[

@@ -15,7 +15,7 @@ export class AuthInterceptorService implements HttpInterceptor {
   ) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>{
-console.log(this.authService.isLoggedIn());
+
     if (this.authService.isLoggedIn()){
       request=request.clone({
         setHeaders: {
