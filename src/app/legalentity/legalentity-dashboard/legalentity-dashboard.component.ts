@@ -13,6 +13,9 @@ import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { LegalentityComplaintConcise } from '../model/legalentity-complaint-concise';
 import { MatPaginator, MatSort, MatTableDataSource } from '@angular/material';
 import { LegalentityBranchDataService } from '../services/legalentity-branch-data.service';
+import *as jwt_token from 'jwt-decode';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-legalentity-dashboard',
@@ -76,7 +79,8 @@ export class LegalentityDashboardComponent implements OnInit {
     private toastService: ToastrService,
     public legalEntityMenuPrefModel: LegalentityMenuPrefNames,
     public complaintConciseRptModel: LegalentityComplaintConcise,
-    private branchData: LegalentityBranchDataService
+    private branchData: LegalentityBranchDataService,
+    private cookieService: CookieService
   ) { 
     commonModel.enableProgressbar=false;
     
@@ -94,12 +98,14 @@ export class LegalentityDashboardComponent implements OnInit {
 
       this.dashboardServiceAPI.getQrIdUsageRpt(this.legalEntityId)
     .subscribe((data:LegalentityQridUsage) => {
+      
       this.qrIdUsageModel = data; 
       this.enableQrIdUsageRptProgressBar=false;
 
       this.popBranchWiseAllottedQrIdRpt();
 
     }, error => {
+      console.log(error.error);
       this.toastService.error("Something went wrong while loading QR ID usage details");
       this.enableQrIdUsageRptProgressBar=false;
     });
@@ -297,6 +303,13 @@ export class LegalentityDashboardComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    const jwtToken = jwt_token(this.cookieService.get('auth'));
+
+    let tokenModel: TokenModel=jwtToken;
+
+    this.headOffice=tokenModel.branchHeadOffice;
+    this.legalEntityId=tokenModel.legalEntityId;
 
     /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {

@@ -83,7 +83,7 @@ export class LegalentityLoginComponent implements OnInit {
             this.errorText = "Please enter valid user email id or password.";
             return false;
           }
-         console.log(data.menuDetails);
+         //console.log(data.menuDetails);
           let userMenuDef:string = JSON.stringify(data.menuDetails);
 
            this.cookieService.set('auth',data.token,2,'localhost','localhost',false, "Strict");
@@ -278,11 +278,11 @@ export class LegalentityLoginComponent implements OnInit {
 
     
 
-    this.ipAddress="111111";
+   // this.ipAddress="111111";
 
     this.utilServiceAPI.setTitle("Legalentity - Login | Attendme");
 
-    if (localStorage.getItem('legalEntityUserDetails') != null)
+    /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {
       this.router.navigate(['legalentity/portal/dashboard']);
       return false;
@@ -291,7 +291,7 @@ export class LegalentityLoginComponent implements OnInit {
     if (localStorage.getItem('technicianUserDetails') != null){
       this.router.navigate(['technician/portal/dashboard']);
       return false;
-    }
+    }*/
    
   }
 

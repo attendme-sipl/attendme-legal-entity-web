@@ -51,7 +51,7 @@ export class LegalentityDashboardService {
   ) { }
 
   getQrIdUsageRpt(legalEntityId: number):Observable<LegalentityQridUsage>{
-    return this.httpClient.post<LegalentityQridUsage>(this.util.legalEntityRestApuURL + "/getQrIdUsageDetails", {
+    return this.httpClient.post<LegalentityQridUsage>(this.util.legalEntityRestApuURL + "/api/getQrIdUsageDetails", {
       legalEntityId: legalEntityId
     });
   }
