@@ -67,6 +67,9 @@ export class LegalentityLoginComponent implements OnInit {
         this.enableProgressBar=true;
         this.errorOccured=false;
 
+        this.cookieService.delete('auth');
+        this.cookieService.delete('userdef_menu');
+
         const userReqObj: IauthUserLoginReqStruct = {
           deviceIpAddress: '192.168.0.1',
           loginActivity: 'login',
@@ -86,10 +89,10 @@ export class LegalentityLoginComponent implements OnInit {
          //console.log(data.menuDetails);
           let userMenuDef:string = JSON.stringify(data.menuDetails);
 
-           this.cookieService.set('auth',data.token,2,'localhost','localhost',false, "Strict");
-           this.cookieService.set('userdef_menu',userMenuDef,2,'localhost','localhost',false,'Strict');
+           this.cookieService.set('auth',data.token,2,'/','',false,"Strict");
+           this.cookieService.set('userdef_menu',userMenuDef,2,'/','',false,"Strict");
 
-           let menuModel: LegalentityMenuPref[] = JSON.parse(this.cookieService.get('userdef_menu'));
+           //let menuModel: LegalentityMenuPref[] = JSON.parse(userMenuDef);
 
            this.enableProgressBar=false;
 
@@ -281,6 +284,10 @@ export class LegalentityLoginComponent implements OnInit {
    // this.ipAddress="111111";
 
     this.utilServiceAPI.setTitle("Legalentity - Login | Attendme");
+
+    if (this.cookieService.get('auth') != ''){
+      this.router.navigate(['legalentity','portal','dashboard']);
+    }
 
     /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {

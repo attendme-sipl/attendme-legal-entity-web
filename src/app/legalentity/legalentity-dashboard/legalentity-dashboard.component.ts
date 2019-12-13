@@ -105,7 +105,7 @@ export class LegalentityDashboardComponent implements OnInit {
       this.popBranchWiseAllottedQrIdRpt();
 
     }, error => {
-      console.log(error.error);
+      
       this.toastService.error("Something went wrong while loading QR ID usage details");
       this.enableQrIdUsageRptProgressBar=false;
     });
