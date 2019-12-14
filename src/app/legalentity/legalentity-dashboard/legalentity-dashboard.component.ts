@@ -16,6 +16,7 @@ import { LegalentityBranchDataService } from '../services/legalentity-branch-dat
 import *as jwt_token from 'jwt-decode';
 import { TokenModel } from 'src/app/Common_Model/token-model';
 import { CookieService } from 'ngx-cookie-service';
+import { HttpErrorResponse, HttpHeaderResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-legalentity-dashboard',
@@ -67,6 +68,9 @@ export class LegalentityDashboardComponent implements OnInit {
   unresolvedMoreCount: number = 0;
   unresolvedUptoCount: number = 0;
 
+  userId: number;
+  userRole: string;
+
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private router:Router,
@@ -96,7 +100,14 @@ export class LegalentityDashboardComponent implements OnInit {
 
     if(this.headOffice){
 
-      this.dashboardServiceAPI.getQrIdUsageRpt(this.legalEntityId)
+      try {
+
+        this.dashboardServiceAPI.getQrIdUsageRpt(
+          this.legalEntityId,
+          this.branchId,
+          this.userId,
+          this.userRole
+          )
     .subscribe((data:LegalentityQridUsage) => {
       
       this.qrIdUsageModel = data; 
@@ -104,16 +115,30 @@ export class LegalentityDashboardComponent implements OnInit {
 
       this.popBranchWiseAllottedQrIdRpt();
 
-    }, error => {
-      
-      this.toastService.error("Something went wrong while loading QR ID usage details");
+    }, (error: any) => {
+      //console.log(error);
+      //this.toastService.error("Something went wrong while loading QR ID usage details");
       this.enableQrIdUsageRptProgressBar=false;
     });
+        
+      } catch (error) {
+       this.toastService.error("Something went worng while loading QR ID usage details");
+       this.enableQrIdUsageRptProgressBar=false;
+      }
+
+      
       
     }
     else{
 
-      this.dashboardServiceAPI.getBrachwiseQRIdConciseRpt(this.branchId)
+      try {
+
+        this.dashboardServiceAPI.getBrachwiseQRIdConciseRpt(
+          this.legalEntityId,
+          this.branchId,
+          this.userId,
+          this.userRole
+          )
     .subscribe((data:IbranchWiseQrIdConciseReponseStruct) => {
        if (data.errorOccured)
        {
@@ -129,105 +154,162 @@ export class LegalentityDashboardComponent implements OnInit {
        this.enableQrIdUsageRptProgressBar=false;
 
     }, error=>{
-      this.toastService.error("Something went wrong while loading QR ID usage details");
+      //this.toastService.error("Something went wrong while loading QR ID usage details");
       this.enableQrIdUsageRptProgressBar=false; 
     }); 
+        
+      } catch (error) {
+        this.toastService.error("Something went wrong while loading QR ID usage details");
+        this.enableQrIdUsageRptProgressBar=false; 
+        
+      }
+
+      
 
     }
   }
 
   popComplaintConciseRtp():void{
     this.enableComptConciseRptProgressBar = true;
-    let complaintConciseReqObj: IcomplaintConciseReqObj = {
-      allBranch: false, //true,
-      branchId: this.branchId,
-      legalEntityId: this.legalEntityId,
-      legalTimeDays: this.complaintLeadTimeDays,
-      userLastLoginDateTime: this.userLastLoginDateTime,
-      userLoginDateTime: this.userCurrentLoginDateTime
-    };
 
-    this.dashboardServiceAPI.getComplaintConciseRtp(complaintConciseReqObj)
-    .subscribe((data: LegalentityComplaintConcise) => {
-      //console.log(data);
-      if (data.errorOccured){
-        
+    try {
+
+      let complaintConciseReqObj: IcomplaintConciseReqObj = {
+        allBranch: false, //true,
+        branchId: this.branchId,
+        userId: this.userId,
+        userRole: this.userRole,
+        legalEntityId: this.legalEntityId,
+        legalTimeDays: this.complaintLeadTimeDays,
+        userLastLoginDateTime: this.userLastLoginDateTime,
+        userLoginDateTime: this.userCurrentLoginDateTime
+      };
+  
+      this.dashboardServiceAPI.getComplaintConciseRtp(complaintConciseReqObj)
+      .subscribe((data: LegalentityComplaintConcise) => {
+       // console.log(data);
+        if (data.errorOccured){
+          
+          this.enableComptConciseRptProgressBar=false;
+          this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
+          return false;
+        }
+  
+       
+        this.complaintConciseRptModel = data;
+        this.enableComptConciseRptProgressBar=false;  
+       
+  
+      }, error => {
         this.enableComptConciseRptProgressBar=false;
-        this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
-        return false;
-      }
-
-     
-      this.complaintConciseRptModel = data;
-      this.enableComptConciseRptProgressBar=false;  
-     
-
-    }, error => {
+        //this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
+      });
+      
+    } catch (error) {
       this.enableComptConciseRptProgressBar=false;
       this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
-    });
+    }
+
+    
   }
 
   popBranchConciseRpt():void{
     this.enableBranchConciseRtpProgressBar=true;
 
-    this.dashboardServiceAPI.getLegalEntityBranchConciseRpt(this.legalEntityId,true)
-    .subscribe(data => {
-      if (data['errorOccured'])
-      {
+    try {
+      this.dashboardServiceAPI.getLegalEntityBranchConciseRpt(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole,
+        true
+        )
+      .subscribe(data => {
+       // if (data['errorOccured'])
+        //{
+         // this.enableBranchConciseRtpProgressBar=false;
+          //this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.branchMenuName + " details");
+          //return false;
+        //}
+  
+        this.totalBranchCount = data['branchTotalCount'];
         this.enableBranchConciseRtpProgressBar=false;
-        this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.branchMenuName + " details");
-        return false;
-      }
-
-      this.totalBranchCount = data['branchTotalCount'];
+  
+      }, error => {
+        this.enableBranchConciseRtpProgressBar=false;
+      });
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details");
       this.enableBranchConciseRtpProgressBar=false;
+    }
 
-    }, error => {
-      this.enableBranchConciseRtpProgressBar=false;
-    });
+    
   }
 
   popBranchWiseAllottedQrIdRpt():void{
-    this.enableBranchQrIdRtpProgressBar=true;
-    this.dashboardServiceAPI.getAllottedBranchQrIdListRpt(this.legalEntityId)
-    .subscribe((data:IallottedBranchQrIdListRptResponse) => {
 
-      if (data.errorOccurred){
+    this.enableBranchQrIdRtpProgressBar=true;
+
+    try {
+      this.dashboardServiceAPI.getAllottedBranchQrIdListRpt(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole
+        )
+      .subscribe((data:IallottedBranchQrIdListRptResponse) => {
+  
+        /*if (data.errorOccurred){
+          this.toastService.error("Something went wrong while loading QR ID details");
+          this.enableBranchQrIdRtpProgressBar=false;
+          return false;  
+        }*/
+  
+        this.allottedQrIdBranchListCount - data.qrIdBranchList.length;
+        this.allottedBranchQrIdDetailsObj=data.qrIdBranchList;
+        this.dataSource=new MatTableDataSource(data.qrIdBranchList);
+        this.dataSource.paginator=this.paginator;
+        this.dataSource.sort=this.sort;
+  
+        this.enableBranchQrIdRtpProgressBar=false;
+        
+      }, error => {
+        //this.toastService.error("Something went wrong while loading QR ID details");
+        this.enableBranchQrIdRtpProgressBar=false;
+      });
+    } catch (error) {
         this.toastService.error("Something went wrong while loading QR ID details");
         this.enableBranchQrIdRtpProgressBar=false;
-        return false;  
-      }
+    }
 
-      this.allottedQrIdBranchListCount - data.qrIdBranchList.length;
-      this.allottedBranchQrIdDetailsObj=data.qrIdBranchList;
-      this.dataSource=new MatTableDataSource(data.qrIdBranchList);
-      this.dataSource.paginator=this.paginator;
-      this.dataSource.sort=this.sort;
-
-      this.enableBranchQrIdRtpProgressBar=false;
-      
-    }, error => {
-      this.toastService.error("Something went wrong while loading QR ID details");
-      this.enableBranchQrIdRtpProgressBar=false;
-    });
+    
   }
 
   popUnreslovedComptRpt():void{
     this.enableUnresolvedRptProgressBar=true;
 
-    this.dashboardServiceAPI.getUnresolvedDaysRuleBook(this.legalEntityId)
+    this.dashboardServiceAPI.getUnresolvedDaysRuleBook(
+      this.legalEntityId,
+      this.branchId,
+      this.userId,
+      this.userRole
+      )
     .subscribe(unresolvedComptDaysData => {
      
-      if (unresolvedComptDaysData['errorOccured']){
+      /*if (unresolvedComptDaysData['errorOccured']){
         this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
         this.enableUnresolvedRptProgressBar=false;
         return false;
-      }
+      }*/
 
       this.unreslovedComptDayLimit = parseInt(unresolvedComptDaysData['unresolvedDaysCount']);
 
-      this.dashboardServiceAPI.getBranchUnreslovedComptRpt(this.branchId,this.unreslovedComptDayLimit, false)
+      this.dashboardServiceAPI.getBranchUnreslovedComptRpt(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,this.userRole,
+        this.unreslovedComptDayLimit, 
+        false)
     .subscribe(data => {
       if (data['errorOccurred']){
         this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
@@ -242,11 +324,11 @@ export class LegalentityDashboardComponent implements OnInit {
       this.enableUnresolvedRptProgressBar=false;
       
     }, error => {
-      this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
+      //this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
         this.enableUnresolvedRptProgressBar=false;
     });
     },error => {
-      this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
+      //this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
       this.enableUnresolvedRptProgressBar=false;
     });
 
@@ -310,6 +392,9 @@ export class LegalentityDashboardComponent implements OnInit {
 
     this.headOffice=tokenModel.branchHeadOffice;
     this.legalEntityId=tokenModel.legalEntityId;
+
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
 
     /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {

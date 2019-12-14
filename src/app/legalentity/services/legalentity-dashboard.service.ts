@@ -9,6 +9,8 @@ export interface IcomplaintConciseReqObj{
    allBranch: boolean,
    legalEntityId: number,
    branchId: number,
+   userId: number,
+   userRole: string,
    userLastLoginDateTime: string,
    userLoginDateTime:string,
    legalTimeDays: number
@@ -50,9 +52,17 @@ export class LegalentityDashboardService {
     private util: LegalentityUtilService 
   ) { }
 
-  getQrIdUsageRpt(legalEntityId: number):Observable<LegalentityQridUsage>{
-    return this.httpClient.post<LegalentityQridUsage>(this.util.legalEntityRestApuURL + "/api/getQrIdUsageDetails", {
-      legalEntityId: legalEntityId
+  getQrIdUsageRpt(
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<LegalentityQridUsage>{
+    return this.httpClient.post<LegalentityQridUsage>(this.util.legalEntityRestApuURL + "/getQrIdUsageDetails", {
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 
@@ -60,39 +70,77 @@ export class LegalentityDashboardService {
     return this.httpClient.post<LegalentityComplaintConcise>(this.util.legalEntityRestApuURL + "/getConciseEquptComp", complaintConciseReqObj);
   }
  
-  getLegalEntityBranchConciseRpt(legalEntityId: number, branchActiveStatus: boolean):Observable<any>{
+  getLegalEntityBranchConciseRpt(
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string,
+    branchActiveStatus: boolean
+    ):Observable<any>{
     return this.httpClient.post(this.util.legalEntityRestApuURL + "/getBranchConciseReport", {
       legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole,
       branchActiveStatus: branchActiveStatus
     });
   }
 
-  getBrachwiseQRIdConciseRpt(branchId: number):Observable<IbranchWiseQrIdConciseReponseStruct>{
+  getBrachwiseQRIdConciseRpt(
+    legalentity: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<IbranchWiseQrIdConciseReponseStruct>{
     return this.httpClient.post<IbranchWiseQrIdConciseReponseStruct>(this.util.legalEntityRestApuURL + "/branchQrUsageReport", {
-      branchId: branchId
+      legalEntityId: legalentity,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 
-  getAllottedBranchQrIdListRpt(legalEntityId:number):Observable<IallottedBranchQrIdListRptResponse>{
+  getAllottedBranchQrIdListRpt(
+    legalEntityId:number,
+    branchId: number,
+    userId: number,
+    userRole: string 
+    ):Observable<IallottedBranchQrIdListRptResponse>{
     return this.httpClient.post<IallottedBranchQrIdListRptResponse>(this.util.legalEntityRestApuURL + "/branchQrIdConciseReport",{
-      legalEntityId: legalEntityId
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 
   getBranchUnreslovedComptRpt(
-    branchId: number, 
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string,
     unresolvedComptDayCount: number,
     complaintTrash: boolean):Observable<any>{
     return this.httpClient.post(this.util.legalEntityRestApuURL + "/unresolvedComplaintReport", {
-       branchId: branchId,
-       unresolvedComptDayCount: unresolvedComptDayCount,
-       complaintTrash: complaintTrash
+      legalEntityId: legalEntityId,
+      
+      branchId: branchId,
+      unresolvedComptDayCount: unresolvedComptDayCount,
+      complaintTrash: complaintTrash
     });
   }
 
-  getUnresolvedDaysRuleBook(legalEntityId: number):Observable<any>{
+  getUnresolvedDaysRuleBook(
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<any>{
     return this.httpClient.post(this.util.legalEntityRestApuURL + "/unresolvedRuleBookDetails",{
-      legalEntityId: legalEntityId
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
  

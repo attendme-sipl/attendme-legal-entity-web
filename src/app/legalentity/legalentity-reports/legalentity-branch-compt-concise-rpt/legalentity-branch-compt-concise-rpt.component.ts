@@ -72,7 +72,7 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     );
    }
 
-   popBranchComplaintConciseRpt(){
+   /*popBranchComplaintConciseRpt(){
 
     this.enableProgressBar=true;
     this.searchKey='';
@@ -131,7 +131,7 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
 
   
 
-   }
+   } */
 
   ngOnInit() {
 
@@ -152,7 +152,9 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     this.branchMenuName=this.menuModel.branchMenuName;
     this.complaintMenuName=this.menuModel.complaintMenuName;
     
-    this.popBranchComplaintConciseRpt();
+    // To be included after token implementation
+
+    //this.popBranchComplaintConciseRpt();
 
 
   }

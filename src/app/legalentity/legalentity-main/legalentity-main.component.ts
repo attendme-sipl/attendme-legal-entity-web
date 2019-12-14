@@ -118,7 +118,7 @@ export class LegalentityMainComponent implements OnInit {
 
   ngOnInit() {
 
-    const jwtToken = jwt_token(this.cookieService.get('auth'));
+    const jwtToken = jwt_token(this.cookieService.get(this.utilAPI.authCookieName));
 
     let tokenModel: TokenModel=jwtToken;
 
@@ -128,8 +128,8 @@ export class LegalentityMainComponent implements OnInit {
     this.branchName = tokenModel.branchName;
     this.userId = tokenModel.userId;
 
-    if (this.cookieService.get('userdef_menu') != ''){
-      const menuModel: LegalentityMenuPref[] = JSON.parse(this.cookieService.get('userdef_menu'));
+    if (this.cookieService.get(this.utilAPI.userDefMenuCookieName) != ''){
+      const menuModel: LegalentityMenuPref[] = JSON.parse(this.cookieService.get(this.utilAPI.userDefMenuCookieName));
 
       if (this.headOffice){
         this.updatedLegalEntityMenuPrefObj = menuModel;
@@ -226,8 +226,8 @@ export class LegalentityMainComponent implements OnInit {
    /// localStorage.removeItem('legalEntityUserDetails');
     //localStorage.removeItem('legalEntityMenuPref');
 
-    this.cookieService.delete('auth');
-    this.cookieService.delete('userdef_menu');
+    this.cookieService.delete(this.utilAPI.authCookieName);
+    this.cookieService.delete(this.utilAPI.userDefMenuCookieName);
 
     this.router.navigate(['legalentity','login']);
   }

@@ -93,7 +93,7 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     );
   }
 
-  popUnresolvedComplaint(exportToExcel: boolean){
+  /*popUnresolvedComplaint(exportToExcel: boolean){
     
     this.unresolvedComplaintProgressBar=true;
     this.searchKey='';
@@ -189,7 +189,7 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
       this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
       this.unresolvedComplaintProgressBar=false;
     });
-  }
+  } */
 
   openComplaintDetailsDialog(complaintId: number):void{
 
@@ -275,7 +275,10 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
       }
 
       this.popBranchList();
-      this.popUnresolvedComplaint(false);
+
+      // To be included after token implementation
+
+    //  this.popUnresolvedComplaint(false);
 
     });
   }

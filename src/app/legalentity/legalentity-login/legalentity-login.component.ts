@@ -89,8 +89,25 @@ export class LegalentityLoginComponent implements OnInit {
          //console.log(data.menuDetails);
           let userMenuDef:string = JSON.stringify(data.menuDetails);
 
-           this.cookieService.set('auth',data.token,2,'/','',false,"Strict");
-           this.cookieService.set('userdef_menu',userMenuDef,2,'/','',false,"Strict");
+           this.cookieService.set(
+             this.utilServiceAPI.authCookieName,
+             data.token,
+             this.utilServiceAPI.authCookieExpires,
+             this.utilServiceAPI.authCookiePath,
+             this.utilServiceAPI.authCookieDomain,
+             this.utilServiceAPI.authCookieSecure,
+             "Strict"
+           );
+
+           this.cookieService.set(
+             this.utilServiceAPI.userDefMenuCookieName,
+             userMenuDef,
+             this.utilServiceAPI.userDefMenuCookieExpires,
+             this.utilServiceAPI.userDefMenuCookiePath,
+             this.utilServiceAPI.authCookieDomain,
+             this.utilServiceAPI.userDefMenuCookieSecure,
+             "Strict"
+             );
 
            //let menuModel: LegalentityMenuPref[] = JSON.parse(userMenuDef);
 

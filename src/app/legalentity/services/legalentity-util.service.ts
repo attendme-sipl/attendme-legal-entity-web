@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import {LegalentityMenuPref} from '../model/legalentity-menu-pref';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { CookieService } from 'ngx-cookie-service';
+import { CoreEnvironment } from '@angular/core/src/render3/jit/compiler_facade_interface';
 
 export interface IcountryCallingCodeResponse{
   countryShortName: String,
@@ -22,6 +23,24 @@ export class LegalentityUtilService {
   superAdminRestApiURL = environment.superAdminAPIURL;
   legalEntityRestApuURL = environment.legalEntityAPIURL;
   mobileRestApiURL = environment.mobileServiceAPIURL;
+
+  superAdminAPIURLWoApi = environment.superAdminAPIURLWoApi;
+  legalEntityAPIURLWoApi = environment.legalEntityAPIURLWoApi;
+  mobileServiceAPIURLWoApi = environment.mobileServiceAPIURLWoApi;
+
+  authCookieName = environment.authCookieName;
+  authCookieExpires = environment.authCookieExpires;
+  authCookiePath = environment.authCookiePath;
+  authCookieDomain = environment.authCookieDomain;
+  authCookieSecure = environment.authCookieSecure;
+
+
+  userDefMenuCookieName = environment.userDefMenuCookieName;
+  userDefMenuCookieExpires = environment.userDefMenuCookieExpires;
+  userDefMenuCookiePath = environment.userDefMenuCookiePath;
+  userDefMenuCookieDomain = environment.userDefMenuCookieDomain;
+  userDefMenuCookieSecure = environment.userDefMenuCookieSecure;
+  
 
   
   constructor(
@@ -48,9 +67,9 @@ export class LegalentityUtilService {
   getLegalEntityMenuPrefNames():LegalentityMenuPrefNames{
     
    
-    if (this.cookieService.get('userdef_menu') != ''){
+    if (this.cookieService.get(this.userDefMenuCookieName) != ''){
 
-      const menuPrefObj:LegalentityMenuPref[] = JSON.parse(this.cookieService.get('userdef_menu'));
+      const menuPrefObj:LegalentityMenuPref[] = JSON.parse(this.cookieService.get(this.userDefMenuCookieName));
 
       //console.log(menuPrefObj);
 

@@ -29,11 +29,11 @@ export class AuthService {
 
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa('attendme:jo%&d!gv')});
 
-    return this.httpClient.post<AuthUserModel>( this.utilServiceAPI.legalEntityRestApuURL + "/userLogin", authUserReqObj, {headers});
+    return this.httpClient.post<AuthUserModel>( this.utilServiceAPI.legalEntityAPIURLWoApi + "/userLogin", authUserReqObj, {headers});
   }
 
   isLoggedIn(){
-    return (this.cookieService.get('auth') != '' && this.cookieService.get('auth') != null)
+    return (this.cookieService.get(this.utilServiceAPI.authCookieName) != '' && this.cookieService.get(this.utilServiceAPI.authCookieName) != null)
   }
 
 }

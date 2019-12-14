@@ -31,7 +31,25 @@ export const environment = {
 
         superAdminAPIURL: "http://demo-sa.attendme.in/api",
         legalEntityAPIURL: "http://demo-le.attendme.in/api",
-        mobileServiceAPIURL: "http://demo-android.attendme.in/api"
+        mobileServiceAPIURL: "http://demo-android.attendme.in/api",
+
+        superAdminAPIURLWoApi: "http://demo-sa.attendme.in",
+        legalEntityAPIURLWoApi: "http://demo-le.attendme.in",
+        mobileServiceAPIURLWoApi: "http://demo-android.attendme.in",
+
+        authCookieName: "auth",
+        authCookieExpires: 2,
+        authCookiePath: "/",
+        authCookieDomain: "attendme.in",
+        authCookieSecure: false,
+        authCookieSameSite: "Strict",
+
+        userDefMenuCookieName: "userdef_menu",
+        userDefMenuCookieExpires: 2,
+        userDefMenuCookiePath: "/",
+        userDefMenuCookieDomain: "attendme.in",
+        userDefMenuCookieSecure: false,
+        userDefMenuCookieSameSite: "Strict"
 
         // AWS New Production Instance (https)
 

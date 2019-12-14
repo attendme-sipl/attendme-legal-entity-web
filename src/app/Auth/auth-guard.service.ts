@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 
 import { CookieService } from 'ngx-cookie-service';
 import { JwtHelperService } from '@auth0/angular-jwt';
+import { LegalentityUtilService } from '../legalentity/services/legalentity-util.service';
 
 @Injectable({
   providedIn: 'root'
@@ -15,17 +16,18 @@ export class AuthGuardService {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private utilServiceAPI: LegalentityUtilService
   ) { }
 
   canActivate(): boolean{
-   // console.log(this.authService.isLoggedIn());
+  
     if (!this.authService.isLoggedIn()){
       this.router.navigate(['legalentity','login']);
       return false;
     }
     else{
-      const jwtToken = this.cookieService.get('auth');
+      const jwtToken = this.cookieService.get(this.utilServiceAPI.authCookieName);
       //console.log(jwtToken);
       
       if (this.jwtHelper.isTokenExpired(jwtToken)){

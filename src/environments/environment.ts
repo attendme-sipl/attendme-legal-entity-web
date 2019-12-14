@@ -7,15 +7,37 @@ export const environment = {
 
   //development server
 
-         //superAdminAPIURL: "http://192.168.0.99:4202",
-         //legalEntityAPIURL: 'http://192.168.0.99:4201',
-         //mobileServiceAPIURL: "http://192.168.0.99:5000"
+         //superAdminAPIURL: "http://192.168.0.99:4202/api",
+         //legalEntityAPIURL: 'http://192.168.0.99:4201/api',
+         //mobileServiceAPIURL: "http://192.168.0.99:5000/api",
+
+         //superAdminAPIURLWoApi: "http://192.168.0.99:4202",
+         //legalEntityAPIURLWoApi: 'http://192.168.0.99:4201',
+         //mobileServiceAPIURLWoApi: "http://192.168.0.99:5000",
 
       // Local instance
 
-            superAdminAPIURL: "http://192.168.0.7:4201",
-            legalEntityAPIURL: 'http://192.168.0.7:4201',
-            mobileServiceAPIURL: "http://192.168.0.7:5000"
+            superAdminAPIURL: "http://192.168.0.7:4201/api",
+            legalEntityAPIURL: 'http://192.168.0.7:4201/api',
+            mobileServiceAPIURL: "http://192.168.0.7:5000/api",
+
+            superAdminAPIURLWoApi: "http://192.168.0.7:4201",
+            legalEntityAPIURLWoApi: 'http://192.168.0.7:4201',
+            mobileServiceAPIURLWoApi: "http://192.168.0.7:5000",
+
+            // cookie parameters
+
+            authCookieName: "auth",
+            authCookieExpires: 2,
+            authCookiePath: "/",
+            authCookieDomain: "localhost",
+            authCookieSecure: false,
+
+            userDefMenuCookieName: "userdef_menu",
+            userDefMenuCookieExpires: 2,
+            userDefMenuCookiePath: "/",
+            userDefMenuCookieDomain: "localhost",
+            userDefMenuCookieSecure: false,
 
        //superAdminAPIURL: "http://192.168.0.99:4202/api",
        //legalEntityAPIURL: 'http://192.168.0.99:4201/api',
