@@ -10,6 +10,8 @@ import { LegalentityComplaintRptService, IbranchComplaintConciseReqStruct, Ibran
 import { LegalentityDashboardService } from '../../services/legalentity-dashboard.service';
 import { LegalentityBranch } from '../../model/legalentity-branch';
 import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { AuthService } from 'src/app/Auth/auth.service';
 
 @Component({
   selector: 'app-legalentity-branch-compt-concise-rpt',
@@ -24,6 +26,9 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
   legalEntityId: number;
   branchId: number;
   branchHeadOffice: boolean;
+
+  userId: number;
+  userRole: string;
 
   branchMenuName: string;
   complaintMenuName: string;
@@ -64,7 +69,8 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     private dashboardService: LegalentityDashboardService,
     private complaintRptService: LegalentityComplaintRptService,
     private branchModel: LegalentityBranch,
-    private branchData: LegalentityBranchDataService
+    private branchData: LegalentityBranchDataService,
+    private authService: AuthService
   ) {
     iconRegistry.addSvgIcon(
       "refresh-panel",
@@ -72,12 +78,17 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     );
    }
 
-   /*popBranchComplaintConciseRpt(){
+   popBranchComplaintConciseRpt(){
 
     this.enableProgressBar=true;
     this.searchKey='';
 
-    this.dashboardService.getUnresolvedDaysRuleBook(this.legalEntityId)
+    this.dashboardService.getUnresolvedDaysRuleBook(
+      this.legalEntityId,
+      this.branchId,
+      this.userId,
+      this.userRole
+      )
     .subscribe(data => {
 
       if (data['errorOccured'] == true){
@@ -92,7 +103,10 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
         branchActiveStatus: true,
         complaintTrash: false,
         legalEntityId: this.legalEntityId,
-        unresolvedComptDaysCount: this.unreslovedDayCount
+        unresolvedComptDaysCount: this.unreslovedDayCount,
+        branchId: this.branchId,
+        userId: this.userId,
+        userRole: this.userRole
       };
 
       this.complaintRptService.getBranchComplaintConciseRpt(branchComptConciseReqObj)
@@ -131,11 +145,11 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
 
   
 
-   } */
+   }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -145,16 +159,22 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
+
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+
+    this.userId=tokenModel.userId;
+    this.branchId=tokenModel.branchId;
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.userRole=tokenModel.userRole;
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
 
     this.branchMenuName=this.menuModel.branchMenuName;
     this.complaintMenuName=this.menuModel.complaintMenuName;
-    
-    // To be included after token implementation
 
-    //this.popBranchComplaintConciseRpt();
+    this.popBranchComplaintConciseRpt();
 
 
   }

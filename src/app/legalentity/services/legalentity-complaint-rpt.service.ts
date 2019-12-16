@@ -235,6 +235,9 @@ export interface IqrIdAllcomplaintDetailsResponse{
 
 export interface IbranchComplaintConciseReqStruct{
    legalEntityId: number,
+   branchId: number,
+   userId: number,
+   userRole: string,
    branchActiveStatus: boolean,
    complaintTrash: boolean,
    unresolvedComptDaysCount: number

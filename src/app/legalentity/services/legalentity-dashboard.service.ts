@@ -49,7 +49,7 @@ export class LegalentityDashboardService {
 
   constructor(
     private httpClient: HttpClient,
-    private util: LegalentityUtilService 
+    private util: LegalentityUtilService
   ) { }
 
   getQrIdUsageRpt(
@@ -126,7 +126,9 @@ export class LegalentityDashboardService {
       
       branchId: branchId,
       unresolvedComptDayCount: unresolvedComptDayCount,
-      complaintTrash: complaintTrash
+      complaintTrash: complaintTrash,
+      userId: userId,
+      userRole: userRole
     });
   }
 

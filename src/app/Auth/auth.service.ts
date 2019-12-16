@@ -5,6 +5,8 @@ import { LegalentityUtilService } from '../legalentity/services/legalentity-util
 import {AuthUserModel} from '../Common_Model/auth-user-model';
 import { CookieService } from 'ngx-cookie-service';
 import { Router } from '@angular/router';
+import { TokenModel } from '../Common_Model/token-model';
+import *as jwt_token from 'jwt-decode';
 
 export interface IauthUserLoginReqStruct{
   username: string,
@@ -34,6 +36,12 @@ export class AuthService {
 
   isLoggedIn(){
     return (this.cookieService.get(this.utilServiceAPI.authCookieName) != '' && this.cookieService.get(this.utilServiceAPI.authCookieName) != null)
+  }
+
+  getTokenDetails(): TokenModel{
+    const tokenModel: TokenModel = jwt_token(this.cookieService.get(this.utilServiceAPI.authCookieName));
+
+    return tokenModel;
   }
 
 }

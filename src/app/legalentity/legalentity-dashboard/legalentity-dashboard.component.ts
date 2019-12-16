@@ -17,6 +17,7 @@ import *as jwt_token from 'jwt-decode';
 import { TokenModel } from 'src/app/Common_Model/token-model';
 import { CookieService } from 'ngx-cookie-service';
 import { HttpErrorResponse, HttpHeaderResponse } from '@angular/common/http';
+import { AuthService } from 'src/app/Auth/auth.service';
 
 @Component({
   selector: 'app-legalentity-dashboard',
@@ -84,7 +85,8 @@ export class LegalentityDashboardComponent implements OnInit {
     public legalEntityMenuPrefModel: LegalentityMenuPrefNames,
     public complaintConciseRptModel: LegalentityComplaintConcise,
     private branchData: LegalentityBranchDataService,
-    private cookieService: CookieService
+    private cookieService: CookieService,
+    private authService: AuthService
   ) { 
     commonModel.enableProgressbar=false;
     
@@ -303,7 +305,7 @@ export class LegalentityDashboardComponent implements OnInit {
       }*/
 
       this.unreslovedComptDayLimit = parseInt(unresolvedComptDaysData['unresolvedDaysCount']);
-
+//console.log(this.branchId);
       this.dashboardServiceAPI.getBranchUnreslovedComptRpt(
         this.legalEntityId,
         this.branchId,
@@ -386,15 +388,17 @@ export class LegalentityDashboardComponent implements OnInit {
 
   ngOnInit() {
 
-    const jwtToken = jwt_token(this.cookieService.get('auth'));
+   // const jwtToken = jwt_token(this.cookieService.get('auth'));
 
-    let tokenModel: TokenModel=jwtToken;
+    let tokenModel: TokenModel=this.authService.getTokenDetails();
 
     this.headOffice=tokenModel.branchHeadOffice;
     this.legalEntityId=tokenModel.legalEntityId;
 
     this.userId=tokenModel.userId;
     this.userRole=tokenModel.userRole;
+
+    this.branchId=tokenModel.branchId;
 
     /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {
