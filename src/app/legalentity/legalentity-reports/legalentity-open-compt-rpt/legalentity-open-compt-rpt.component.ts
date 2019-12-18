@@ -22,6 +22,8 @@ import { LegalentityBranchService, IbranchRptReqStruct, IbranchListReportRespons
 import { LegalentityBranch } from '../../model/legalentity-branch';
 import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 import { LegalentityComplaintActionComponent } from '../../legalentity-complaint-action/legalentity-complaint-action.component';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 export interface IAssingTechnicianDialogData{
   complaintId: number,
@@ -38,6 +40,8 @@ export interface IopenComplaintRtpReqStruct{
    allBranch: boolean,
    branchId: number,
    legalEntityId: number,
+   userId: number,
+   userRole: string,
    complaintStatus: string,
    fromDate: string,
    toDate: string,
@@ -73,6 +77,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
   legalEntityId: number;
   branchId: number;
   userId: number;
+  userRole: string;
 
   openComplaintProgressBar: boolean;
 
@@ -122,7 +127,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     private dialog: MatDialog,
     private branchServiceAPI: LegalentityBranchService,
     private activatedroute:ActivatedRoute,
-    private branchData: LegalentityBranchDataService
+    private branchData: LegalentityBranchDataService,
+    private authService: AuthService
   ) { 
     iconRegistry.addSvgIcon(
       'refreshIcon',
@@ -159,6 +165,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     const openComplaintReqObj: IopenComplaintRtpReqStruct ={
       allBranch: false, //true,
       branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole,
       complaintStatus:'open',
       fromDate: null,
       legalEntityId: this.legalEntityId,
@@ -178,30 +186,43 @@ export class LegalentityOpenComptRptComponent implements OnInit {
   
     });*/
 
+  
     if (exportToExcel){
 
-      let fileName: string = "Open-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+      try {
+
+        let fileName: string = "Open-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
 
       this.complaintRptServiceAPI.getOpenComplaintRtpToExcel(openComplaintReqObj)
       .subscribe(data => {
         saveAs(data,fileName + ".xls");
         this.openComplaintProgressBar=false;
       },error => {
-        this.toastService.error("Something went wrong while downloading excel");
+        //this.toastService.error("Something went wrong while downloading excel");
         this.openComplaintProgressBar=false;
       });
+        
+      } catch (error) {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.openComplaintProgressBar=false;
+      }
+
+      
 
     }
     else{
-      this.complaintRptServiceAPI.getOpenComplaintRtp(openComplaintReqObj)
+
+      try {
+
+        this.complaintRptServiceAPI.getOpenComplaintRtp(openComplaintReqObj)
     .subscribe((data: IopenComplaintRptResponseStruct) => {
       //console.log(data);
-      if (data.errorOccured)
+      /*if (data.errorOccured)
       {
         this.openComplaintProgressBar=false;
         this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
         return false;
-      }
+      }*/
 
       
       /*const openComplaintFilterData = data.complaintList.map((value,index) => value ? {
@@ -269,10 +290,16 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       this.openComplaintProgressBar=false;
  
     }, error => {
-      
       this.openComplaintProgressBar=false;
-      this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
+      //this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
     })
+        
+      } catch (error) {
+        this.openComplaintProgressBar=false;
+        this.toastService.error("Something went wrong while loading " + this.legalEntityMenuPrefModel.complaintMenuName + " details.");
+      }
+
+      
     }
 
     
@@ -462,6 +489,30 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
 
   ngOnInit() {
+
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId = tokenModel.userId;
+    this.userRole = tokenModel.userRole;
+
+    this.legalEntityMenuPrefModel = this.utilService.getLegalEntityMenuPrefNames();
+
+    this.equptMenuName=this.legalEntityMenuPrefModel.equipmentMenuName;
+    this.complaintMenuName=this.legalEntityMenuPrefModel.complaintMenuName;
+    this.technicianMenuName=this.legalEntityMenuPrefModel.technicianMenuName;
+    this.complaintMenuName=this.legalEntityMenuPrefModel.complaintMenuName;
+
+    this.utilService.setTitle("Legalentity - Open " + this.legalEntityMenuPrefModel.complaintMenuName + " Report | Attendme");
+
+    this.complaintFilterType="0";
+
+   this.popOpenComplaintGrid(false);
+
+   if (this.branchHeadOffice){
+     this.popBranchList();
+   }
 
   /*  if(localStorage.getItem('legalEntityUserDetails') != null){
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));

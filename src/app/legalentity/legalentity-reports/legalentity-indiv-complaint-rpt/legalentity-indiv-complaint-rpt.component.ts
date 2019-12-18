@@ -4,6 +4,8 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { IcomplaintIndivReqStruct, LegalentityComplaintRptService, IcomplaintIndivResponseStruct } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { LegalentityIndivComptDetails } from '../../model/legalentity-indiv-compt-details';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 export interface IcomplaintIndivDocResponseStruct{
    imageDocTransId: number,
@@ -39,13 +41,19 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
   
   formFieldCountToDisp: number;
 
+  legalEntityId: number;
+  branchId: number;
+  userId: number;
+  userRole: string;
+
   constructor(
     private utilServices: LegalentityUtilService,
     public dialogRef: MatDialogRef<LegalentityIndivComplaintRptComponent>,
     @Inject(MAT_DIALOG_DATA) public data: IcomplaintIndivReqStruct,
     public legalEntityMenuPrefModel: LegalentityMenuPrefNames,
     private complaintRptServiceAPI: LegalentityComplaintRptService,
-    public indivComptDetailsModel: LegalentityIndivComptDetails
+    public indivComptDetailsModel: LegalentityIndivComptDetails,
+    private authService: AuthService
   ) { 
     dialogRef.disableClose=true;
 
@@ -113,6 +121,13 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
   }
 
   ngOnInit() {
+   
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
 
     this.legalEntityMenuPrefModel = this.utilServices.getLegalEntityMenuPrefNames();
      this.popIndivComplaintDetails();

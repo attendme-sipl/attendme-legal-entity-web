@@ -321,7 +321,13 @@ export class LegalentityComplaintRptService {
 
   getIndivComplaintDetails(indivComplaintReqObj: IcomplaintIndivReqStruct):Observable<IcomplaintIndivResponseStruct>{
    
-    return this.httpClient.get<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail/" + indivComplaintReqObj);
+    let params = new URLSearchParams();
+
+    for(let key in indivComplaintReqObj){
+      params.set(key, indivComplaintReqObj[key]);
+    }
+
+    return this.httpClient.get<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail/" + params);
   }
 
   assignTechnicianToComplaint(complaintDetails:IAssingTechnicianDialogData):Observable<any>{

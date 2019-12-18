@@ -72,7 +72,7 @@ export class LegalentityTrashComptRptComponent implements OnInit {
     );
    }
 
-   popTrashComplaintRpt(exportToExcel: boolean){
+   /*popTrashComplaintRpt(exportToExcel: boolean){
      this.trashComplaintProgressBar=true;
      this.searchKey='';
 
@@ -149,7 +149,7 @@ export class LegalentityTrashComptRptComponent implements OnInit {
 
      
 
-   }
+   } */
 
    openComplaintDetailsDialog(complaintId: number):void{
 
@@ -228,7 +228,9 @@ export class LegalentityTrashComptRptComponent implements OnInit {
       this.popBranchList();
     }
 
-    this.popTrashComplaintRpt(false);
+    // To be added after jwt implementation
+    
+   // this.popTrashComplaintRpt(false);
 
   }
 
