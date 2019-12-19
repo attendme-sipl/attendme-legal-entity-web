@@ -33,7 +33,11 @@ export interface IAssingTechnicianDialogData{
   technicianMenuName: string,
   equipmentMenuName: string,
   complaintNumber: string,
-  technicianId:number
+  technicianId:number,
+  legalEntityId: number,
+  branchId: number,
+  userId: number,
+  userRole: string
  };
 
 export interface IopenComplaintRtpReqStruct{
@@ -326,136 +330,175 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
       complaintId: complaintId
     };
+
+    try {
+      const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
+        data: IndivComplaintReqObj
+      });
+
+    } catch (error) {
+      console.log("Something went wrong while displaying " + this.complaintMenuName + " details.");
+    }
     
-    const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
-      data: IndivComplaintReqObj
-    });
+    
   }
 
   openAssingTechnicianDialog(complaintId: number):void{
-    
-    const complaintNumberObj = this.openComplaintResponseArray.map((value,index) => value ? {
-      complaintId: value['complaintId'],
-      complaintNumber: value['complaintNumber']
-    } : null)
-    .filter(value => value.complaintId == complaintId);
 
-    let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
+    try {
 
-    let complaintDetailsData: IAssingTechnicianDialogData = {
-      complaintStatus: 'assigned',
-      complaintAssignStatus: true,
-      complaintId: complaintId,
-      complaintMenuName: this.complaintMenuName,
-      equipmentMenuName: this.equptMenuName,
-      technicianMenuName: this.technicianMenuName,
-      complaintNumber: complaintNumber,
-      technicianId:null
-    };
-
-    const dialogRef = this.dialog.open(LegalentityComplaintActionComponent);
-
-    /*const dialogRef = this.dialog.open(LegalentityAssignTechnicianComponent, {
-      data: complaintDetailsData,
-      width: '500px',
-      panelClass: 'custom-dialog-container'
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (complaintDetailsData.technicianId  != null)
-      {
-
-        let confirmAlertData:IConfirmAlertStruct = {
-         alertMessage: "Are you sure you want to assign " + this.technicianMenuName + " to a " + this.complaintMenuName,
-         confirmBit:false
-        };
-
-        const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
-          data:confirmAlertData,
-          panelClass: 'custom-dialog-container'
-        });
-
-        alertDialogRef.afterClosed().subscribe(result =>{
-         
-          if (confirmAlertData.confirmBit)
-          {
-            //console.log(complaintDetailsData);
-            this.openComplaintProgressBar = true;
-            this.complaintRptServiceAPI.assignTechnicianToComplaint(complaintDetailsData)
-            .subscribe(data => {
-              if (data['errorOccured'])
-              {
-                this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName,"");
+      const complaintNumberObj = this.openComplaintResponseArray.map((value,index) => value ? {
+        complaintId: value['complaintId'],
+        complaintNumber: value['complaintNumber']
+      } : null)
+      .filter(value => value.complaintId == complaintId);
+  
+      let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
+  
+      let complaintDetailsData: IAssingTechnicianDialogData = {
+        complaintStatus: 'assigned',
+        complaintAssignStatus: true,
+        complaintId: complaintId,
+        complaintMenuName: this.complaintMenuName,
+        equipmentMenuName: this.equptMenuName,
+        technicianMenuName: this.technicianMenuName,
+        complaintNumber: complaintNumber,
+        technicianId:null,
+        branchId: this.branchId,
+        legalEntityId: this.legalEntityId,
+        userId: this.userId,
+        userRole: this.userRole
+      };
+  
+     // const dialogRef = this.dialog.open(LegalentityComplaintActionComponent);
+  
+      const dialogRef = this.dialog.open(LegalentityAssignTechnicianComponent, {
+        data: complaintDetailsData,
+        width: '500px',
+        panelClass: 'custom-dialog-container'
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {
+        if (complaintDetailsData.technicianId  != null)
+        {
+  
+          let confirmAlertData:IConfirmAlertStruct = {
+           alertMessage: "Are you sure you want to assign " + this.technicianMenuName + " to a " + this.complaintMenuName,
+           confirmBit:false
+          };
+  
+          const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
+            data:confirmAlertData,
+            panelClass: 'custom-dialog-container'
+          });
+  
+          alertDialogRef.afterClosed().subscribe(result =>{
+           
+            if (confirmAlertData.confirmBit)
+            {
+              //console.log(complaintDetailsData);
+              this.openComplaintProgressBar = true;
+              this.complaintRptServiceAPI.assignTechnicianToComplaint(complaintDetailsData)
+              .subscribe(data => {
+                /*if (data['errorOccured'])
+                {
+                  this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName,"");
+                  this.openComplaintProgressBar = false;
+                  return false;
+                }*/
+  
+                this.popOpenComplaintGrid(false);
+                this.toastService.success(this.technicianMenuName + " assigned to a " + this.complaintMenuName + " successfully","");
+  
+              }, error => {
+                //this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName,"");
                 this.openComplaintProgressBar = false;
-                return false;
-              }
-
-              this.popOpenComplaintGrid(false);
-              this.toastService.success(this.technicianMenuName + " assigned to a " + this.complaintMenuName + " successfully","");
-
-            }, error => {
-              this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName,"");
-              this.openComplaintProgressBar = false;
-            });
-          }
-
-        });
-
-      }
-    }); */
+              });
+            }
+  
+          });
+  
+        }
+      }); 
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName,"");
+    }
+    
+    
 
   }
 
   
 
   opendQrDetailsDialog(qrCodeId: number){
-    const qrIdDialog = this.dialog.open(LegalentityQrDetailsComponent);
+    try {
+      const qrIdDialog = this.dialog.open(LegalentityQrDetailsComponent);  
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading QR Id image file.");
+    }
+    
   }
 
   trashComplaint(complaintId: number){
 
-    const complaintNumberObj = this.openComplaintResponseArray.map((value,index) => value ? {
-      complaintId: value['complaintId'],
-      complaintNumber: value['complaintNumber']
-    } : null)
-    .filter(value => value.complaintId == complaintId);
+    try {
 
-    let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
-
-    let confirmAlertData:IConfirmAlertStruct = {
-      alertMessage: "Are you sure you want to trash the " + this.complaintMenuName + " (" + complaintNumber + ")",
-      confirmBit:false
-     };
-
-     const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
-      data:confirmAlertData,
-      panelClass: 'custom-dialog-container'
-    });
-
-    alertDialogRef.afterClosed().subscribe(result => {
-      //console.log(confirmAlertData.confirmBit);
-
-      if (confirmAlertData.confirmBit){
-        this.openComplaintProgressBar=true;
-
-        this.complaintRptServiceAPI.trashComplaint(complaintId, true)
-        .subscribe(data => {
-          if (data['errorOccured']){
-            this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+      const complaintNumberObj = this.openComplaintResponseArray.map((value,index) => value ? {
+        complaintId: value['complaintId'],
+        complaintNumber: value['complaintNumber']
+      } : null)
+      .filter(value => value.complaintId == complaintId);
+  
+      let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
+  
+      let confirmAlertData:IConfirmAlertStruct = {
+        alertMessage: "Are you sure you want to trash the " + this.complaintMenuName + " (" + complaintNumber + ")",
+        confirmBit:false
+       };
+  
+       const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
+        data:confirmAlertData,
+        panelClass: 'custom-dialog-container'
+      });
+  
+      alertDialogRef.afterClosed().subscribe(result => {
+        //console.log(confirmAlertData.confirmBit);
+  
+        if (confirmAlertData.confirmBit){
+          this.openComplaintProgressBar=true;
+  
+          this.complaintRptServiceAPI.trashComplaint(
+            complaintId, 
+            true,
+            this.legalEntityId,
+            this.branchId,
+            this.userId,
+            this.userRole
+            )
+          .subscribe(data => {
+            /*if (data['errorOccured']){
+              this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+              this.openComplaintProgressBar=false;
+              return false;
+            }*/
+  
+            this.openComplaintProgressBar = false;
+            this.toastService.success("" + this.complaintMenuName + " added to trash successfully");
+            this.popOpenComplaintGrid(false);
+          }, error => {
+           // this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
             this.openComplaintProgressBar=false;
-            return false;
-          }
+          });
+        }
+  
+      });
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+    }
 
-          this.openComplaintProgressBar = false;
-          this.toastService.success("" + this.complaintMenuName + " added to trash successfully");
-          this.popOpenComplaintGrid(false);
-        }, error => {
-          this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
-          this.openComplaintProgressBar=false;
-        });
-      }
-
-    });
+    
 
   }
 
@@ -496,6 +539,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     this.branchId=tokenModel.branchId;
     this.userId = tokenModel.userId;
     this.userRole = tokenModel.userRole;
+
+    this.branchHeadOffice=tokenModel.branchHeadOffice;
 
     this.legalEntityMenuPrefModel = this.utilService.getLegalEntityMenuPrefNames();
 

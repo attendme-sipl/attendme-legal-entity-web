@@ -28,7 +28,13 @@ export class LegalentityTechnicianService {
     private httpClient: HttpClient
   ) { }
 
-  getTechnicianNameList(legalEntityId: number, technicianActiveStatus: boolean):Observable<any>
+  getTechnicianNameList(
+    legalEntityId: number, 
+    branchId: number,
+    userId: number,
+    userRole: string,
+    technicianActiveStatus: boolean
+    ):Observable<any>
   {
     return this.httpClient.post(this.util.legalEntityRestApuURL + "/getTechnicianList",{
       legalEntityId: legalEntityId,

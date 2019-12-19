@@ -321,13 +321,19 @@ export class LegalentityComplaintRptService {
 
   getIndivComplaintDetails(indivComplaintReqObj: IcomplaintIndivReqStruct):Observable<IcomplaintIndivResponseStruct>{
    
-    let params = new URLSearchParams();
+    //let params = new URLSearchParams();
 
-    for(let key in indivComplaintReqObj){
-      params.set(key, indivComplaintReqObj[key]);
-    }
+   // let indivComplatDetailsForm: FormData = new FormData();
 
-    return this.httpClient.get<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail/" + params);
+    //indivComplatDetailsForm.append("complaintId", indivComplaintReqObj.complaintId.toString());
+
+    //for(let key in indivComplaintReqObj){
+      //console.log(key);
+      //params.set(key, indivComplaintReqObj[key]);
+    //}
+
+
+    return this.httpClient.get<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail/" + indivComplaintReqObj.complaintId);
   }
 
   assignTechnicianToComplaint(complaintDetails:IAssingTechnicianDialogData):Observable<any>{
@@ -416,10 +422,21 @@ export class LegalentityComplaintRptService {
       );
     }
 
-    trashComplaint(complaintId: number, trashComplaint: boolean): Observable<any>{
+    trashComplaint(
+      complaintId: number, 
+      trashComplaint: boolean,
+      legalEntityId: number,
+      branchId: number,
+      userId: number,
+      userRole: string
+      ): Observable<any>{
       return this.httpClient.post(this.util.legalEntityRestApuURL + "/complaintTrash",{
         complaintId: complaintId,
-        trashComplaint: trashComplaint
+        trashComplaint: trashComplaint,
+        legalEntityId: legalEntityId,
+        branchId: branchId,
+        userId: userId,
+        userRole: userRole
       });
     }
 

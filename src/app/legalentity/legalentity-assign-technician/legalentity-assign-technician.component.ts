@@ -11,6 +11,8 @@ import { NgForm } from '@angular/forms';
 import { IAssingTechnicianDialogData } from '../legalentity-reports/legalentity-open-compt-rpt/legalentity-open-compt-rpt.component';
 import { LegalentityTechnicianService } from '../services/legalentity-technician.service';
 import { LegalentityUser } from '../model/legalentity-user';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { AuthService } from 'src/app/Auth/auth.service';
 
 
 export interface IAlertData{
@@ -29,6 +31,7 @@ export class LegalentityAssignTechnicianComponent implements OnInit {
   legalEntityId:number;
   branchId:number;
   userId:number;
+  userRole: string;
 
   technicianMenuName: string;
   complaintMenueName: string;
@@ -50,7 +53,8 @@ export class LegalentityAssignTechnicianComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: IAssingTechnicianDialogData,
     private dialog:MatDialog,
     private technicianServiceAPI: LegalentityTechnicianService,
-    private toasterService:ToastrService
+    private toasterService:ToastrService,
+    private authService: AuthService
   ) { 
     this.technicianMenuName = data.technicianMenuName;
     this.complaintNumber = data.complaintNumber;
@@ -84,9 +88,52 @@ export class LegalentityAssignTechnicianComponent implements OnInit {
     });
   }
 
+  popTechnicianList(){
+
+    try {
+      this.technicianServiceAPI.getTechnicianNameList(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole,
+        true)
+      .subscribe((data) => {
+      
+      this.technicianNameArr = data['technicialList'];
+    
+      /*if (data['errorOccured'] == true)
+      {
+        this.toasterService.error("Something went wrong while loading " + this.technicianMenuName + " list.");
+        return false;
+      }*/
+  
+     
+      //console.log(data);
+  
+     // this.technicianNameArr = data['technicialList'];
+  
+      }, error => {
+        //this.toasterService.error("Something went wrong while loading " + this.technicianMenuName + " list.");
+      });
+    } catch (error) {
+      this.toasterService.error("Something went wrong while loading " + this.technicianMenuName + " list.");
+      //return false;
+    }
+
+    
+  }
+
   ngOnInit() {
 
-    if(localStorage.getItem('legalEntityUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.popTechnicianList();
+    /*if(localStorage.getItem('legalEntityUserDetails') != null){
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId = this.legalEntityUserModel.legalEntityUserDetails.legalEntityId;
       this.branchId = this.legalEntityUserModel.legalEntityBranchDetails.branchId;
@@ -95,7 +142,7 @@ export class LegalentityAssignTechnicianComponent implements OnInit {
     else {
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    } */
 
    /* if (localStorage.getItem('legalEntityUser') != null)
     {
@@ -124,25 +171,7 @@ export class LegalentityAssignTechnicianComponent implements OnInit {
 
     //this.technicianId = 0;
   
-    this.technicianServiceAPI.getTechnicianNameList(this.legalEntityId,true)
-    .subscribe((data) => {
-    
-    this.technicianNameArr = data['technicialList'];
-  
-    if (data['errorOccured'] == true)
-    {
-      this.toasterService.error("Something went wrong while loading " + this.technicianMenuName + " list.");
-      return false;
-    }
-
-   
-    //console.log(data);
-
-   // this.technicianNameArr = data['technicialList'];
-
-    }, error => {
-      this.toasterService.error("Something went wrong while loading " + this.technicianMenuName + " list.");
-    }); 
+     
     
   }
 

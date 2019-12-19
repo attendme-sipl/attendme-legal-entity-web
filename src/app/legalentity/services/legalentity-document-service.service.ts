@@ -83,7 +83,7 @@ export class LegalentityDocumentServiceService {
     
     formData.append("complaintStatusDocument", uploadedFileObject.docData, uploadedFileObject.docData.name);
     
-    const formDataNew: FormData = new FormData();
+    /*const formDataNew: FormData = new FormData();
     
     formDataNew.append("complaintStatusDocument",uploadedFileObject.docData);
     formDataNew.append("complaintId","1814");
@@ -97,13 +97,13 @@ export class LegalentityDocumentServiceService {
     formDataNew.append("complaintStageCount","4");
     formDataNew.append("failureReason","NA");
     formDataNew.append("actionTaken","NA");
-    formDataNew.append("userId","7");
+    formDataNew.append("userId","7"); */
 
 
-   // return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/uploadDocument", formData);
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/uploadDocument", formData);
 
     
-    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/techChangeCompStatus", formDataNew);
+    //return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/techChangeCompStatus", formDataNew);
 
   }
 

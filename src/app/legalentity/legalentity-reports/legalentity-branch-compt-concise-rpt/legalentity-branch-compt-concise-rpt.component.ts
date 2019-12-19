@@ -83,65 +83,83 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     this.enableProgressBar=true;
     this.searchKey='';
 
-    this.dashboardService.getUnresolvedDaysRuleBook(
-      this.legalEntityId,
-      this.branchId,
-      this.userId,
-      this.userRole
-      )
-    .subscribe(data => {
+    try {
 
-      if (data['errorOccured'] == true){
-        this.enableProgressBar=false;
-        this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details.");
-        return false;
-      }
-
-      this.unreslovedDayCount = parseInt(data['unresolvedDaysCount']);
-
-      const branchComptConciseReqObj: IbranchComplaintConciseReqStruct = {
-        branchActiveStatus: true,
-        complaintTrash: false,
-        legalEntityId: this.legalEntityId,
-        unresolvedComptDaysCount: this.unreslovedDayCount,
-        branchId: this.branchId,
-        userId: this.userId,
-        userRole: this.userRole
-      };
-
-      this.complaintRptService.getBranchComplaintConciseRpt(branchComptConciseReqObj)
-      .subscribe((data: IbranchComplaintConciseResponse) => {
-
-        if (data.errorOccurred)
-        {
+      this.dashboardService.getUnresolvedDaysRuleBook(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole
+        )
+      .subscribe(data => {
+  
+        /*if (data['errorOccured'] == true){
           this.enableProgressBar=false;
           this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details.");
           return false;
+        }*/
+  
+        this.unreslovedDayCount = parseInt(data['unresolvedDaysCount']);
+  
+        const branchComptConciseReqObj: IbranchComplaintConciseReqStruct = {
+          branchActiveStatus: true,
+          complaintTrash: false,
+          legalEntityId: this.legalEntityId,
+          unresolvedComptDaysCount: this.unreslovedDayCount,
+          branchId: this.branchId,
+          userId: this.userId,
+          userRole: this.userRole
+        };
+  
+        try {
+  
+          this.complaintRptService.getBranchComplaintConciseRpt(branchComptConciseReqObj)
+        .subscribe((data: IbranchComplaintConciseResponse) => {
+  
+          /*if (data.errorOccurred)
+          {
+            this.enableProgressBar=false;
+            this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details.");
+            return false;
+          }*/
+  
+          this.totalRecordCount=data.branchComptDetails.length;
+  
+          this.branchRecordCount = data.branchComptDetails.length;
+          this.dataSource = new MatTableDataSource(data.branchComptDetails);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+     
+          //const sortState: Sort = {active: 'complaintAssignedDateTime', direction: 'desc'};
+          //this.sort.active = sortState.active;
+          //this.sort.direction = sortState.direction;
+          //this.sort.sortChange.emit(sortState);
+  
+          this.enableProgressBar=false;
+  
+        }, error => {
+          this.enableProgressBar=false;
+          //this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details.");
+        });
+          
+        } catch (error) {
+          this.enableProgressBar=false;
+          this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details.");
         }
-
-        this.totalRecordCount=data.branchComptDetails.length;
-
-        this.branchRecordCount = data.branchComptDetails.length;
-        this.dataSource = new MatTableDataSource(data.branchComptDetails);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-   
-        //const sortState: Sort = {active: 'complaintAssignedDateTime', direction: 'desc'};
-        //this.sort.active = sortState.active;
-        //this.sort.direction = sortState.direction;
-        //this.sort.sortChange.emit(sortState);
-
-        this.enableProgressBar=false;
-
+  
+        
+  
       }, error => {
-        this.enableProgressBar=false;
+        //this.enableProgressBar=false;
         this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details.");
       });
+      
+    } catch (error) {
+        this.enableProgressBar=false;
+        this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details.");
+    }
 
-    }, error => {
-      this.enableProgressBar=false;
-      this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details.");
-    });
+    
 
   
 

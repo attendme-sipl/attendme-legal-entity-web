@@ -69,15 +69,17 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
       complaintId: this.complaintId
     };
 
-    this.complaintRptServiceAPI.getIndivComplaintDetails(indivComplaintReqObj)
+    try {
+
+      this.complaintRptServiceAPI.getIndivComplaintDetails(indivComplaintReqObj)
     .subscribe((data: IcomplaintIndivResponseStruct) => {
 
      // console.log(data);
 
-      if (data.errorOccured){
+      /*if (data.errorOccured){
         this.indivComplaintProgressBar = false;
         this.dialogRef.close();
-      }
+      }*/
       
       //this.indivComplaintDetailsObj  = data;
 
@@ -118,6 +120,13 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
     }, error => {
       this.indivComplaintProgressBar = false;
     });
+      
+    } catch (error) {
+      this.indivComplaintProgressBar = false;
+      this.dialogRef.close();
+    }
+
+    
   }
 
   ngOnInit() {
