@@ -74,7 +74,9 @@ export class LegalentityBranchListRptComponent implements OnInit {
     );
   }
 
-  popBranchList(exportToExcel: boolean):void{
+   // to be added after jwt implmenetation
+
+  /*popBranchList(exportToExcel: boolean):void{
     this.enableProgressBar=true;
 
     const branchRptReqObj: IbranchRptReqStruct = {
@@ -138,7 +140,7 @@ export class LegalentityBranchListRptComponent implements OnInit {
     
 
     
-  }
+  }*/
 
   addBranchClick():void{
     this.router.navigate(['legalentity','portal','add-branch']);
@@ -165,7 +167,9 @@ export class LegalentityBranchListRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - " + this.branchMenuName + " List | Attendme");
 
-    this.popBranchList(false);
+     // to be added after jwt implmenetation
+
+   // this.popBranchList(false);
   }
 
   applyFilter(filterValue: string){

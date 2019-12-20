@@ -56,7 +56,9 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     private qrIdServiceAPI: LegalentityQrService
   ) { }
 
-  popBranchList(exportToExcel: boolean):void{
+  // to be added after jwt implmenetation
+
+  /*popBranchList(exportToExcel: boolean):void{
 
     const branchRptReqObj: IbranchRptReqStruct = {
       branchMenuName: this.branchMenuName,
@@ -85,7 +87,7 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
       .filter(value => value.branchHeadOffice == false);
        
     });
-  }
+  }*/
 
   getAvailableQrToAllot():void{
     const availableQrToAllotReqObj: IavailbleQrIdCountReqStruct = {
@@ -254,8 +256,8 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
  
     this.setFormGroup();
     
-
-    this.popBranchList(false);
+     // to be added after jwt implmenetation
+    //this.popBranchList(false);
 
     this.getAvailableQrToAllot();
   }

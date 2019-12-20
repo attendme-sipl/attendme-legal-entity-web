@@ -80,6 +80,8 @@ export interface IComplaintBodyStruct
   allBranch: boolean,
   branchId: number,
   legalEntityId: number,
+  userId: number,
+  userRole: string,
   complaintStatus: string,
   fromDate: string,
   toDate: string,

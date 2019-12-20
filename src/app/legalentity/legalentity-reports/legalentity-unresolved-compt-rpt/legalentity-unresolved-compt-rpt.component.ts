@@ -202,8 +202,9 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     });
 
   }
+ // to be added after jwt implementation
 
-  popBranchList(){
+  /*popBranchList(){
 
     //this.openComplaintProgressBar=true;
 
@@ -229,7 +230,7 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     }, error => {
       this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
     });
-  }
+  }*/
 
   ngOnInit() {
     if (localStorage.getItem('legalEntityUserDetails') != null){
@@ -274,7 +275,9 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
         this.moreThanUptoPhrase="Up to";
       }
 
-      this.popBranchList();
+       // to be added after jwt implementation
+
+     // this.popBranchList();
 
       // To be included after token implementation
 

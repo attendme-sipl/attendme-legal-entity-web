@@ -36,6 +36,9 @@ export interface IbranchListDetailsResponse{
 
 export interface IbranchRptReqStruct{
   legalEntityId: number,
+  branchId: number,
+  userId: number,
+  userRole: string,
   exportToExcel: boolean,
   complaintMenuName: string,
   technicianMenuName: string,

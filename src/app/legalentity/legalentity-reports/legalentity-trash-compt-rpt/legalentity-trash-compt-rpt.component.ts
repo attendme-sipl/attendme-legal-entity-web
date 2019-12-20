@@ -163,7 +163,9 @@ export class LegalentityTrashComptRptComponent implements OnInit {
 
   }
 
-  popBranchList(){
+   // to be added after jwt implementation
+
+  /*popBranchList(){
 
     //this.openComplaintProgressBar=true;
 
@@ -189,7 +191,7 @@ export class LegalentityTrashComptRptComponent implements OnInit {
     }, error => {
       this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
     });
-  }
+  }*/
 
   ngOnInit() {
 
@@ -224,9 +226,11 @@ export class LegalentityTrashComptRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle('Legalentity - Trash ' + this.complaintMenuName + " Report | Attendme");
 
-    if (this.branchHeadOffice){
+     // to be added after jwt implementation
+
+    /*if (this.branchHeadOffice){
       this.popBranchList();
-    }
+    }*/
 
     // To be added after jwt implementation
     

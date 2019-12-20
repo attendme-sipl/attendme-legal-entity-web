@@ -12,6 +12,8 @@ import {saveAs} from 'file-saver';
 import *as moment from 'moment';
 import { IbranchListDetailsResponse, IbranchRptReqStruct, LegalentityBranchService, IbranchListReportResponse } from '../../services/legalentity-branch.service';
 import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-inprogress-compt-rpt',
@@ -25,6 +27,8 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
   
   legalEntityId: number;
   branchId: number;
+  userId: number;
+  userRole: string;
 
   complaintMenuName: string;
   technicianMenuName: string;
@@ -65,15 +69,16 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     private menuModel: LegalentityMenuPrefNames,
     private dialog:MatDialog,
     private branchData: LegalentityBranchDataService,
-    private branchServiceAPI: LegalentityBranchService
+    private branchServiceAPI: LegalentityBranchService,
+    private authService: AuthService
   ) { 
     iconRegistry.addSvgIcon(
       'refresh-icon',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
     );
   }
-
-  popInprogressComplaintsRpt(exportToExcel: boolean):void{
+// to be done after jwt implementation
+  /*popInprogressComplaintsRpt(exportToExcel: boolean):void{
     
     this.enableProgressBar=true;
     this.searchKey='';
@@ -149,7 +154,7 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     }
     
     
-  }
+  }*/
 
   openComplaintDetailsDialog(complaintId: number):void{
 
@@ -163,7 +168,9 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
 
   }
 
-  popBranchList(){
+   // to be added after jwt implementation
+
+  /*popBranchList(){
 
     //this.openComplaintProgressBar=true;
 
@@ -189,11 +196,18 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     }, error => {
       this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
     });
-  }
+  }*/
 
   ngOnInit() {
 
-    if(localStorage.getItem('legalEntityUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchHeadOffice=tokenModel.branchHeadOffice;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    /*if(localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.userBranchId=this.userModel.legalEntityBranchDetails.branchId;
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -203,13 +217,15 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     if (this.branchData.branchDetails != null){
       this.branchId=this.branchData.branchDetails['branchId'];
     }
     else{
-      this.branchId=this.userBranchId
+      //this.branchId=this.userBranchId
+      
+      this.branchId=tokenModel.branchId;
     }
     
 
@@ -221,11 +237,15 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - In Progress " + this.complaintMenuName + " Report | Attendme");
 
+     // to be added after jwt implementation
+
     if (this.branchHeadOffice){
-      this.popBranchList();
+    //  this.popBranchList();
     }
 
-    this.popInprogressComplaintsRpt(false);
+    // to be done after jwt implementation
+
+    //this.popInprogressComplaintsRpt(false);
     
 
   }

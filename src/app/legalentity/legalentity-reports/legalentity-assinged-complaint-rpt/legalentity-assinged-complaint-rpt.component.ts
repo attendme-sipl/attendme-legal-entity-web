@@ -22,6 +22,8 @@ import {saveAs} from 'file-saver';
 import *as moment from 'moment';
 import { IbranchListDetailsResponse, IbranchRptReqStruct, IbranchListReportResponse, LegalentityBranchService } from '../../services/legalentity-branch.service';
 import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-assinged-complaint-rpt',
@@ -36,6 +38,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
   legalEntityId: number;
   branchId: number;
   userId: number;
+  userRole: string;
 
   equipmentMenuName:string;
   technicianMenuName:string;
@@ -82,7 +85,8 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     private userModel: LegalentityUser,
     private menuModel: LegalentityMenuPrefNames,
     private branchServiceAPI: LegalentityBranchService,
-    private branchData: LegalentityBranchDataService
+    private branchData: LegalentityBranchDataService,
+    private authService: AuthService
   ) { 
 
     iconRegistry.addSvgIcon(
@@ -138,7 +142,9 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
      equptMenuName: this.equipmentMenuName,
      exportToExcel: exportToExcel,
      technicianMenuName: this.technicianMenuName,
-     complaintTrash: false
+     complaintTrash: false,
+     userId: this.userId,
+     userRole: this.userRole
    };
 
    this.enableProgressBar = true;
@@ -146,29 +152,41 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
    if (exportToExcel){
 
-    let fileName: string = "Assigned-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+    try {
+
+      let fileName: string = "Assigned-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
 
     this.complaintServiceAPI.getAssingedComplaintsListExportToExcel(assignComplaintReqObj)
     .subscribe(data => {
       saveAs(data, fileName + ".xls");
       this.enableProgressBar=false;
     }, error => {
-      this.toastService.error("Something went wrong while downloading excel");
+      //this.toastService.error("Something went wrong while downloading excel");
       this.enableProgressBar=false;
     });
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while downloading excel");
+      this.enableProgressBar=false;
+    }
+
+    
 
    }
    else{
 
-    this.complaintServiceAPI.getAssingedComplaintsListRpt(assignComplaintReqObj)
+
+    try {
+      
+      this.complaintServiceAPI.getAssingedComplaintsListRpt(assignComplaintReqObj)
    .subscribe((data: IAssingnComplaintResponse) => {
   
-    if (data.errorOccurred)
+    /*if (data.errorOccurred)
     {
       this.toastService.error("Something went wrong while loading assinged " + this.complaintMenuName + " reprot");
       this.enableProgressBar = false;
       return false;
-    }
+    }*/
 
     
 
@@ -204,9 +222,16 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
      this.enableProgressBar = false;
     
    },error => {
-    this.toastService.error("Something went wrong while loading assinged " + this.complaintMenuName + " reprot");
+    //this.toastService.error("Something went wrong while loading assinged " + this.complaintMenuName + " reprot");
     this.enableProgressBar = false;
    });
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading assinged " + this.complaintMenuName + " reprot");
+      this.enableProgressBar = false;
+    }
+
+    
 
    }
 
@@ -220,36 +245,45 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
   openComplaintDetails(complaintId: number):void {
 
-    const complaintNumberObj = this.complaintResponseData.map((value,index) => value? {
-      complaintId: value['complaintId'],
-      complaintNumber: value['complaintNumber']
-    }: null)
-    .filter(value => value.complaintId == complaintId);
+    try {
 
-    let complaintNumber: string = complaintNumberObj[0]['complaintNumber']
-   
-    const complaintDialogReqDataObj: IComplaintIdStruct = {
+      const complaintNumberObj = this.complaintResponseData.map((value,index) => value? {
+        complaintId: value['complaintId'],
+        complaintNumber: value['complaintNumber']
+      }: null)
+      .filter(value => value.complaintId == complaintId);
+  
+      let complaintNumber: string = complaintNumberObj[0]['complaintNumber']
+     
+      const complaintDialogReqDataObj: IComplaintIdStruct = {
+  
+        complaintId: complaintId,
+        complaintMenuName: this.complaintMenuName,
+        complaintNumber: complaintNumber,
+        equipmentMenuName: this.equipmentMenuName,
+        errorOccured: false,
+        technicianMenuName: this.technicianMenuName   
+      };
+  
+      const complaintDialogRef = this.dialog.open(LegalentityIndivComplaintRptComponent, {
+        data: complaintDialogReqDataObj
+      });
+  
+      complaintDialogRef.afterClosed().subscribe(result => {
+        if (complaintDialogReqDataObj.errorOccured)
+        {
+          this.toastService.error("Something when wrong while loading " + this.complaintMenuName + " details");
+        }
+      })
+      
+    } catch (error) {
+      this.toastService.error("Something when wrong while loading " + this.complaintMenuName + " details");
+    }
 
-      complaintId: complaintId,
-      complaintMenuName: this.complaintMenuName,
-      complaintNumber: complaintNumber,
-      equipmentMenuName: this.equipmentMenuName,
-      errorOccured: false,
-      technicianMenuName: this.technicianMenuName   
-    };
-
-    const complaintDialogRef = this.dialog.open(LegalentityIndivComplaintRptComponent, {
-      data: complaintDialogReqDataObj
-    });
-
-    complaintDialogRef.afterClosed().subscribe(result => {
-      if (complaintDialogReqDataObj.errorOccured)
-      {
-        this.toastService.error("Something when worg while loading " + this.complaintMenuName + " details");
-      }
-    })
 
   }
+
+  
 
   popBranchList(){
 
@@ -261,10 +295,15 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
       equptMenuName: this.equipmentMenuName,
       exportToExcel: false,
       legalEntityId: this.legalEntityId,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
-    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    try {
+
+      this.branchServiceAPI.getBranchListReport(branchListReqObj)
     .subscribe((data: IbranchListReportResponse) => {
       //console.log(data);
       if (data.errorOccured){
@@ -275,13 +314,19 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
       this.branchListArr=data.branchDetailsList;
 
     }, error => {
-      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+     // this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
     });
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+    }
+
+    
   }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
       this.userBranchId=this.userModel.legalEntityBranchDetails.branchId;
@@ -292,13 +337,22 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
+    const jwtTokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=jwtTokenModel.legalEntityId;
+    this.userId=jwtTokenModel.userId;
+    this.userRole=jwtTokenModel.userRole;
+
+    this.branchHeadOffice=jwtTokenModel.branchHeadOffice;
+ 
     if (this.branchData.branchDetails != null){
       this.branchId=this.branchData.branchDetails['branchId'];
     }
     else{
-      this.branchId=this.userBranchId
+      //this.branchId=this.userBranchId
+      this.branchId=jwtTokenModel.branchId;
     }
     
     this.menuModel = this.util.getLegalEntityMenuPrefNames();

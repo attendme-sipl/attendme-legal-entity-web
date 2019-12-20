@@ -400,6 +400,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
               this.openComplaintProgressBar = true;
               this.complaintRptServiceAPI.assignTechnicianToComplaint(complaintDetailsData)
               .subscribe(data => {
+
+                console.log(data);
                 /*if (data['errorOccured'])
                 {
                   this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName,"");
@@ -512,7 +514,10 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       equptMenuName: this.equptMenuName,
       exportToExcel: false,
       legalEntityId: this.legalEntityId,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     this.branchServiceAPI.getBranchListReport(branchListReqObj)
@@ -536,9 +541,18 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     const tokenModel: TokenModel = this.authService.getTokenDetails();
 
     this.legalEntityId=tokenModel.legalEntityId;
-    this.branchId=tokenModel.branchId;
+   // this.branchId=tokenModel.branchId;
     this.userId = tokenModel.userId;
     this.userRole = tokenModel.userRole;
+    
+
+    if (this.branchData.branchDetails != null){
+      this.branchId=this.branchData.branchDetails['branchId'];
+    }
+    else{
+     // this.branchId=this.userBranchId
+     this.branchId=tokenModel.branchId;
+    }
 
     this.branchHeadOffice=tokenModel.branchHeadOffice;
 

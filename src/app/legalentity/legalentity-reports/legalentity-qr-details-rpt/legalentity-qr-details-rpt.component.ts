@@ -232,8 +232,9 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
    }
 
+ // to be added after jwt implementation
 
-   popBranchList(){
+   /*popBranchList(){
 
     //this.openComplaintProgressBar=true;
 
@@ -259,7 +260,7 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
     }, error => {
       this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
     });
-  }
+  }*/
 
   openQrIdComplaints(qrId: number){
     this.router.navigate(['legalentity/portal/rpt/complaints/qr/' + qrId]);
@@ -296,9 +297,11 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
     this.utileServiceAPI.setTitle("Legalentity - " + this.equipmentMenuName + " | Attendme" );
 
-    if (this.branchHeadOffice){
+     // to be added after jwt implementation
+
+    /*if (this.branchHeadOffice){
       this.popBranchList();
-    }
+    }*/
 
     this.popQrIdDetailsRpt(5, false);
   }

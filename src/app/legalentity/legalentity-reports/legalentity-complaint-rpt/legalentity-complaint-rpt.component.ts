@@ -79,7 +79,9 @@ export class LegalentityComplaintRptComponent implements OnInit {
     );
   }
 
-  popQrIdAllComplaintRpt(exportToExcel: boolean):void{
+  // to be done after jwt implementation
+
+  /*popQrIdAllComplaintRpt(exportToExcel: boolean):void{
     this.enableProgressBar=true;
     this.searchKey='';
 
@@ -159,7 +161,7 @@ export class LegalentityComplaintRptComponent implements OnInit {
     }
 
     
-  }
+  }*/
 
   onFilterItemChange(){
     
@@ -227,7 +229,9 @@ openComplaintDetailsDialog(complaintId: number):void{
 
 }
 
-popBranchList(){
+ // to be added after jwt implmenetation
+
+/*popBranchList(){
 
   //this.openComplaintProgressBar=true;
 
@@ -253,7 +257,7 @@ popBranchList(){
   }, error => {
     this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
   });
-}
+}*/
 
   ngOnInit() {
 
@@ -279,11 +283,15 @@ popBranchList(){
 
     this.complaintFilterType="0";
 
-    if (this.branchHeadOffice){
-      this.popBranchList();
-    }
+     // to be added after jwt implmenetation
 
-    this.popQrIdAllComplaintRpt(false);
+    /*if (this.branchHeadOffice){
+      this.popBranchList();
+    }*/
+
+// to be done after jwt implementation
+
+    ///this.popQrIdAllComplaintRpt(false);
   }
 
   applyFilter(filterValue: string){

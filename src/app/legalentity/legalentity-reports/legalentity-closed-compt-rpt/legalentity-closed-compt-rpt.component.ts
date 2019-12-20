@@ -88,7 +88,9 @@ export class LegalentityClosedComptRptComponent implements OnInit {
 
   }
 
-  popClosedComplaintRpt(exportToExcel: boolean):void{
+  // to be done after jwt implementation
+
+  /*popClosedComplaintRpt(exportToExcel: boolean):void{
 
     this.enableProgressBar=true;
     this.searchKey='';
@@ -161,9 +163,11 @@ export class LegalentityClosedComptRptComponent implements OnInit {
     }
 
     
-  }
+  }*/
 
-  popBranchList(){
+   // to be added after jwt implmenetation
+
+  /*popBranchList(){
 
     //this.openComplaintProgressBar=true;
 
@@ -189,7 +193,7 @@ export class LegalentityClosedComptRptComponent implements OnInit {
     }, error => {
       this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
     });
-  }
+  }*/
 
   ngOnInit() {
 
@@ -220,11 +224,15 @@ export class LegalentityClosedComptRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - Closed " + this.complaintMenuName + " Report | Attendme");
     
-    if (this.branchHeadOffice){
-      this.popBranchList();
-    }
+     // to be added after jwt implmenetation
 
-    this.popClosedComplaintRpt(false);
+    /*if (this.branchHeadOffice){
+      this.popBranchList();
+    }*/
+
+    // to be done after jwt implementation
+
+   // this.popClosedComplaintRpt(false);
   }
 
   applyFilter(filterValue: string){

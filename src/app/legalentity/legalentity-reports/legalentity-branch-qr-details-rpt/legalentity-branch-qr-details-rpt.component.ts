@@ -221,7 +221,10 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
     this.dataSource.filter = filterValue.trim().toLocaleLowerCase();
   }
 
-  setBranchName(exportToExcel: boolean){
+   // to be added after jwt implmenetation
+
+
+  /*setBranchName(exportToExcel: boolean){
 
     const branchRptReqObj: IbranchRptReqStruct = {
       branchMenuName: this.branchMenuName,
@@ -246,7 +249,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
       }
 
     });
-  }
+  }*/
 
   ngOnInit() {
 
@@ -282,7 +285,9 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
     this.popQrIdDetailsRpt(0, false);
 
-    this.setBranchName(false);
+     // to be added after jwt implmenetation
+
+    //this.setBranchName(false);
   }
 
 }
