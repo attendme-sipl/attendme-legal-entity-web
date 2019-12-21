@@ -249,9 +249,9 @@ export class LegalentityBranchComptConciseRptComponent implements OnInit {
     this.router.navigate(['/legalentity','portal','rpt','trash','complaint']);
   }
 
-  onResolvedComplaintClick(moreThanUptoFlag: string){
+  onResolvedComplaintClick(moreThanUptoFlag: string, branchId: number){
     this.branchData.branchDetails={
-      branchId: this.branchId
+      branchId: branchId
     };
 
     this.router.navigate(['/legalentity','portal','rpt','complaints','unresolved',moreThanUptoFlag]);

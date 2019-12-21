@@ -54,6 +54,8 @@ export interface IallotQrIdToBranchNewReq{
 export interface IqrIdRptReqStruct{
    legalEntityId: number,
    branchId: number,
+   userId: number,
+   userRole: string,
    allBranch: boolean,
    qrActiveStatus: boolean,
    startDateTime: string,

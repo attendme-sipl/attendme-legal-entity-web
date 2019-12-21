@@ -20,6 +20,8 @@ import { Observable } from 'rxjs';
 import { startWith, map, filter, distinctUntilChanged } from 'rxjs/operators';
 import {RequireMatch as RequireMatch} from '../requireMatch';
 import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IlegalEntityDocumentRptDetails, IlegalEntityDocumentRptWithSelect } from '../services/legalentity-document-service.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 
 export interface IalottedQRIDList{
@@ -84,6 +86,8 @@ export class LegalentityEquipmentComponent implements OnInit {
   branchId: number;
 
   userId: number;
+
+  userRole: string;
 
   qrIdListObj: IalottedQRIDList[];
 
@@ -153,7 +157,8 @@ export class LegalentityEquipmentComponent implements OnInit {
     private dialog:MatDialog,
     private contactServiceAPI: LegalentityContactsService,
     private qrIdServiceAPI: LegalentityQrService,
-    private documentServiceAPI: LegalentityDocumentServiceService
+    private documentServiceAPI: LegalentityDocumentServiceService,
+    private authService: AuthService
   ) { 
     iconRegistry.addSvgIcon(
       "addRecordIcon",
@@ -198,52 +203,66 @@ export class LegalentityEquipmentComponent implements OnInit {
 
     
      this.addEquptProgressBar=true;
-    
-    this.equptService.getEquptFormFieldPref(this.legalEntityId,true)
-    .subscribe((data:IequptFormFieldPrefResponse) => {
-      if (data.errorOccured)
-      {
-        this.addEquptProgressBar=false;
-        this.toastService.error("Something whent wrong while loading form details");
-        return false;
-      }
-      
 
-      //let formFieldArray: FormArray;
-
-      if (data.equptFormFieldTitles.length > 0){
-       this.equptFormFiledDataObj = data.equptFormFieldTitles
-
-       let recordCount: number = 1;
-     
-       this.equptFormFiledDataObj.forEach(result => {
-
-        if (recordCount == 1 || recordCount == 2){
-          let updatedFormFieldTitle: string = result.formFiledTitleName;
-          this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',256);
-        }
-        else{
-          let updatedFormFieldTitle: string = result.formFiledTitleName;
-          this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',40);
-        }
-
-        recordCount = recordCount+1;
-
-        });
-
-       // this.commonModel.enableProgressbar=false;
-       
-      }
-      else
-      {
+     try {
+      this.equptService.getEquptFormFieldPref(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole,
+        true
+        )
         
-      }
-
-      this.addEquptProgressBar=false;
-    }, error =>{
+      .subscribe((data:IequptFormFieldPrefResponse) => {
+        /*if (data.errorOccured)
+        {
+          this.addEquptProgressBar=false;
+          this.toastService.error("Something whent wrong while loading form details");
+          return false;
+        }*/
+        
+  
+        //let formFieldArray: FormArray;
+  
+        if (data.equptFormFieldTitles.length > 0){
+         this.equptFormFiledDataObj = data.equptFormFieldTitles
+  
+         let recordCount: number = 1;
+       
+         this.equptFormFiledDataObj.forEach(result => {
+  
+          if (recordCount == 1 || recordCount == 2){
+            let updatedFormFieldTitle: string = result.formFiledTitleName;
+            this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',256);
+          }
+          else{
+            let updatedFormFieldTitle: string = result.formFiledTitleName;
+            this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',40);
+          }
+  
+          recordCount = recordCount+1;
+  
+          });
+  
+         // this.commonModel.enableProgressbar=false;
+         
+        }
+        //else
+       // {
+          
+        //}
+  
+        this.addEquptProgressBar=false;
+      }, error =>{
+        this.addEquptProgressBar=false;
+        //this.toastService.error("Something whent wrong while loading form details");
+      });
+     } catch (error) {
       this.addEquptProgressBar=false;
       this.toastService.error("Something whent wrong while loading form details");
-    });
+     }
+    
+    
   }
 
   popQrIdDrp():void{
@@ -1068,7 +1087,14 @@ export class LegalentityEquipmentComponent implements OnInit {
 
   ngOnInit() {
 
-    if (localStorage.getItem("legalEntityUserDetails") != null)
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+console.log(tokenModel);
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    /*if (localStorage.getItem("legalEntityUserDetails") != null)
     {
      this.userModel = JSON.parse(localStorage.getItem("legalEntityUserDetails"));
 
@@ -1080,7 +1106,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     }
     else{
       this.router.navigate(['legalentity','login']);
-    }
+    }*/
 
     this.checked = true;
     

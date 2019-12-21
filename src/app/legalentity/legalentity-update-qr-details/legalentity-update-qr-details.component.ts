@@ -202,10 +202,9 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
   }
 
 
- 
+// to be added after jwt implementation
 
-
-  getEquptFormfieldPref():void{
+  /*getEquptFormfieldPref():void{
 
     
     this.editEquptProgressBar=true;
@@ -256,9 +255,11 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
      this.editEquptProgressBar=false;
      this.toastService.error("Something whent wrong while loading form details");
    });
- }
+ }*/
 
- getQrIdDetails(){
+ // to be added after jwt implementation
+
+ /*getQrIdDetails(){
    this.editEquptProgressBar = true;
 
    this.equptService.getQrIdIndivDetails(this.qrCodeId)
@@ -487,7 +488,7 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     this.editEquptProgressBar=false;
     this.toastService.error("Something went wrong while loading " + this.equptMenuName + " details");
    });
- }
+ }*/
 
 
  getSpcificQrIdContactFromGroup(): FormGroup{
@@ -964,7 +965,7 @@ get qrIdDocumentListFormArray()
 
     this.editEquptForm.controls['qrCodeData'].disable();
 
-    this.getQrIdDetails();
+    //this.getQrIdDetails();
 
     this.popQrIdList();
 

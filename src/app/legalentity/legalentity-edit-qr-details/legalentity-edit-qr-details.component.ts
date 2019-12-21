@@ -131,7 +131,9 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
     this.equptFormFieldArray.removeAt(indexValue);
   }
 
-  getEquptFormfieldPref():void{
+  // to be added after jwt implementation
+
+  /*getEquptFormfieldPref():void{
 
     
     this.addEquptProgressBar=true;
@@ -184,7 +186,7 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
      this.addEquptProgressBar=false;
      this.toastService.error("Something whent wrong while loading form details");
    });
- }
+ }*/
 
  popQrIdDrp():void{
     
@@ -756,7 +758,9 @@ get qrContactDetailsFormArray()
     this.menuPrefNameModel = this.utilService.getLegalEntityMenuPrefNames();
     this.utilService.setTitle("Legalentity - Edit " + this.menuPrefNameModel.equipmentMenuName + " | Attendme");
 
-    this.getEquptFormfieldPref();
+    // to be added after jwt implementation
+
+   // this.getEquptFormfieldPref();
     this.popQrIdDrp();
 
     this.defaultCountryCode = 91;

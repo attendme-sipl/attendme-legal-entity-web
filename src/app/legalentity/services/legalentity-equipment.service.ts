@@ -111,10 +111,18 @@ export class LegalentityEquipmentService {
     private httpclient: HttpClient
   ) { }
 
-  getEquptFormFieldPref(legalEntityId: number, formFieldActiveStatus: boolean):Observable<IequptFormFieldPrefResponse>{
+  getEquptFormFieldPref(
+    legalEntityId: number, 
+    branchId: number,
+    userId: number,
+    userRole: string,
+    formFieldActiveStatus: boolean
+    ):Observable<IequptFormFieldPrefResponse>{
     return this.httpclient.post<IequptFormFieldPrefResponse>(this.util.legalEntityRestApuURL + "/formFieldPref",{
       legalEntityId: legalEntityId,
-      equptFormFieldActiveStatus: formFieldActiveStatus
+      equptFormFieldActiveStatus: formFieldActiveStatus,
+      branchId: branchId,
+      
     });
   }
 

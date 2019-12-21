@@ -13,6 +13,8 @@ import {saveAs} from 'file-saver';
 import *as moment from 'moment';
 import { IbranchListDetailsResponse, LegalentityBranchService, IbranchRptReqStruct, IbranchListReportResponse } from '../../services/legalentity-branch.service';
 import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-trash-compt-rpt',
@@ -25,6 +27,8 @@ export class LegalentityTrashComptRptComponent implements OnInit {
   
   legalEntityId: number;
   branchId: number;
+  userId: number;
+  userRole: string;
 
   equptMenuName: string;
   branchMenuName: string;
@@ -64,7 +68,8 @@ export class LegalentityTrashComptRptComponent implements OnInit {
     private menuModel: LegalentityMenuPrefNames,
     private dialog: MatDialog,
     private branchData: LegalentityBranchDataService,
-    private branchServiceAPI: LegalentityBranchService
+    private branchServiceAPI: LegalentityBranchService,
+    private authService: AuthService
   ) {
     iconRegistry.addSvgIcon(
       'refreshIcon',
@@ -72,7 +77,7 @@ export class LegalentityTrashComptRptComponent implements OnInit {
     );
    }
 
-   /*popTrashComplaintRpt(exportToExcel: boolean){
+   popTrashComplaintRpt(exportToExcel: boolean){
      this.trashComplaintProgressBar=true;
      this.searchKey='';
 
@@ -88,32 +93,44 @@ export class LegalentityTrashComptRptComponent implements OnInit {
        fromDate: null,
        legalEntityId: this.legalEntityId,
        technicianMenuName: this.technicianMenuName,
-       toDate: null
+       toDate: null,
+       userId: this.userId,
+       userRole: this.userRole
      };
 
      if (exportToExcel){
-      let fileName: string = "Trash-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+
+      try {
+        let fileName: string = "Trash-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
       this.complaintServiceAPI.getOpenComplaintRtpToExcel(complaintReqObj)
       .subscribe(data => {
         saveAs(data, fileName);
         this.trashComplaintProgressBar=false;
       }, error => {
-        this.toastService.error("Something went wrong while downloading excel");
+        //this.toastService.error("Something went wrong while downloading excel");
         this.trashComplaintProgressBar=false;
       });
+      } catch (error) {
+        this.trashComplaintProgressBar=false;
+        this.toastService.error("Something went wrong while downloading excel");
+      }
+
+      
      }
      else{
-      this.complaintServiceAPI.getOpenComplaintRtp(complaintReqObj)
+
+      try {
+        this.complaintServiceAPI.getOpenComplaintRtp(complaintReqObj)
      
       .subscribe((data: IopenComplaintRptResponseStruct ) => {
  
       //console.log(data.complaintList);
  
-        if (data.errorOccured){
+        /*if (data.errorOccured){
           this.toastService.error("Something went wrong while loading trash " + this.complaintMenuName);
           this.trashComplaintProgressBar=false;
           return false;
-        }
+        }*/
  
        const trashComplaintFilteredObj = data.complaintList.map((value,index) => value ? {
          complaintId: value['complaintId'],
@@ -142,30 +159,36 @@ export class LegalentityTrashComptRptComponent implements OnInit {
  
         this.trashComplaintProgressBar=false;
       }, error => {
-       this.toastService.error("Something went wrong while loading trash " + this.complaintMenuName);
+       //this.toastService.error("Something went wrong while loading trash " + this.complaintMenuName);
        this.trashComplaintProgressBar=false;
       });
+      } catch (error) {
+        this.toastService.error("Something went wrong while loading trash " + this.complaintMenuName);
+        this.trashComplaintProgressBar=false;
+      }
+
+      
      }
 
-     
-
-   } */
+   } 
 
    openComplaintDetailsDialog(complaintId: number):void{
 
-    const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
-      complaintId: complaintId
-    };
-    
-    const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
-      data: IndivComplaintReqObj
-    });
+    try {
+      const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+        complaintId: complaintId
+      };
+      
+      const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
+        data: IndivComplaintReqObj
+      });
+    } catch (error) {
+      this.toastService.error("Something went wrong while displaying " +  this.complaintMenuName + " details.");
+    }
 
   }
 
-   // to be added after jwt implementation
-
-  /*popBranchList(){
+  popBranchList(){
 
     //this.openComplaintProgressBar=true;
 
@@ -175,27 +198,43 @@ export class LegalentityTrashComptRptComponent implements OnInit {
       equptMenuName: this.equptMenuName,
       exportToExcel: false,
       legalEntityId: this.legalEntityId,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
-    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    try {
+      this.branchServiceAPI.getBranchListReport(branchListReqObj)
     .subscribe((data: IbranchListReportResponse) => {
       //console.log(data);
-      if (data.errorOccured){
+      /*if (data.errorOccured){
         this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
         return false;
-      }
+      }*/
 
       this.branchListArr=data.branchDetailsList;
 
     }, error => {
+      //this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+    });  
+    } catch (error) {
       this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
-    });
-  }*/
+    }
+
+    
+  }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+    this.branchHeadOffice=tokenModel.branchHeadOffice;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
 
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       
@@ -208,13 +247,14 @@ export class LegalentityTrashComptRptComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    } */
 
     if (this.branchData.branchDetails != null){
       this.branchId=this.branchData.branchDetails['branchId'];
     }
     else{
-      this.branchId=this.userBranchId
+     // this.branchId=this.userBranchId;
+     this.branchId=tokenModel.branchId;
     }    
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
@@ -226,15 +266,12 @@ export class LegalentityTrashComptRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle('Legalentity - Trash ' + this.complaintMenuName + " Report | Attendme");
 
-     // to be added after jwt implementation
-
-    /*if (this.branchHeadOffice){
-      this.popBranchList();
-    }*/
-
-    // To be added after jwt implementation
     
-   // this.popTrashComplaintRpt(false);
+    if (this.branchHeadOffice){
+      this.popBranchList();
+    }
+
+   this.popTrashComplaintRpt(false);
 
   }
 

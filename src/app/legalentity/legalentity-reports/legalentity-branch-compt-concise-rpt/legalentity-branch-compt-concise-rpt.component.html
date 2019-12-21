@@ -99,7 +99,7 @@
                       <ng-container matColumnDef="unreslovedMoreThanCount">
                           <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;">Unresloved (More than {{unreslovedDayCount}} days)</th>
                           <td mat-cell *matCellDef="let element">
-                              <a href="javascript: void(0);" (click)="onResolvedComplaintClick('moreThanCount')">
+                              <a href="javascript: void(0);" (click)="onResolvedComplaintClick('moreThanCount', element.branchId)">
                                 {{ element.unreslovedMoreThanCount }}
                               </a>
                           </td>
@@ -108,7 +108,7 @@
                       <ng-container matColumnDef="unresolvedUptoCount">
                           <th mat-header-cell *matHeaderCellDef mat-sort-header style="width: 10%;">Unresloved (Up to {{unreslovedDayCount}} days)</th>
                           <td mat-cell *matCellDef="let element">
-                              <a href="javascript: void(0);" (click)="onResolvedComplaintClick('upToCount')">
+                              <a href="javascript: void(0);" (click)="onResolvedComplaintClick('upToCount', element.branchId)">
                                 {{ element.unresolvedUptoCount }}
                               </a>
                           </td>

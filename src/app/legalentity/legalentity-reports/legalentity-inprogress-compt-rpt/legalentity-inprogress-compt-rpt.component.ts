@@ -77,8 +77,8 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
     );
   }
-// to be done after jwt implementation
-  /*popInprogressComplaintsRpt(exportToExcel: boolean):void{
+
+  popInprogressComplaintsRpt(exportToExcel: boolean):void{
     
     this.enableProgressBar=true;
     this.searchKey='';
@@ -95,31 +95,45 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       equptMenuName: this.equptMenuName,
       exportToExcel: exportToExcel,
       technicianMenuName: this.technicianMenuName,
-      complaintTrash: false
+      complaintTrash: false,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     if (exportToExcel){
 
-      let fileName: string = "In-Progress-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+      try {
 
-      this.complaintRtpServiceAPI.getIprogressComptListExportToExcel(inprogressComplaintRtpReqObj)
-      .subscribe(data => {
-        saveAs(data, fileName + ".xls");
-        this.enableProgressBar=false;
-      }, error => {
+        let fileName: string = "In-Progress-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+
+        this.complaintRtpServiceAPI.getIprogressComptListExportToExcel(inprogressComplaintRtpReqObj)
+        .subscribe(data => {
+          saveAs(data, fileName + ".xls");
+          this.enableProgressBar=false;
+        }, error => {
+          //this.toastService.error("Something went wrong while downloading excel");
+          this.enableProgressBar=false;
+        });
+        
+      } catch (error) {
         this.toastService.error("Something went wrong while downloading excel");
         this.enableProgressBar=false;
-      });
+      }
+
+     
     }
     else{
-      this.complaintRtpServiceAPI.getIprogressComptListRpt(inprogressComplaintRtpReqObj)
+
+      try {
+
+        this.complaintRtpServiceAPI.getIprogressComptListRpt(inprogressComplaintRtpReqObj)
     .subscribe((data: IinprogressComptRptResponse) => {
 
-      if (data.errorOccurred){
+      /*if (data.errorOccurred){
         this.toastService.error("Something went wrong while loading inprogress " + this.complaintMenuName);
         this.enableProgressBar=false;
         return false;  
-      }
+      }*/
 
       this.inprogressComptListObj=data.complaintList.map((value,index) => value ? {
         complaintId: value['complaintId'],
@@ -148,31 +162,44 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       this.enableProgressBar=false;
 
     }, error => {
-      this.toastService.error("Something went wrong while loading inprogress " + this.complaintMenuName);
+      //this.toastService.error("Something went wrong while loading inprogress " + this.complaintMenuName);
       this.enableProgressBar=false;
     });
+        
+      } catch (error) {
+        this.toastService.error("Something went wrong while loading inprogress " + this.complaintMenuName);
+        this.enableProgressBar=false;
+      }
+
+      
     }
     
     
-  }*/
+  }
 
   openComplaintDetailsDialog(complaintId: number):void{
 
-    const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
-      complaintId: complaintId
-    };
+    try {
+      const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+        complaintId: complaintId
+      };
+      
+      const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
+        data: IndivComplaintReqObj
+      });
+    } catch (error) {
+      this.toastService.error("Something went wrong while showing " + this.complaintMenuName + " details.");
+    }
+
     
-    const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
-      data: IndivComplaintReqObj
-    });
 
   }
 
    // to be added after jwt implementation
 
-  /*popBranchList(){
+  popBranchList(){
 
-    //this.openComplaintProgressBar=true;
+   
 
     const branchListReqObj: IbranchRptReqStruct = {
       branchMenuName: this.branchMenuName,
@@ -180,23 +207,34 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       equptMenuName: this.equptMenuName,
       exportToExcel: false,
       legalEntityId: this.legalEntityId,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
-    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    try {
+
+      this.branchServiceAPI.getBranchListReport(branchListReqObj)
     .subscribe((data: IbranchListReportResponse) => {
       //console.log(data);
-      if (data.errorOccured){
+      /*if (data.errorOccured){
         this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
         return false;
-      }
+      }*/
 
       this.branchListArr=data.branchDetailsList;
 
     }, error => {
-      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+      //this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
     });
-  }*/
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+    }
+
+    
+  }
 
   ngOnInit() {
 
@@ -237,15 +275,11 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - In Progress " + this.complaintMenuName + " Report | Attendme");
 
-     // to be added after jwt implementation
-
     if (this.branchHeadOffice){
-    //  this.popBranchList();
+     this.popBranchList();
     }
 
-    // to be done after jwt implementation
-
-    //this.popInprogressComplaintsRpt(false);
+    this.popInprogressComplaintsRpt(false);
     
 
   }

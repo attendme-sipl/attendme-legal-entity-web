@@ -15,6 +15,8 @@ import { LegalentityDashboardService } from '../../services/legalentity-dashboar
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-unresolved-compt-rpt',
@@ -29,6 +31,8 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
   legalEntityId: number;
   branchId: number;
   userBranchId: number;
+  userId: number;
+  userRole: string;
 
   branchHeadOffice: boolean;
 
@@ -85,7 +89,8 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     private activateRoute: ActivatedRoute,
     private toastService: ToastrService,
     private dashboardServiceAPI: LegalentityDashboardService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService
   ) { 
     iconRegistry.addSvgIcon(
       'refreshIcon',
@@ -93,118 +98,152 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     );
   }
 
-  /*popUnresolvedComplaint(exportToExcel: boolean){
+  popUnresolvedComplaint(exportToExcel: boolean){
     
     this.unresolvedComplaintProgressBar=true;
     this.searchKey='';
 
-    this.dashboardServiceAPI.getUnresolvedDaysRuleBook(this.legalEntityId)
-    .subscribe(data => {
-      if (data['errorOccured']){
-        this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
-        this.unresolvedComplaintProgressBar=false;
-        return false;
-      }
-      
-      this.moreThanUptoDays=parseInt(data['unresolvedDaysCount']);
-      this.unresolvedComplaintProgressBar=false;
-
-      const unresolvedComplaintReqObj: IunresolvedComplaintReqStruct = {
-        allBranch: false,
-        branchId: this.branchId,
-        branchMenuName: this.branchMenuName,
-        complaintMenuName: this.complaintMenuName,
-        complaintTrash: false,
-        equptMenuName: this.equptMenuName,
-        exportToExcel: exportToExcel,
-        legalEntityId: this.legalEntityId,
-        technicianMenuName: this.technicianMenuName,
-        unresolvedDayCount: this.moreThanUptoDays,
-        unresolvedMoreThanUpToDays: this.moreThanUptoFlag
-      };
-      //console.log(exportToExcel);
-      if (exportToExcel){
-        let fileName: string = "Un-Resolved-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
-        this.complaintRptServiceAPI.exportToExcelUnresolvedComplaintRpt(unresolvedComplaintReqObj)
-        .subscribe(data => {
-          console.log(data);
-          console.log("samop");
-          saveAs(data, fileName);
-        }, error => {
-          console.log(error);
-          this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
-          this.unresolvedComplaintProgressBar=false;
-        });
-      }
-      else{
-        this.complaintRptServiceAPI.getUnresolvedComplaintRpt(unresolvedComplaintReqObj)
-      .subscribe((data: IunresolvedComplaintResponseStruct) => {
-
-        if (data.errorOccurred){
+    try {
+      this.dashboardServiceAPI.getUnresolvedDaysRuleBook(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole
+        )
+      .subscribe(data => {
+        /*if (data['errorOccured']){
           this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
           this.unresolvedComplaintProgressBar=false;
           return false;
+        }*/
+        
+        this.moreThanUptoDays=parseInt(data['unresolvedDaysCount']);
+        this.unresolvedComplaintProgressBar=false;
+
+        const unresolvedComplaintReqObj: IunresolvedComplaintReqStruct = {
+          allBranch: false,
+          branchId: this.branchId,
+          branchMenuName: this.branchMenuName,
+          complaintMenuName: this.complaintMenuName,
+          complaintTrash: false,
+          equptMenuName: this.equptMenuName,
+          exportToExcel: exportToExcel,
+          legalEntityId: this.legalEntityId,
+          technicianMenuName: this.technicianMenuName,
+          unresolvedDayCount: this.moreThanUptoDays,
+          unresolvedMoreThanUpToDays: this.moreThanUptoFlag
+        };
+        //console.log(exportToExcel);
+        if (exportToExcel){
+  
+          try {
+  
+            let fileName: string = "Un-Resolved-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+          this.complaintRptServiceAPI.exportToExcelUnresolvedComplaintRpt(unresolvedComplaintReqObj)
+          .subscribe(data => {
+           // console.log(data);
+           
+            saveAs(data, fileName);
+          }, error => {
+           // console.log(error);
+            //this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
+            this.unresolvedComplaintProgressBar=false;
+          });
+  
+          } catch (error) {
+            this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
+            this.unresolvedComplaintProgressBar=false;  
+          }
+  
+          
         }
-
-        const filteredComplaintList = data.complaintList.map((value,index) => value ? {
-          complaintId: value['complaintId'],
-          complaintNumber: value['complaintNumber'],
-          qrCodeId: value['qrCodeId'],
-          qrId: value['qrId'],
-          regsiteredByName: value['regsiteredByName'],
-          registeredByMobileNumber: value['registeredByMobileNumber'],
-          assignedTechnicianName: value['assignedTechnicianName'],
-          asignedTechnicianMobile: value['asignedTechnicianMobile'], 
-          openDateTime: value['openDateTime'],
-          assignedDateTime: value['assignedDateTime'],
-          inprogressDateTime: value['inprogressDateTime'],
-          currentComplaintStatus: value['currentComplaintStatus'],
-          complaintTrash: value['complaintTrash']
-        } : null)
-        .filter(value => value.complaintTrash == false);
-
-      this.totalRecordCount=filteredComplaintList.length;
-
-      this.unresolvedComplaintRecordCount = filteredComplaintList.length; //data.complaintList.length;
-      this.dataSource = new MatTableDataSource(filteredComplaintList);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-
-      const sortState: Sort = {active: 'openDateTime', direction: 'desc'};
-      this.sort.active = sortState.active;
-      this.sort.direction = sortState.direction;
-      this.sort.sortChange.emit(sortState);
-
-      this.unresolvedComplaintProgressBar=false;
-
+        else{
+  
+          try {
+            this.complaintRptServiceAPI.getUnresolvedComplaintRpt(unresolvedComplaintReqObj)
+        .subscribe((data: IunresolvedComplaintResponseStruct) => {
+  
+          /*if (data.errorOccurred){
+            this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
+            this.unresolvedComplaintProgressBar=false;
+            return false;
+          }*/
+  
+          const filteredComplaintList = data.complaintList.map((value,index) => value ? {
+            complaintId: value['complaintId'],
+            complaintNumber: value['complaintNumber'],
+            qrCodeId: value['qrCodeId'],
+            qrId: value['qrId'],
+            regsiteredByName: value['regsiteredByName'],
+            registeredByMobileNumber: value['registeredByMobileNumber'],
+            assignedTechnicianName: value['assignedTechnicianName'],
+            asignedTechnicianMobile: value['asignedTechnicianMobile'], 
+            openDateTime: value['openDateTime'],
+            assignedDateTime: value['assignedDateTime'],
+            inprogressDateTime: value['inprogressDateTime'],
+            currentComplaintStatus: value['currentComplaintStatus'],
+            complaintTrash: value['complaintTrash']
+          } : null)
+          .filter(value => value.complaintTrash == false);
+  
+        this.totalRecordCount=filteredComplaintList.length;
+  
+        this.unresolvedComplaintRecordCount = filteredComplaintList.length; //data.complaintList.length;
+        this.dataSource = new MatTableDataSource(filteredComplaintList);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+  
+        const sortState: Sort = {active: 'openDateTime', direction: 'desc'};
+        this.sort.active = sortState.active;
+        this.sort.direction = sortState.direction;
+        this.sort.sortChange.emit(sortState);
+  
+        this.unresolvedComplaintProgressBar=false;
+  
+        }, error => {
+          //this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
+          this.unresolvedComplaintProgressBar=false;
+        });
+          } catch (error) {
+            this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
+            this.unresolvedComplaintProgressBar=false;
+          }
+  
+          
+        }
+  
+        
+  
       }, error => {
-        this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
+        //this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
         this.unresolvedComplaintProgressBar=false;
       });
-      }
-
-      
-
-    }, error => {
+    } catch (error) {
       this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName.toLowerCase() + " list.");
       this.unresolvedComplaintProgressBar=false;
-    });
-  } */
+    }
+
+    
+  } 
 
   openComplaintDetailsDialog(complaintId: number):void{
-
-    const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
-      complaintId: complaintId
-    };
+    try {
+      const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+        complaintId: complaintId
+      };
+      
+      const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
+        data: IndivComplaintReqObj
+      });  
+    } catch (error) {
+      this.toastService.error("Something went wrong while displaying " + this.complaintMenuName + " details");
+    }      
     
-    const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
-      data: IndivComplaintReqObj
-    });
 
   }
  // to be added after jwt implementation
 
-  /*popBranchList(){
+  popBranchList(){
 
     //this.openComplaintProgressBar=true;
 
@@ -214,26 +253,45 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
       equptMenuName: this.equptMenuName,
       exportToExcel: false,
       legalEntityId: this.legalEntityId,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
-    this.branchServiceAPI.getBranchListReport(branchListReqObj)
-    .subscribe((data: IbranchListReportResponse) => {
-      //console.log(data);
-      if (data.errorOccured){
-        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
-        return false;
-      }
-
-      this.branchListArr=data.branchDetailsList;
-
-    }, error => {
+    try {
+      this.branchServiceAPI.getBranchListReport(branchListReqObj)
+      .subscribe((data: IbranchListReportResponse) => {
+        //console.log(data);
+        /*if (data.errorOccured){
+          this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+          return false;
+        }*/
+  
+        this.branchListArr=data.branchDetailsList;
+  
+      }, error => {
+        //this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+      });  
+    } catch (error) {
       this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
-    });
-  }*/
+    }
+
+    
+  }
 
   ngOnInit() {
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+     this.legalEntityId=tokenModel.legalEntityId;
+     this.userId=tokenModel.userId;
+     this.userBranchId=tokenModel.branchId;
+     this.userRole=tokenModel.userRole;
+
+     this.branchHeadOffice=tokenModel.branchHeadOffice;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
       this.userBranchId=this.userModel.legalEntityBranchDetails.branchId;
@@ -244,13 +302,15 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     if (this.branchData.branchDetails != null){
+      console.log(this.branchData.branchDetails['branchId']);
       this.branchId=this.branchData.branchDetails['branchId'];
     }
     else{
-      this.branchId=this.userBranchId
+      //this.branchId=this.userBranchId
+      this.branchId=tokenModel.branchId;
     }
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
@@ -275,13 +335,13 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
         this.moreThanUptoPhrase="Up to";
       }
 
-       // to be added after jwt implementation
+     
+      if (this.branchHeadOffice){
+        this.popBranchList();
+      }
+    
 
-     // this.popBranchList();
-
-      // To be included after token implementation
-
-    //  this.popUnresolvedComplaint(false);
+     this.popUnresolvedComplaint(false);
 
     });
   }
