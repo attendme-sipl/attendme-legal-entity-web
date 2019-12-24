@@ -68,7 +68,8 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
     );
    }
 
-   popQrIdDetailsRpt(lastRecordCount: number, exportToExcel: boolean):void{
+   // to be added after jwt implementation
+   /*popQrIdDetailsRpt(lastRecordCount: number, exportToExcel: boolean):void{
   
 
     this.enableProgressBar=true;
@@ -210,7 +211,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
     });
     }
 
-  }
+  }*/
 
   editLinkClick(qrCodeId: number){
 
@@ -283,7 +284,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
     this.branchId=parseInt(this.route.snapshot.paramMap.get('branchId'));
 
-    this.popQrIdDetailsRpt(0, false);
+    //this.popQrIdDetailsRpt(0, false);
 
      // to be added after jwt implmenetation
 

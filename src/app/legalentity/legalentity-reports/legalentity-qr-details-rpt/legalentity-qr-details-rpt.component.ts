@@ -305,7 +305,9 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
   ngOnInit() {
 
-    const tokenModel: TokenModel = this.authService.getTokenDetails();
+    try {
+
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
 
     this.legalEntityId=tokenModel.legalEntityId;
     this.branchId=tokenModel.branchId;
@@ -346,10 +348,21 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
     }
 
     this.popQrIdDetailsRpt(5, false);
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading " + this.equipmentMenuName + " details.","");
+    }
+
+    
   }
   
   openEquipmentFrom(){
-    this.router.navigate(['legalentity','portal','add-equipment']);
+    try {
+      this.router.navigate(['legalentity','portal','add-equipment']);  
+    } catch (error) {
+      this.toastService.error("Something went wrong while redirecting to add " + this.equipmentMenuName + " page");
+    }
+    
   }
 
   applyFilter(filterValue: string):void{
@@ -357,8 +370,12 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
   }
 
   editLinkClick(qrCodeId: number){
-
-    this.router.navigate(['legalentity','portal','edit','qr-details',qrCodeId]);
+    try {
+      this.router.navigate(['legalentity','portal','edit','qr-details',qrCodeId]);  
+    } catch (error) {
+      this.toastService.error("Something went wrong while redirecting to edit " + this.equipmentMenuName + " page.","");
+    }  
+    
   }
 
 
