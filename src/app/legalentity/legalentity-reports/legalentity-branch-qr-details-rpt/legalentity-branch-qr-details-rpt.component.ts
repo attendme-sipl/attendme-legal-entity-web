@@ -13,6 +13,8 @@ import { DatePipe } from '@angular/common';
 import { LegalentityBranchService, IbranchListDetailsResponse, IbranchListReportResponse, IbranchRptReqStruct } from '../../services/legalentity-branch.service';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-branch-qr-details-rpt',
@@ -26,6 +28,8 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
   legalEntityId: number;
   branchId: number;
+  userId: number;
+  userRole: string;
 
   enableProgressBar: boolean;
 
@@ -49,6 +53,8 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
   branchName: string;
 
+  complaintCountColName: string;
+
   constructor(
     private utilServiceAPI: LegalentityUtilService,
     private userModel: LegalentityUser,
@@ -60,7 +66,8 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
     private router: Router,
     private datePipe: DatePipe,
     private route:ActivatedRoute,
-    private branchServiceAPI: LegalentityBranchService
+    private branchServiceAPI: LegalentityBranchService,
+    private authService: AuthService
   ) {
     iconRegistry.addSvgIcon(
       "refresh-icon",
@@ -68,8 +75,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
     );
    }
 
-   // to be added after jwt implementation
-   /*popQrIdDetailsRpt(lastRecordCount: number, exportToExcel: boolean):void{
+   popQrIdDetailsRpt(lastRecordCount: number, exportToExcel: boolean):void{
   
 
     this.enableProgressBar=true;
@@ -86,31 +92,40 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
       complaintMenuName: this.complaintMenuName,
       equptMenuName: this.equipmentMenuName,
       exportToExcel: exportToExcel,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     //console.log(qrIdDetailsRptReqObj);
 
     if (exportToExcel){
-      let fileName: string = this.equipmentMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
-      this.qrIdServiceAPI.getQrIdDetailsExportToExcel(qrIdDetailsRptReqObj)
-      .subscribe(data => {
-        saveAs(data, fileName + ".xls")
-        this.enableProgressBar=false;
-      }, error => {
+      try {
+        let fileName: string = this.equipmentMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+        this.qrIdServiceAPI.getQrIdDetailsExportToExcel(qrIdDetailsRptReqObj)
+        .subscribe(data => {
+          saveAs(data, fileName + ".xls")
+          this.enableProgressBar=false;
+        }, error => {
+          //this.toastService.error("Something went wrong while downloading excel");
+          this.enableProgressBar=false;
+        });  
+      } catch (error) {
         this.toastService.error("Something went wrong while downloading excel");
-        this.enableProgressBar=false;
-      });
+      }
+      
     }
     else{
-      this.qrIdServiceAPI.getQrIdDetailsRpt(qrIdDetailsRptReqObj)
+      
+      try {
+        this.qrIdServiceAPI.getQrIdDetailsRpt(qrIdDetailsRptReqObj)
     .subscribe((data:IqrIdRptResponseStruct) => {
-//console.log(data);
-     if (data.errorOccured){
+
+     /*if (data.errorOccured){
        this.enableProgressBar=false;
        this.toastService.error("Something went wrong while loading QR ID details list");
        return false;
-     }
+     }*/
 
       this.displayedColumns = [];
 
@@ -118,6 +133,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
         "srNo",
         "QR ID",
         "Edit",
+        this.complaintCountColName,
         "Assigned Date"
        ];
       
@@ -161,7 +177,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
          let assignDate:string = this.datePipe.transform(indivQrDetails.qrAssignDateTime, 'yyyy-MM-dd hh:mm:ss');
 
          myMap['Assigned Date'] = assignDate;
-         
+         myMap[this.complaintCountColName] = indivQrDetails.complaintCount;
 
          let qrIdFieldsObj: any[] = indivQrDetails.formFieldDetails;
 
@@ -207,11 +223,15 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
 
     }, error => {
      this.enableProgressBar=false;
-     this.toastService.error("Something went wrong while loading QR ID details list");
+     //this.toastService.error("Something went wrong while loading QR ID details list");
     });
+      } catch (error) {
+        this.toastService.error("Something went wrong while loading QR ID details list"); 
+      }
+
     }
 
-  }*/
+  }
 
   editLinkClick(qrCodeId: number){
 
@@ -225,7 +245,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
    // to be added after jwt implmenetation
 
 
-  /*setBranchName(exportToExcel: boolean){
+  setBranchName(exportToExcel: boolean){
 
     const branchRptReqObj: IbranchRptReqStruct = {
       branchMenuName: this.branchMenuName,
@@ -233,28 +253,44 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
       equptMenuName: this.equipmentMenuName,
       exportToExcel: exportToExcel,
       legalEntityId: this.legalEntityId,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
-    this.branchServiceAPI.getBranchListReport(branchRptReqObj)
-    .subscribe((data:IbranchListReportResponse) =>{
-      
-      let branchListObjFiltered = data.branchDetailsList.map((value,index) => value?{
-        branchId: value['branchId'],
-        branchName: value['branchName']
-      }:null)
-      .filter(value => value.branchId == this.branchId);
+    try {
+      this.branchServiceAPI.getBranchListReport(branchRptReqObj)
+      .subscribe((data:IbranchListReportResponse) =>{
+        
+        let branchListObjFiltered = data.branchDetailsList.map((value,index) => value?{
+          branchId: value['branchId'],
+          branchName: value['branchName']
+        }:null)
+        .filter(value => value.branchId == this.branchId);
+  
+        if (branchListObjFiltered.length != 0){
+          this.branchName=branchListObjFiltered[0]['branchName'];
+        }
+  
+      });  
+    } catch (error) {
+      this.toastService.error("Something went wrong while fetching " + this.branchMenuName + " details.","");
+    }
 
-      if (branchListObjFiltered.length != 0){
-        this.branchName=branchListObjFiltered[0]['branchName'];
-      }
-
-    });
-  }*/
+    
+  }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -271,7 +307,7 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
 
@@ -280,15 +316,19 @@ export class LegalentityBranchQrDetailsRptComponent implements OnInit {
     this.technicianMenuName=this.menuModel.technicianMenuName;
     this.complaintMenuName=this.menuModel.complaintMenuName;
 
+    this.complaintCountColName = this.complaintMenuName + " Count"
+
+    this.columnsTobeExcluded.push(this.complaintCountColName);
+    
+    this.displayedColumns.push(this.branchMenuName);
+
     this.utilServiceAPI.setTitle("" + this.branchMenuName + " QR ID assigned report | Attendme");
 
     this.branchId=parseInt(this.route.snapshot.paramMap.get('branchId'));
 
-    //this.popQrIdDetailsRpt(0, false);
+    this.popQrIdDetailsRpt(0, false);
 
-     // to be added after jwt implmenetation
-
-    //this.setBranchName(false);
+    this.setBranchName(false);
   }
 
 }

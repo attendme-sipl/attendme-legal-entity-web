@@ -181,22 +181,36 @@ export class LegalentityEquipmentComponent implements OnInit {
   
 
   get equptFormFieldArray(){
-    return this.equptForm.get('formFieldData') as FormArray;
+    try {
+      return this.equptForm.get('formFieldData') as FormArray;  
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading " + this.menuPrefNameModel.equipmentMenuName + " form field heads.","");
+    }
+    
   }
 
 
   addEqutpFromFieldFormArray(formFieldId: number, formFieldTitleName: string, formFieldValue: string, characterLength: number){
-    
+  try {
     this.equptFormFieldArray.push(this.equptFormFieldBuider.group({
       formFieldId: formFieldId,
       formFiledTitleName: formFieldTitleName,
       characterLimit: characterLength,
       formFieldValue:['', Validators.maxLength(characterLength)]  //formFieldValue
-    }))
+    }));
+  } catch (error) {
+    this.toastService.error("Something went wrong while adding " + this.menuPrefNameModel.equipmentMenuName + " form field heads to the page.","");
+  }
+   
   }
 
   removeEqutpFormFiledArray(indexValue: number){
-    this.equptFormFieldArray.removeAt(indexValue);
+    try {
+      this.equptFormFieldArray.removeAt(indexValue);      
+    } catch (error) {
+      this.toastService.error("Something went wrong while removing " + this.menuPrefNameModel.equipmentMenuName + " form field head from the page.","");
+    }
+
   }
 
   getEquptFormfieldPref():void{
@@ -277,41 +291,59 @@ export class LegalentityEquipmentComponent implements OnInit {
         branchId: this.branchId,
         legalEntityId: this.legalEntityId,
         qrActiveStatus: true,
-        qrAssignStatus: true
+        qrAssignStatus: true,
+        userId: this.userId,
+        userRole: this.userRole
       }
 
-      this.qrIdServiceAPI.getNumOfQrIdAvailableHeadOffice(availableQrIdCountReqObj)
-      .subscribe(data => {
-//console.log(data);
-        if (data['errorOccurred']){
-           this.addEquptProgressBar=false;
-           this.toastService.error("Something went wrong while loading QR IDs");
-           return false;
-        }
-
-        let availableQrIdCount: number = parseInt(data['availabledQrIdAllotCount']);
-
-        if (availableQrIdCount == 0){
+      try {
+        this.qrIdServiceAPI.getNumOfQrIdAvailableHeadOffice(availableQrIdCountReqObj)
+        .subscribe(data => {
+  //console.log(data);
+          /*if (data['errorOccurred']){
+             this.addEquptProgressBar=false;
+             this.toastService.error("Something went wrong while loading QR IDs");
+             return false;
+          }*/
+  
+          let availableQrIdCount: number = parseInt(data['availabledQrIdAllotCount']);
+  
+          if (availableQrIdCount == 0){
+            this.addEquptProgressBar=false;
+            this.errorMessageEnable=true;
+            this.errorMessageTxt="QR IDs not availabled. Please contact administrator";
+            return false
+          }
+          
+          try {
+            this.utilService.getLegalEntityAlottedQRIdList(
+              this.legalEntityId,
+              this.branchId,
+              this.userId,
+              this.userRole,
+              false,
+              true,
+              false)
+          .subscribe(data => {
+            this.qrIdListObj = data;
+    
+            this.addEquptProgressBar=false;
+            
+          }, error => {
+            //this.toastService.error("Something went wrong while load QR ID list");
+          });
+          } catch (error) {
+            this.toastService.error("Something went wrong while load QR ID list");
+          }
+  
+  
+        }, error => {
           this.addEquptProgressBar=false;
-          this.errorMessageEnable=true;
-          this.errorMessageTxt="QR IDs not availabled. Please contact administrator";
-          return false
-        }
-
-        this.utilService.getLegalEntityAlottedQRIdList(this.legalEntityId,false,true,false)
-      .subscribe(data => {
-        this.qrIdListObj = data;
-
-        this.addEquptProgressBar=false;
-        
-      }, error => {
-        this.toastService.error("Something went wrong while load QR ID list");
-      })
-
-      }, error => {
-        this.addEquptProgressBar=false;
+          //this.toastService.error("Something went wrong while loading QR IDs");
+        });        
+      } catch (error) {
         this.toastService.error("Something went wrong while loading QR IDs");
-      });
+      }
 
     
 
@@ -324,41 +356,60 @@ export class LegalentityEquipmentComponent implements OnInit {
         branchId: this.branchId,
         legalEntityId: this.legalEntityId,
         qrActiveStatus: true,
-        qrAssignStatus: true
+        qrAssignStatus: true,
+        userId: this.userId,
+        userRole: this.userRole
       }
 
-      this.qrIdServiceAPI.getNumOfQrIdAvailableBranchOffice(availableQrIdCountReqObj)
-      .subscribe(data => {
-
-        if (data['errorOccurred']){
+      try {
+        this.qrIdServiceAPI.getNumOfQrIdAvailableBranchOffice(availableQrIdCountReqObj)
+        .subscribe(data => {
+  
+          /*if (data['errorOccurred']){
+            this.addEquptProgressBar=false;
+            this.toastService.error("Something went wrong while loading QR IDs");
+            return false;
+         }*/
+  
+         let availableQrIdCount: number = parseInt(data['availabledQrIdAllotCount']);
+  
+         if (availableQrIdCount == 0){
+           this.addEquptProgressBar=false;
+           this.errorMessageEnable=true;
+           this.errorMessageTxt="QR IDs not availabled. Please contact administrator";
+           return false
+         }
+  
+         try {
+          this.utilService.getLegalEntityAlottedQRIdList(
+            this.legalEntityId,
+            this.branchId,
+            this.userId,
+            this.userRole,
+            false,
+            true,
+            false)
+          .subscribe(data => {
+            this.qrIdListObj = data;
+    
+            this.addEquptProgressBar=false;
+            
+          }, error => {
+            //this.toastService.error("Something went wrong while load QR ID list");
+          }); 
+         } catch (error) {
+          this.toastService.error("Something went wrong while load QR ID list");
+         }
+  
+        }, error => {
           this.addEquptProgressBar=false;
-          this.toastService.error("Something went wrong while loading QR IDs");
-          return false;
-       }
-
-       let availableQrIdCount: number = parseInt(data['availabledQrIdAllotCount']);
-
-       if (availableQrIdCount == 0){
-         this.addEquptProgressBar=false;
-         this.errorMessageEnable=true;
-         this.errorMessageTxt="QR IDs not availabled. Please contact administrator";
-         return false
-       }
-
-       this.utilService.getLegalEntityAlottedQRIdList(this.legalEntityId,false,true,false)
-       .subscribe(data => {
-         this.qrIdListObj = data;
- 
-         this.addEquptProgressBar=false;
-         
-       }, error => {
-         this.toastService.error("Something went wrong while load QR ID list");
-       })
-
-      }, error => {
-        this.addEquptProgressBar=false;
+          //this.toastService.error("Something went wrong while loading QR IDs");
+        });  
+      } catch (error) {
         this.toastService.error("Something went wrong while loading QR IDs");
-      });
+      }
+
+      
 
     }
 
@@ -394,13 +445,18 @@ export class LegalentityEquipmentComponent implements OnInit {
   }
 
   popCountryCallingCode():void{
-    this.utilService.countryCallingCode()
+    try {
+      this.utilService.countryCallingCode()
     .subscribe((data:IcountryCallingCodeResponse) =>{
       this.countryCallingCodeResponseObj = data;
       
     }, error => {
-      this.toastService.error("Something went wrong while loading country calling code");
+      //this.toastService.error("Something went wrong while loading country calling code");
     });
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading country calling code");
+    }
+    
   }
   
   get qrContactDetailsFormArray()
@@ -1088,11 +1144,13 @@ export class LegalentityEquipmentComponent implements OnInit {
   ngOnInit() {
 
     const tokenModel: TokenModel = this.authService.getTokenDetails();
-console.log(tokenModel);
+
     this.legalEntityId=tokenModel.legalEntityId;
     this.branchId=tokenModel.branchId;
     this.userId=tokenModel.userId;
     this.userRole=tokenModel.userRole;
+
+    this.headOffice=tokenModel.branchHeadOffice;
 
     /*if (localStorage.getItem("legalEntityUserDetails") != null)
     {

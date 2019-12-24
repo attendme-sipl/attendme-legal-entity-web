@@ -29,7 +29,7 @@ export class AuthService {
 
   authUser(authUserReqObj: IauthUserLoginReqStruct): Observable<AuthUserModel>{
 
-    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa('attendme:jo%&d!gv')});
+    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(this.utilServiceAPI.basicAuthUserName + ":" + this.utilServiceAPI.basicAuthPassword)});
 
     return this.httpClient.post<AuthUserModel>( this.utilServiceAPI.legalEntityAPIURLWoApi + "/userLogin", authUserReqObj, {headers});
   }

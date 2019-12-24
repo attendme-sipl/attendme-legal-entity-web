@@ -39,7 +39,9 @@ export interface IavailbleQrIdCountReqStruct{
    legalEntityId: number,
    branchId: number,
    qrActiveStatus: boolean,
-   qrAssignStatus: boolean
+   qrAssignStatus: boolean,
+   userId: number,
+   userRole: string
 };
 
 export interface IallotQrIdToBranchNewReq{

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import {LegalentityMenuPref} from '../model/legalentity-menu-pref';
@@ -41,13 +41,15 @@ export class LegalentityUtilService {
   userDefMenuCookieDomain = environment.userDefMenuCookieDomain;
   userDefMenuCookieSecure = environment.userDefMenuCookieSecure;
   
-
+  basicAuthUserName = environment.basicAuthUserName;
+  basicAuthPassword = environment.basicAuthPassword;
   
   constructor(
   private titleService: Title,
   private httpClient: HttpClient,
   private menuPrefNameModel: LegalentityMenuPrefNames,
-  private cookieService: CookieService
+  private cookieService: CookieService,
+  private utilServiceAPI: LegalentityUtilService
   ) { }
 
   setTitle(titleString: string):void{
@@ -124,11 +126,17 @@ export class LegalentityUtilService {
 
   getLegalEntityAlottedQRIdList(
     legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string,
     qrIdAssingedStatus:boolean,
     qrIdActiveStatus: boolean,
     assignedToBranch: boolean):Observable<any>{
       return this.httpClient.post(this.legalEntityRestApuURL + "/getQrIdDetails", {
          legalEntityId: legalEntityId,
+         branchId: branchId,
+         userId: userId,
+         userRole: userRole,
          qrIdStatus: qrIdAssingedStatus,
          qrIdActiveStatus: qrIdActiveStatus,
          assignedToBranch: assignedToBranch
@@ -136,7 +144,10 @@ export class LegalentityUtilService {
     }
 
     countryCallingCode():Observable<IcountryCallingCodeResponse>{
-      return this.httpClient.get<IcountryCallingCodeResponse>(this.legalEntityRestApuURL + "/getCountryCallingCode");
+      const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(this.utilServiceAPI.basicAuthUserName + ":" + this.utilServiceAPI.basicAuthPassword)});
+      return this.httpClient.get<IcountryCallingCodeResponse>(
+        this.legalEntityAPIURLWoApi + "/getCountryCallingCode",
+        {headers});
     }
 
     
