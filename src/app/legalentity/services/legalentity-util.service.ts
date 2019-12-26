@@ -144,10 +144,9 @@ export class LegalentityUtilService {
     }
 
     countryCallingCode():Observable<IcountryCallingCodeResponse>{
-      const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(this.utilServiceAPI.basicAuthUserName + ":" + this.utilServiceAPI.basicAuthPassword)});
+     
       return this.httpClient.get<IcountryCallingCodeResponse>(
-        this.legalEntityAPIURLWoApi + "/getCountryCallingCode",
-        {headers});
+        this.legalEntityAPIURLWoApi + "/getCountryCallingCode");
     }
 
     

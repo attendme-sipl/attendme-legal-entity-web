@@ -27,6 +27,9 @@ export interface IdeactivateContactReqStruct{
 
 export interface IcontactRptReqStruct{
    legalEntityId: number,
+   branchId: number,
+   userId: number,
+   userRole: string,
    contactActiveStatus: boolean,
    exportToExcel: boolean,
    complaintMenuName: string,

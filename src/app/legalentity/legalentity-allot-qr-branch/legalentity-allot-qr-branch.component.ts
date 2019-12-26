@@ -89,7 +89,9 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     });
   }*/
 
-  getAvailableQrToAllot():void{
+  //to be added after jwt implementation
+
+  /*getAvailableQrToAllot():void{
     const availableQrToAllotReqObj: IavailbleQrIdCountReqStruct = {
       branchId: this.branchId,
       legalEntityId: this.legalEntityId,
@@ -109,7 +111,7 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     }, error => {
       this.toastService.error("Something went wrong while loading number of available QR IDs to allot");
     });
-  }
+  }*/
 
   onSubmitClick(form:NgForm){
 
@@ -210,7 +212,8 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
 
     this.form.resetForm();
 
-    this.getAvailableQrToAllot();
+    // to be added after jwt implementation
+   // this.getAvailableQrToAllot();
 
     this.setFormGroup();
 
@@ -258,8 +261,9 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     
      // to be added after jwt implmenetation
     //this.popBranchList(false);
-
-    this.getAvailableQrToAllot();
+    
+ // to be added after jwt implmenetation
+    //this.getAvailableQrToAllot();
   }
   
 }

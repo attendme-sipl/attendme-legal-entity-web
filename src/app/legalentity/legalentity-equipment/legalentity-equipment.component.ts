@@ -448,6 +448,7 @@ export class LegalentityEquipmentComponent implements OnInit {
     try {
       this.utilService.countryCallingCode()
     .subscribe((data:IcountryCallingCodeResponse) =>{
+     
       this.countryCallingCodeResponseObj = data;
       
     }, error => {
@@ -461,33 +462,53 @@ export class LegalentityEquipmentComponent implements OnInit {
   
   get qrContactDetailsFormArray()
   {
-    return this.equptForm.get('qrContactData') as FormArray 
+    try {
+      return this.equptForm.get('qrContactData') as FormArray   
+    } catch (error) {
+      this.toastService.error("Something went wrong while getting contact details","");
+    }
+    
   } 
 
   getQrIdContactFormGroup(): FormGroup{
-    return this.equptFormFieldBuider.group({
-      contactPersonName: [''],
-      countryCallingCode: this.defaultCountryCode,
-      contactMobileNumber: ['',Validators.compose([
-        Validators.minLength(10),
-        Validators.maxLength(10)
-      ])],
-      contactEmailId: ['', Validators.email],
-      contactToBeDisplayed: this.checked,
-      contactId:[''],
-      smsRequired: this.defaultSMSEnable ,
-      emailRequired: this.defaultEmailEnable
-    })
+    try {
+      return this.equptFormFieldBuider.group({
+        contactPersonName: [''],
+        countryCallingCode: this.defaultCountryCode,
+        contactMobileNumber: ['',Validators.compose([
+          Validators.minLength(10),
+          Validators.maxLength(10)
+        ])],
+        contactEmailId: ['', Validators.email],
+        contactToBeDisplayed: this.checked,
+        contactId:[''],
+        smsRequired: this.defaultSMSEnable ,
+        emailRequired: this.defaultEmailEnable
+      })  
+    } catch (error) {
+      this.toastService.error("Something went wrong while getting contact details","");
+    }
+    
   }
 
   
   addQrIdContact()
   {
-    this.qrContactDetailsFormArray.push(this.getQrIdContactFormGroup())
+    try {
+      this.qrContactDetailsFormArray.push(this.getQrIdContactFormGroup())  
+    } catch (error) {
+      this.toastService.error("Something went wrong while adding contact details","");
+    }
+    
   }
 
   removeQrIdContact(indexId: number){
-    this.qrContactDetailsFormArray.removeAt(indexId);
+    try {
+      this.qrContactDetailsFormArray.removeAt(indexId);  
+    } catch (error) {
+      this.toastService.error("Something went wrong while removing contact details","");
+    }
+    
   }
 
 
@@ -495,7 +516,9 @@ export class LegalentityEquipmentComponent implements OnInit {
 
   popNotificationContactList():void{
 
-    this.enableContactProgressBar=true;
+    try {
+
+      this.enableContactProgressBar=true;
 
     while(this.qrIdContactFormArray.length){
       this.qrIdContactFormArray.removeAt(0);
@@ -508,16 +531,19 @@ export class LegalentityEquipmentComponent implements OnInit {
       equptMenuName: this.menuPrefNameModel.equipmentMenuName,
       exportToExcel: false,
       legalEntityId: this.legalEntityId,
-      technicianMenuName: this.menuPrefNameModel.technicianMenuName
+      technicianMenuName: this.menuPrefNameModel.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
     
     this.contatServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
     .subscribe((data:IcontactResponseStruct) => {
-      if (data.errorOccurred){
+      /*if (data.errorOccurred){
         this.toastService.error("Something went wrong while loading contacts list");
         this.enableContactProgressBar=false;
         return false;
-      }
+      }*/
 
       this.contactArr=data.contactList.map((value,index) => value ? {
         contactId: value['contactId'],
@@ -543,9 +569,16 @@ export class LegalentityEquipmentComponent implements OnInit {
       this.enableContactProgressBar=false;
 
     }, error => {
-      this.toastService.error("Something went wrong while loading contacts list");
+      //this.toastService.error("Something went wrong while loading contacts list");
       this.enableContactProgressBar=false;
     });
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading contacts list");
+      this.enableContactProgressBar=false;
+    }
+
+    
   }
 
   get qrIdContactFormArray()

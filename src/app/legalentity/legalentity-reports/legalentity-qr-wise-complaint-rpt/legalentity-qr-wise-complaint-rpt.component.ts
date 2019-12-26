@@ -70,7 +70,9 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
 
     let paramSetQrId: string = this.activatedRoute.snapshot.paramMap.get('qrId');
 
-    if (paramSetQrId != ''){
+    //to be added after jwt implementation
+
+    /*if (paramSetQrId != ''){
       this.qrCodeId= parseInt(this.activatedRoute.snapshot.paramMap.get('qrId'));
 
       this.utilService.getLegalEntityAlottedQRIdList(
@@ -101,7 +103,7 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
           this.toastService.error("Something went wrong while get QR Id details");
         });
 
-    }
+    }*/
 
   }
 

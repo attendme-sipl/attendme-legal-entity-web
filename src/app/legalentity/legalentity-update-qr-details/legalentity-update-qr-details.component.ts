@@ -99,7 +99,9 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     );
   }
 
-  popQrIdList(){
+  //to be added after jwt implementation
+
+  /*popQrIdList(){
 
      this.editEquptProgressBar=true;
 
@@ -128,7 +130,7 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
        this.editEquptProgressBar=false;
        this.toastService.error("Something went wrong while loading QR Id");
      })
-  }
+  }*/
 
   popCountryCallingCode():void{
     this.utilServiceAPI.countryCallingCode()
@@ -964,10 +966,10 @@ get qrIdDocumentListFormArray()
     })
 
     this.editEquptForm.controls['qrCodeData'].disable();
-
+//to be added after jwt implementation
     //this.getQrIdDetails();
-
-    this.popQrIdList();
+//to be added after jwt implementation
+    //this.popQrIdList();
 
     this.spcificQrIdContactCount=1;
 

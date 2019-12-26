@@ -113,7 +113,9 @@ export class LegalentityContactsRptComponent implements OnInit {
    
   }
 
-  popLegalEntityContactRpt(exportToExcel: boolean):void{
+  // to be added after jwt authentication
+
+  /*popLegalEntityContactRpt(exportToExcel: boolean):void{
 
     this.enableProgressBar=true;
 
@@ -176,7 +178,7 @@ export class LegalentityContactsRptComponent implements OnInit {
     }
 
     
-  }
+  }*/
 
   openAddContactDialog(){
 
@@ -220,7 +222,9 @@ export class LegalentityContactsRptComponent implements OnInit {
 
       this.enableProgressBar=false;
       this.toastService.success("Contacts added successfully");
-      this.popLegalEntityContactRpt(false);
+
+      // to be added after jwt authentication
+      //this.popLegalEntityContactRpt(false);
 
     }, error => {
       this.enableProgressBar=false;
@@ -268,7 +272,8 @@ export class LegalentityContactsRptComponent implements OnInit {
           this.enableProgressBar = false;
           this.toastService.success("Contact removed successfully");
 
-          this.popLegalEntityContactRpt(false);
+          // to be added after jwt authentication
+          //this.popLegalEntityContactRpt(false);
         }, error => {
           this.toastService.error("Something went wrong while removing contact, please try again later");
         })
@@ -307,7 +312,8 @@ export class LegalentityContactsRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - Contacts | Attendme");
 
-    this.popLegalEntityContactRpt(false);
+    // to be added after jwt authentication
+    //this.popLegalEntityContactRpt(false);
 
    // console.log(this.displayedColumns[5]);
   }

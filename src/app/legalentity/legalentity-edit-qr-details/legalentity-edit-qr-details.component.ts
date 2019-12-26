@@ -188,7 +188,9 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
    });
  }*/
 
- popQrIdDrp():void{
+ //to be added after jwt implementation
+
+ /*popQrIdDrp():void{
     
   if(this.headOffice){
     this.utilService.getLegalEntityAlottedQRIdList(this.legalEntityId,true,true,false)
@@ -223,7 +225,7 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
       this.toastService.error("Something went wrong while load QR ID list");
     });
   }
-}
+}*/
 
 popCountryCallingCode():void{
   this.utilService.countryCallingCode()
@@ -268,8 +270,9 @@ get qrContactDetailsFormArray()
 
 
   // Logic to populate contact list
+// to be added after jwt implementation
 
-  popNotificationContactList():void{
+  /*popNotificationContactList():void{
 
     while(this.qrIdContactFormArray.length){
       this.qrIdContactFormArray.removeAt(0);
@@ -308,7 +311,7 @@ get qrContactDetailsFormArray()
     }, error => {
       this.toastService.error("Something went wrong while loading contacts list");
     });
-  }
+  }*/
 
   get qrIdContactFormArray()
   {
@@ -722,7 +725,10 @@ get qrContactDetailsFormArray()
 
       this.enableContactProgressBar=false;
       //this.toastService.success("Contacts added successfully");
-      this.popNotificationContactList();
+
+      // to be added after jwt authentication
+
+      //this.popNotificationContactList();
 
     }, error => {
       this.enableContactProgressBar=false;
@@ -761,7 +767,8 @@ get qrContactDetailsFormArray()
     // to be added after jwt implementation
 
    // this.getEquptFormfieldPref();
-    this.popQrIdDrp();
+    //to be added after jwt implementation
+   //this.popQrIdDrp();
 
     this.defaultCountryCode = 91;
 
@@ -783,7 +790,9 @@ get qrContactDetailsFormArray()
     });
 
     this.popCountryCallingCode();
-    this.popNotificationContactList();
+
+    // to be added after jwt authentication
+    //this.popNotificationContactList();
 
    //this.popQrIdDetails();
     
