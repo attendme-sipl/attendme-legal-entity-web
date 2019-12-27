@@ -582,8 +582,9 @@ cancelClick(){
   this.router.navigate(['legalentity','portal','equipment']);
 }
 
+// to be added after jwt implementation
 
-onSubmit(){
+/*onSubmit(){
   this.equptFormSubmitted = true;
 
   this.editEquptProgressBar=true;
@@ -699,7 +700,7 @@ onSubmit(){
       return false;
     }
   
-}
+}*/
 
 
 setCustomValidators(){
@@ -854,8 +855,8 @@ get qrIdDocumentListFormArray()
   {
     return this.editEquptForm.get('equptDocList') as FormArray;
   }
-
-  popDocumentList(){
+//to be added after jwt implementation
+  /*popDocumentList(){
    this.editEquptProgressBar=true;
 
    while(this.qrIdDocumentListFormArray.length){
@@ -863,6 +864,8 @@ get qrIdDocumentListFormArray()
   }
 
   //console.log(this.qrIdAttachedDocList);
+
+  //to be added after jwt implementation
 
    this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
    .subscribe((data: IlegalEntityDocumentRptResponse) => {
@@ -920,7 +923,7 @@ get qrIdDocumentListFormArray()
     this.editEquptProgressBar=false;
     this.toastService.error("Something went wrong while loading document list");
    });
-  }
+  }*/
 
   ngOnInit() {
 

@@ -72,7 +72,8 @@ export class LegalentityDocumentRptComponent implements OnInit {
      this.router.navigate(['legalentity','portal','upload','document']);
    }
 
-   popLegalEntityDocument(){
+   //to be added after jwt implementation
+   /*popLegalEntityDocument(){
 
     this.enableProgressBar=true;
     this.searchKey='';
@@ -114,7 +115,7 @@ export class LegalentityDocumentRptComponent implements OnInit {
       this.enableProgressBar=false;
       this.toastService.error("Something went wrong while loading document details");
      });
-   }
+   }*/
 
   /*onSubmitClick(){
   
@@ -169,7 +170,8 @@ export class LegalentityDocumentRptComponent implements OnInit {
           this.enableProgressBar=false;
           this.toastService.success("Document deleted successfully");
 
-          this.popLegalEntityDocument();
+//to be added after jwt implementation
+          //this.popLegalEntityDocument();
         }, error => {
           this.toastService.error("Something went wrong while deleting document");
           this.enableProgressBar=false;
@@ -228,7 +230,8 @@ export class LegalentityDocumentRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - Documents | Attendme");
 
-    this.popLegalEntityDocument();
+    //to be added after jwt implementation
+    //this.popLegalEntityDocument();
 
   }
 

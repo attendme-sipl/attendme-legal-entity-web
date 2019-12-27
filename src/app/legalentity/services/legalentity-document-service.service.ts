@@ -65,9 +65,17 @@ export class LegalentityDocumentServiceService {
     private utilServiceAPI: LegalentityUtilService
   ) { }
 
-  getLegalEntityDocumentsRpt(legalEntityId: number):Observable<IlegalEntityDocumentRptResponse>{
+  getLegalEntityDocumentsRpt(
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<IlegalEntityDocumentRptResponse>{
     return this.httpClient.post<IlegalEntityDocumentRptResponse>(this.utilServiceAPI.legalEntityRestApuURL + "/documentInfo", {
-      legalEntityId: legalEntityId
+      legalEntityId: legalEntityId,
+     // branchId: branchId,
+      //userId: userId,
+      //userRole: userRole
     });
   }
 

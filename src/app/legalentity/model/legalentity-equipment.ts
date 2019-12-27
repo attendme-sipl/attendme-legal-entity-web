@@ -2,6 +2,8 @@ export interface LegalentityEquipment {
   qrCodeId: number,
   branchId: number,
   legalEntityId: number,
+  userId: number,
+  userRole: string,
   adminApprove: boolean,
   equptActiveStatus: boolean,
   addedByUserId: number,
