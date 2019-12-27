@@ -73,9 +73,9 @@ export class LegalentityDocumentServiceService {
     ):Observable<IlegalEntityDocumentRptResponse>{
     return this.httpClient.post<IlegalEntityDocumentRptResponse>(this.utilServiceAPI.legalEntityRestApuURL + "/documentInfo", {
       legalEntityId: legalEntityId,
-     // branchId: branchId,
-      //userId: userId,
-      //userRole: userRole
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 

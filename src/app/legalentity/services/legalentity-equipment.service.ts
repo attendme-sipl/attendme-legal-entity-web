@@ -53,7 +53,10 @@ export interface IbranchWiseQrIdListResStruct{
 };
 
 export interface IbranchWiseQrIdListReqStruct{
+  leglalEntity: number,
   branchId: number,
+  userId: number,
+  userRole: string,
   qrStatus: boolean,
   qrActiveStatus: boolean
 };
@@ -122,7 +125,8 @@ export class LegalentityEquipmentService {
       legalEntityId: legalEntityId,
       equptFormFieldActiveStatus: formFieldActiveStatus,
       branchId: branchId,
-      
+      userId: userId,
+      userRole: userRole
     });
   }
 
@@ -134,9 +138,19 @@ export class LegalentityEquipmentService {
     return this.httpclient.post<IbranchWiseQrIdListResStruct>(this.util.legalEntityRestApuURL + "/branchWiseQrIdList", branchWiseQrIdListReqObj);
   }
 
-  getQrIdIndivDetails(qrCodeId: number):Observable<IqrIdIndivDetailsResponse>{
+  getQrIdIndivDetails(
+    qrCodeId: number,
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<IqrIdIndivDetailsResponse>{
     return this.httpclient.post<IqrIdIndivDetailsResponse>(this.util.legalEntityRestApuURL + "/qrIdDetailsWeb", {
-      qrCodeId: qrCodeId
+      qrCodeId: qrCodeId,
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 

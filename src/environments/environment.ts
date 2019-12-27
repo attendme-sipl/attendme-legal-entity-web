@@ -17,13 +17,13 @@ export const environment = {
 
       // Local instance
 
-            //superAdminAPIURL: "http://192.168.0.7:4201/api",
-            //legalEntityAPIURL: 'http://192.168.0.7:4201/api',
-            //mobileServiceAPIURL: "http://192.168.0.7:5000/api",
+            superAdminAPIURL: "http://192.168.0.7:4201/api",
+            legalEntityAPIURL: 'http://192.168.0.7:4201/api',
+            mobileServiceAPIURL: "http://192.168.0.7:5000/api",
 
-            //superAdminAPIURLWoApi: "http://192.168.0.7:4201",
-            //legalEntityAPIURLWoApi: 'http://192.168.0.7:4201',
-            //mobileServiceAPIURLWoApi: "http://192.168.0.7:5000",
+            superAdminAPIURLWoApi: "http://192.168.0.7:4201",
+            legalEntityAPIURLWoApi: 'http://192.168.0.7:4201',
+            mobileServiceAPIURLWoApi: "http://192.168.0.7:5000",
 
             // cookie parameters
 
@@ -54,13 +54,13 @@ export const environment = {
 
        // AWS New Demo Instance (https)
 
-       superAdminAPIURL: "http://demo-sa.attendme.in/api",
-       legalEntityAPIURL: "http://demo-le.attendme.in/api",
-       mobileServiceAPIURL: "http://demo-android.attendme.in/api",
+       //superAdminAPIURL: "http://demo-sa.attendme.in/api",
+       //legalEntityAPIURL: "http://demo-le.attendme.in/api",
+       //mobileServiceAPIURL: "http://demo-android.attendme.in/api",
 
-       superAdminAPIURLWoApi: "http://demo-sa.attendme.in",
-       legalEntityAPIURLWoApi: "http://demo-le.attendme.in",
-       mobileServiceAPIURLWoApi: "http://demo-android.attendme.in"
+       //superAdminAPIURLWoApi: "http://demo-sa.attendme.in",
+       //legalEntityAPIURLWoApi: "http://demo-le.attendme.in",
+       //mobileServiceAPIURLWoApi: "http://demo-android.attendme.in"
 
         // AWS New Production Instance (https)
 

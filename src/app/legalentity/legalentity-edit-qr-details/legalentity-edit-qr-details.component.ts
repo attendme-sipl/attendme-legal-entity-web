@@ -15,6 +15,8 @@ import { IaddContactReqUpdatedStruct } from '../legalentity-reports/legalentity-
 import { IalottedQRIDList, equptFormfieldTitleDataStruct, IcontactEquptMappingReqStruct, IqrIdFormFieldObjStruct } from '../legalentity-equipment/legalentity-equipment.component';
 import { MatDialog } from '@angular/material';
 import { LegalentityAddContactComponent } from '../legalentity-add-contact/legalentity-add-contact.component';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 
 export interface IupdateFormFieldDatatStruct{
@@ -43,6 +45,8 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
   branchId: number;
 
   userId: number;
+
+  userRole: string;
 
   qrIdListObj: IalottedQRIDList[];
 
@@ -94,7 +98,8 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
     private contatServiceAPI: LegalentityContactsService,
     private route: ActivatedRoute,
     private dialog: MatDialog,
-    private contactServiceAPI: LegalentityContactsService
+    private contactServiceAPI: LegalentityContactsService,
+    private authService: AuthService
   ) { 
 
     iconRegistry.addSvgIcon(
@@ -115,117 +120,163 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
   }
 
   get equptFormFieldArray(){
-    return this.equptForm.get('formFieldData') as FormArray;
+    try {
+      return this.equptForm.get('formFieldData') as FormArray;  
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading form fields","");
+    }
+    
   }
 
   addEqutpFromFieldFormArray(formFieldId: number, formFieldTitleName: string, formFieldValue: string, characterLength: number){
+    try {
+      this.equptFormFieldArray.push(this.equptFormFieldBuider.group({
+        formFieldId: formFieldId,
+        formFiledTitleName: formFieldTitleName,
+        formFieldValue: ['', Validators.maxLength(characterLength)] //formFieldValue
+      }));  
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading form fields","");
+    }
     
-    this.equptFormFieldArray.push(this.equptFormFieldBuider.group({
-      formFieldId: formFieldId,
-      formFiledTitleName: formFieldTitleName,
-      formFieldValue: ['', Validators.maxLength(characterLength)] //formFieldValue
-    }))
   }
 
   removeEqutpFormFiledArray(indexValue: number){
-    this.equptFormFieldArray.removeAt(indexValue);
+    try {
+      this.equptFormFieldArray.removeAt(indexValue);  
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading form fields","");
+    }
+    
   }
 
-  // to be added after jwt implementation
 
-  /*getEquptFormfieldPref():void{
+  getEquptFormfieldPref():void{
 
-    
-    this.addEquptProgressBar=true;
+    try {
+      this.addEquptProgressBar=true;
     
    
-   this.equptService.getEquptFormFieldPref(this.legalEntityId,true)
-   .subscribe((data:IequptFormFieldPrefResponse) => {
-     if (data.errorOccured)
-     {
-       this.addEquptProgressBar=false;
-       this.toastService.error("Something whent wrong while loading form details");
-       return false;
-     }
-     
-
-     //let formFieldArray: FormArray;
-
-     let recordCount: number = 1;
-
-     if (data.equptFormFieldTitles.length > 0){
-      this.equptFormFiledDataObj = data.equptFormFieldTitles
-    
-      this.equptFormFiledDataObj.forEach(result => {
-      // this.addEqutpFromFieldFormArray(result.formFieldId,result.formFiledTitleName,'')
-
-      if (recordCount == 1 || recordCount == 2){
-        let updatedFormFieldTitle: string = result.formFiledTitleName + " (Allowed upto 256 character)";
-        this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',256);
-      }
-      else{
-        let updatedFormFieldTitle: string = result.formFiledTitleName + " (Allowed upto 40 character)";
-        this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',40);
-      }
-
-      recordCount = recordCount+1;
-       });
-
-      // this.commonModel.enableProgressbar=false;
-      
-     }
-     else
-     {
+      this.equptService.getEquptFormFieldPref(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole,
+        true
+        )
+      .subscribe((data:IequptFormFieldPrefResponse) => {
+        /*if (data.errorOccured)
+        {
+          this.addEquptProgressBar=false;
+          this.toastService.error("Something whent wrong while loading form details");
+          return false;
+        }*/
+        
+   
+        //let formFieldArray: FormArray;
+   
+        let recordCount: number = 1;
+   
+        if (data.equptFormFieldTitles.length > 0){
+         this.equptFormFiledDataObj = data.equptFormFieldTitles
        
-     }
+         this.equptFormFiledDataObj.forEach(result => {
+         // this.addEqutpFromFieldFormArray(result.formFieldId,result.formFiledTitleName,'')
+   
+         if (recordCount == 1 || recordCount == 2){
+           let updatedFormFieldTitle: string = result.formFiledTitleName + " (Allowed upto 256 character)";
+           this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',256);
+         }
+         else{
+           let updatedFormFieldTitle: string = result.formFiledTitleName + " (Allowed upto 40 character)";
+           this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',40);
+         }
+   
+         recordCount = recordCount+1;
+          });
+   
+         // this.commonModel.enableProgressbar=false;
+         
+        }
+        else
+        {
+          
+        }
+   
+        this.popQrIdFormFieldDetails();
+   
+        this.addEquptProgressBar=false;
+      }, error =>{
+        this.addEquptProgressBar=false;
+        //this.toastService.error("Something whent wrong while loading form details");
+      });    
+    } catch (error) {
+      this.addEquptProgressBar=false;
+      this.toastService.error("Something whent wrong while loading form details");
+    }
+  
+ }
 
-     this.popQrIdFormFieldDetails();
 
-     this.addEquptProgressBar=false;
-   }, error =>{
-     this.addEquptProgressBar=false;
-     this.toastService.error("Something whent wrong while loading form details");
-   });
- }*/
-
- //to be added after jwt implementation
-
- /*popQrIdDrp():void{
+ popQrIdDrp():void{
     
   if(this.headOffice){
-    this.utilService.getLegalEntityAlottedQRIdList(this.legalEntityId,true,true,false)
-    .subscribe(data => {
-      this.qrIdListObj = data;
-    }, error => {
+
+    try {
+      this.utilService.getLegalEntityAlottedQRIdList(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole,
+        true,
+        true,
+        false)
+      .subscribe(data => {
+        this.qrIdListObj = data;
+      }, error => {
+        //this.toastService.error("Something went wrong while load QR ID list");
+      });
+    } catch (error) {
       this.toastService.error("Something went wrong while load QR ID list");
-    })
+    }
+
+    
   }
   else{
 
-    const branchWiseQrIdListReqObj: IbranchWiseQrIdListReqStruct = {
-      branchId: this.branchId,
-      qrActiveStatus: true,
-      qrStatus: false
+    try {
+      const branchWiseQrIdListReqObj: IbranchWiseQrIdListReqStruct = {
+        branchId: this.branchId,
+        qrActiveStatus: true,
+        qrStatus: false,
+        leglalEntity: this.legalEntityId,
+        userId: this.userId,
+        userRole: this.userRole
+      }
+  
+      this.equptService.getBranchWiseQrId(branchWiseQrIdListReqObj)
+      .subscribe((data:IbranchWiseQrIdListResStruct) => {
+  
+        /*if(data.errorOccured){
+          this.toastService.error("Something went wrong while load QR ID list");
+          return false;
+        }*/
+  
+        this.qrIdListObj=data.qrIdList;
+  
+        //console.log(this.qrIdListObj.length);
+  
+  
+      }, error =>{
+        //this.toastService.error("Something went wrong while load QR ID list");
+      });
+    } catch (error) {
+      this.toastService.error("Something went wrong while load QR ID list");
     }
 
-    this.equptService.getBranchWiseQrId(branchWiseQrIdListReqObj)
-    .subscribe((data:IbranchWiseQrIdListResStruct) => {
-
-      if(data.errorOccured){
-        this.toastService.error("Something went wrong while load QR ID list");
-        return false;
-      }
-
-      this.qrIdListObj=data.qrIdList;
-
-      //console.log(this.qrIdListObj.length);
-
-
-    }, error =>{
-      this.toastService.error("Something went wrong while load QR ID list");
-    });
+    
   }
-}*/
+}
 
 popCountryCallingCode():void{
   this.utilService.countryCallingCode()
@@ -744,7 +795,16 @@ get qrContactDetailsFormArray()
 
   ngOnInit() {     
 
-    if (localStorage.getItem("legalEntityUserDetails") != null)
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId = tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.headOffice=tokenModel.branchHeadOffice;
+
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    /*if (localStorage.getItem("legalEntityUserDetails") != null)
     {
      this.userModel = JSON.parse(localStorage.getItem("legalEntityUserDetails"));
 
@@ -756,7 +816,7 @@ get qrContactDetailsFormArray()
     }
     else{
       this.router.navigate(['legalentity','login']);
-    }
+    }*/
 
     this.checked = true;
     

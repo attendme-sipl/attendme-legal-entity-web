@@ -14,6 +14,8 @@ import { LegalentityContactsService, IcontactResponseStruct, IcontactRptReqStruc
 import { LegalentityEquipment } from '../model/legalentity-equipment';
 import { flattenStyles } from '@angular/platform-browser/src/dom/dom_renderer';
 import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IlegalEntityDocumentRptDetails, IlegalEntityDocumentRptWithSelect } from '../services/legalentity-document-service.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-update-qr-details',
@@ -25,7 +27,7 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
   legalEntityId: number;
   userId: number;
   branchId: number;
-
+  userRole: string;
   qrCodeId: number;
 
   equptMenuName: string;
@@ -81,7 +83,8 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     private equptEditFb: FormBuilder,
     private equptService: LegalentityEquipmentService,
     private contatServiceAPI: LegalentityContactsService,
-    private documentServiceAPI: LegalentityDocumentServiceService
+    private documentServiceAPI: LegalentityDocumentServiceService,
+    private authService: AuthService
   ) { 
     iconRegistry.addSvgIcon(
       "addRecordIcon",
@@ -99,14 +102,17 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     );
   }
 
-  //to be added after jwt implementation
 
-  /*popQrIdList(){
+  popQrIdList(){
 
-     this.editEquptProgressBar=true;
+    try {
+      this.editEquptProgressBar=true;
 
      this.utilServiceAPI.getLegalEntityAlottedQRIdList(
        this.legalEntityId,
+       this.branchId,
+       this.userId,
+       this.userRole,
        true,
        true,
        false
@@ -128,150 +134,222 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
        this.editEquptProgressBar=false;
      }, error => {
        this.editEquptProgressBar=false;
-       this.toastService.error("Something went wrong while loading QR Id");
-     })
-  }*/
+       //this.toastService.error("Something went wrong while loading QR Id");
+     });
+    } catch (error) {
+      this.editEquptProgressBar=false;
+      this.toastService.error("Something went wrong while loading QR Id");
+    }
+
+  }
 
   popCountryCallingCode():void{
-    this.utilServiceAPI.countryCallingCode()
-    .subscribe((data:IcountryCallingCodeResponse) =>{
-      this.countryCallingCodeResponseObj = data;
-      
-    }, error => {
+    try {
+      this.utilServiceAPI.countryCallingCode()
+      .subscribe((data:IcountryCallingCodeResponse) =>{
+        this.countryCallingCodeResponseObj = data;
+        
+      }, error => {
+        //this.toastService.error("Something went wrong while loading country calling code");
+      });  
+    } catch (error) {
       this.toastService.error("Something went wrong while loading country calling code");
-    });
+    }
+    
   }
 
   get equptFormFieldArray(){
-    return this.editEquptForm.get('formFieldData') as FormArray;
+    try {
+      return this.editEquptForm.get('formFieldData') as FormArray;  
+    } catch (error) {
+      this.toastService.error("Something went wrong while getting form field details","");
+    }
+    
   }
 
   addEqutpFromFieldFormArray(formFieldId: number, formFieldTitleName: string, formFieldValue: string, characterLength: number){
-    
-    this.equptFormFieldArray.push(this.equptEditFb.group({
-      formFieldId: formFieldId,
-      formFiledTitleName: formFieldTitleName,
-      characterLimit: characterLength,
-      formFieldValue:[formFieldValue, Validators.maxLength(characterLength)]  //formFieldValue
-    }))
+    try {
+      this.equptFormFieldArray.push(this.equptEditFb.group({
+        formFieldId: formFieldId,
+        formFiledTitleName: formFieldTitleName,
+        characterLimit: characterLength,
+        formFieldValue:[formFieldValue, Validators.maxLength(characterLength)]  //formFieldValue
+      })); 
+    } catch (error) {
+      this.toastService.error("Something went wrong while adding form field details to page","");
+    }
   }
 
   removeEqutpFormFiledArray(indexValue: number){
-    this.equptFormFieldArray.removeAt(indexValue);
+    try {
+      this.equptFormFieldArray.removeAt(indexValue); 
+    } catch (error) {
+      this.toastService.error("Something went wrong while removing form field details","");
+    }
   }
 
 
   get qrContactDetailsFormArray()
   {
-    return this.editEquptForm.get('qrContactData') as FormArray 
+    try {
+      return this.editEquptForm.get('qrContactData') as FormArray;  
+    } catch (error) {
+      this.toastService.error("Something went wrong while getting contact details","");
+    }
+     
   } 
 
   getQrIdContactFormGroup(): FormGroup{
-    return this.equptEditFb.group({
-      contactPersonName: [''],
-      countryCallingCode: this.defaultCountryCode,
-      contactMobileNumber: ['',Validators.compose([
-        Validators.minLength(10),
-        Validators.maxLength(10)
-      ])],
-      contactEmailId: ['', Validators.email],
-      contactToBeDisplayed: this.defaultDispToPublic,
-      contactId:[''],
-      smsRequired: this.defaultSMSEnable ,
-      emailRequired: this.defaultEmailEnable
-    })
+
+    try {
+      return this.equptEditFb.group({
+        contactPersonName: [''],
+        countryCallingCode: this.defaultCountryCode,
+        contactMobileNumber: ['',Validators.compose([
+          Validators.minLength(10),
+          Validators.maxLength(10)
+        ])],
+        contactEmailId: ['', Validators.email],
+        contactToBeDisplayed: this.defaultDispToPublic,
+        contactId:[''],
+        smsRequired: this.defaultSMSEnable ,
+        emailRequired: this.defaultEmailEnable
+      });  
+    } catch (error) {
+      this.toastService.error("Something went wrong while getting contact details","");
+    }
+
+    
   }
 
   
   get qrIdContactFormArray()
   {
-    return this.editEquptForm.get('qrContactData') as FormArray;
+    try {
+      return this.editEquptForm.get('qrContactData') as FormArray;  
+    } catch (error) {
+      this.toastService.error("Something went wrong while getting contact details","");
+    }
+    
   }
 
   addQrIdContactDetailsToFormArray(qrIdContactObj: IcontactEquptMappingReqStruct){
    
-    this.qrIdContactFormArray.push(this.equptEditFb.group(qrIdContactObj));
+    try {
+      this.qrIdContactFormArray.push(this.equptEditFb.group(qrIdContactObj));      
+    } catch (error) {
+      this.toastService.error("Something went wrong while adding contact details","");
+    }
+
     
   }
 
   addQrIdContact()
   {
-    this.qrContactDetailsFormArray.push(this.getQrIdContactFormGroup())
+    try {
+      this.qrContactDetailsFormArray.push(this.getQrIdContactFormGroup());
+    } catch (error) {
+      this.toastService.error("Something went wrong while adding contact details","");
+    }
+    
   }
 
   removeQrIdContact(indexId: number){
-    this.qrContactDetailsFormArray.removeAt(indexId);
+    try {
+      this.qrContactDetailsFormArray.removeAt(indexId);  
+    } catch (error) {
+      this.toastService.error("Something went wrong while removing contact details","");
+    }
+    
   }
 
 
-// to be added after jwt implementation
+  getEquptFormfieldPref():void{
 
-  /*getEquptFormfieldPref():void{
-
+    try {
+      this.equptService.getEquptFormFieldPref(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole,
+        true
+        )
+      .subscribe((data:IequptFormFieldPrefResponse) => {
+        /*if (data.errorOccured)
+        {
+          this.editEquptProgressBar=false;
+          this.toastService.error("Something whent wrong while loading form details");
+          return false;
+        }*/
+        
+   
+        //let formFieldArray: FormArray;
+   
+        if (data.equptFormFieldTitles.length > 0){
+         this.equptFormFiledDataObj = data.equptFormFieldTitles
+   
+         let recordCount: number = 1;
+       
+         this.equptFormFiledDataObj.forEach(result => {
+   
+          if (recordCount == 1 || recordCount == 2){
+            let updatedFormFieldTitle: string = result.formFiledTitleName;
+            this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',256);
+          }
+          else{
+            let updatedFormFieldTitle: string = result.formFiledTitleName;
+            this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',40);
+          }
+   
+          recordCount = recordCount+1;
+   
+          });
+   
+         // this.commonModel.enableProgressbar=false;
+         
+        }
+        else
+        {
+          
+        }
+       
+   
+        this.editEquptProgressBar=false;
+      }, error =>{
+        this.editEquptProgressBar=false;
+        //this.toastService.error("Something whent wrong while loading form details");
+      });
+    } catch (error) {
+      this.editEquptProgressBar=false;
+      this.toastService.error("Something whent wrong while loading form details");
+    }
     
     this.editEquptProgressBar=true;
    
-   this.equptService.getEquptFormFieldPref(this.legalEntityId,true)
-   .subscribe((data:IequptFormFieldPrefResponse) => {
-     if (data.errorOccured)
-     {
-       this.editEquptProgressBar=false;
-       this.toastService.error("Something whent wrong while loading form details");
-       return false;
-     }
-     
+   
+ }
 
-     //let formFieldArray: FormArray;
 
-     if (data.equptFormFieldTitles.length > 0){
-      this.equptFormFiledDataObj = data.equptFormFieldTitles
+ getQrIdDetails(){
 
-      let recordCount: number = 1;
-    
-      this.equptFormFiledDataObj.forEach(result => {
+  try {
 
-       if (recordCount == 1 || recordCount == 2){
-         let updatedFormFieldTitle: string = result.formFiledTitleName;
-         this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',256);
-       }
-       else{
-         let updatedFormFieldTitle: string = result.formFiledTitleName;
-         this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,'',40);
-       }
+    this.editEquptProgressBar = true;
 
-       recordCount = recordCount+1;
-
-       });
-
-      // this.commonModel.enableProgressbar=false;
-      
-     }
-     else
-     {
-       
-     }
-    
-
-     this.editEquptProgressBar=false;
-   }, error =>{
-     this.editEquptProgressBar=false;
-     this.toastService.error("Something whent wrong while loading form details");
-   });
- }*/
-
- // to be added after jwt implementation
-
- /*getQrIdDetails(){
-   this.editEquptProgressBar = true;
-
-   this.equptService.getQrIdIndivDetails(this.qrCodeId)
+   this.equptService.getQrIdIndivDetails(
+     this.qrCodeId,
+     this.legalEntityId,
+     this.branchId,
+     this.userId,
+     this.userRole
+     )
    .subscribe((data:IqrIdIndivDetailsResponse) => {
     
-     if (data.errorOccurred){
+     /*if (data.errorOccurred){
        this.editEquptProgressBar=false;
        this.toastService.error("Something went wrong while loading " + this.equptMenuName + " details");
        return false;
-     }
+     }*/
 
      if (data.qrContactData.length > 0){
        this.expandContactSection=true;
@@ -288,61 +366,74 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
 
      let qrIdFormFieldDataObj: any[] = data.qrIdData;
 
-     this.equptService.getEquptFormFieldPref(this.legalEntityId,true)
-   .subscribe((data:IequptFormFieldPrefResponse) => {
-     if (data.errorOccured)
-     {
-       this.editEquptProgressBar=false;
-       this.toastService.error("Something whent wrong while loading form details");
-       return false;
-     }
-     
-     //let formFieldArray: FormArray;
-
-     if (data.equptFormFieldTitles.length > 0){
-      this.equptFormFiledDataObj = data.equptFormFieldTitles
-
-      let recordCount: number = 1;
-    
-      this.equptFormFiledDataObj.forEach(result => {
-
-        let formFieldData: string = '';
-
-        let formFieldDataObj = qrIdFormFieldDataObj.map((value,index) => value ? {
-          formFieldId: value['formFieldId'],
-          formFieldValue: value['formFieldValue']
-        } : null)
-        .filter(value => value.formFieldId == result.formFieldId);
-
-        if(formFieldDataObj.length > 0){
-          formFieldData = formFieldDataObj[0]['formFieldValue'];
-          //console.log(formFieldData);
-        }
-
-       if (recordCount == 1 || recordCount == 2){
-         let updatedFormFieldTitle: string = result.formFiledTitleName;
-         this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,formFieldData,256);
-       }
-       else{
-         let updatedFormFieldTitle: string = result.formFiledTitleName;
-         this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,formFieldData,40);
-       }
-
-       recordCount = recordCount+1;
-
-       });
-
-      // this.commonModel.enableProgressbar=false;
+     try {
+      this.equptService.getEquptFormFieldPref(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole,
+        true
+        )
+    .subscribe((data:IequptFormFieldPrefResponse) => {
+      /*if (data.errorOccured)
+      {
+        this.editEquptProgressBar=false;
+        this.toastService.error("Something whent wrong while loading form details");
+        return false;
+      }*/
       
-     }
+      //let formFieldArray: FormArray;
+ 
+      if (data.equptFormFieldTitles.length > 0){
+       this.equptFormFiledDataObj = data.equptFormFieldTitles
+ 
+       let recordCount: number = 1;
      
-    
+       this.equptFormFiledDataObj.forEach(result => {
+ 
+         let formFieldData: string = '';
+ 
+         let formFieldDataObj = qrIdFormFieldDataObj.map((value,index) => value ? {
+           formFieldId: value['formFieldId'],
+           formFieldValue: value['formFieldValue']
+         } : null)
+         .filter(value => value.formFieldId == result.formFieldId);
+ 
+         if(formFieldDataObj.length > 0){
+           formFieldData = formFieldDataObj[0]['formFieldValue'];
+           //console.log(formFieldData);
+         }
+ 
+        if (recordCount == 1 || recordCount == 2){
+          let updatedFormFieldTitle: string = result.formFiledTitleName;
+          this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,formFieldData,256);
+        }
+        else{
+          let updatedFormFieldTitle: string = result.formFiledTitleName;
+          this.addEqutpFromFieldFormArray(result.formFieldId,updatedFormFieldTitle,formFieldData,40);
+        }
+ 
+        recordCount = recordCount+1;
+ 
+        });
+ 
+       // this.commonModel.enableProgressbar=false;
+       
+      }
+      
+     
+ 
+      this.editEquptProgressBar=false;
+    }, error =>{
+      this.editEquptProgressBar=false;
+      //this.toastService.error("Something whent wrong while loading form details");
+    });
+     } catch (error) {
+      this.editEquptProgressBar=false;
+      this.toastService.error("Something whent wrong while loading form details");
+     }
 
-     this.editEquptProgressBar=false;
-   }, error =>{
-     this.editEquptProgressBar=false;
-     this.toastService.error("Something whent wrong while loading form details");
-   });
+     
 
    let qrIdPrimaryContactObj: any[] = data.qrContactData;
  
@@ -416,17 +507,20 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     equptMenuName: this.menuModel.equipmentMenuName,
     exportToExcel: false,
     legalEntityId: this.legalEntityId,
-    technicianMenuName: this.menuModel.technicianMenuName
+    technicianMenuName: this.menuModel.technicianMenuName,
+    branchId: this.branchId,
+    userId: this.userId,
+    userRole: this.userRole
   };
   
-  
-  this.contatServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
+  try {
+    this.contatServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
   .subscribe((data:IcontactResponseStruct) => {
-    if (data.errorOccurred){
+    /*if (data.errorOccurred){
       this.toastService.error("Something went wrong while loading contacts list");
       this.editEquptProgressBar=false;
       return false;
-    }
+    }*/
 
     this.contactArr=data.contactList.map((value,index) => value ? {
       contactId: value['contactId'],
@@ -474,9 +568,15 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     this.editEquptProgressBar=false;
 
   }, error => {
-    this.toastService.error("Something went wrong while loading contacts list");
+    //this.toastService.error("Something went wrong while loading contacts list");
     this.editEquptProgressBar=false;
   });
+  } catch (error) {
+    this.toastService.error("Something went wrong while loading contacts list");
+    this.editEquptProgressBar=false;
+  }
+  
+  
 
 
   //this.removeSpecificQrIdContactFromFormArray(0);
@@ -488,9 +588,16 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
 
    }, error => {
     this.editEquptProgressBar=false;
-    this.toastService.error("Something went wrong while loading " + this.equptMenuName + " details");
+    //this.toastService.error("Something went wrong while loading " + this.equptMenuName + " details");
    });
- }*/
+    
+  } catch (error) {
+    this.editEquptProgressBar=false;
+    this.toastService.error("Something went wrong while loading " + this.equptMenuName + " details");
+  }
+
+   
+ }
 
 
  getSpcificQrIdContactFromGroup(): FormGroup{
@@ -855,9 +962,11 @@ get qrIdDocumentListFormArray()
   {
     return this.editEquptForm.get('equptDocList') as FormArray;
   }
-//to be added after jwt implementation
-  /*popDocumentList(){
-   this.editEquptProgressBar=true;
+
+  popDocumentList(){
+
+    try {
+      this.editEquptProgressBar=true;
 
    while(this.qrIdDocumentListFormArray.length){
     this.qrIdDocumentListFormArray.removeAt(0);
@@ -865,15 +974,18 @@ get qrIdDocumentListFormArray()
 
   //console.log(this.qrIdAttachedDocList);
 
-  //to be added after jwt implementation
-
-   this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
+   this.documentServiceAPI.getLegalEntityDocumentsRpt(
+     this.legalEntityId,
+     this.branchId,
+     this.userId,
+     this.userRole
+     )
    .subscribe((data: IlegalEntityDocumentRptResponse) => {
-     if (data.errorOccurred){
+     /*if (data.errorOccurred){
        this.editEquptProgressBar=false;
        this.toastService.error("Something went wrong while loading document list");
        return false;
-     }
+     }*/
 
      this.documentRptDetailsObj=data.documentList.map((value,index) => value ? {
       docId: value['docId'],
@@ -921,13 +1033,28 @@ get qrIdDocumentListFormArray()
      this.editEquptProgressBar=false;
    }, error => {
     this.editEquptProgressBar=false;
-    this.toastService.error("Something went wrong while loading document list");
+    //this.toastService.error("Something went wrong while loading document list");
    });
-  }*/
+    } catch (error) {
+      this.editEquptProgressBar=false;
+      this.toastService.error("Something went wrong while loading document list");
+    }
+    
+   
+  }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.headOffice=tokenModel.branchHeadOffice;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
        
       this.legalEntityId = this.userModel.legalEntityUserDetails.legalEntityId;
@@ -939,7 +1066,7 @@ get qrIdDocumentListFormArray()
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     this.qrCodeId = parseInt(this.route.snapshot.paramMap.get('id'));
 
