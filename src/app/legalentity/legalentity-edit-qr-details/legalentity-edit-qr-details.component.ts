@@ -219,7 +219,7 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
 
 
  popQrIdDrp():void{
-    
+   
   if(this.headOffice){
 
     try {
@@ -232,6 +232,7 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
         true,
         false)
       .subscribe(data => {
+        
         this.qrIdListObj = data;
       }, error => {
         //this.toastService.error("Something went wrong while load QR ID list");
@@ -279,99 +280,140 @@ export class LegalentityEditQrDetailsComponent implements OnInit {
 }
 
 popCountryCallingCode():void{
-  this.utilService.countryCallingCode()
-  .subscribe((data:IcountryCallingCodeResponse) =>{
-    this.countryCallingCodeResponseObj = data;
-    
-  }, error => {
+  try {
+    this.utilService.countryCallingCode()
+    .subscribe((data:IcountryCallingCodeResponse) =>{
+      this.countryCallingCodeResponseObj = data;
+      
+    }, error => {
+      //this.toastService.error("Something went wrong while loading country calling code");
+    });  
+  } catch (error) {
     this.toastService.error("Something went wrong while loading country calling code");
-  });
+  }
+  
 }
 
 get qrContactDetailsFormArray()
   {
-    return this.equptForm.get('qrContactData') as FormArray 
+    try {
+      return this.equptForm.get('qrContactData') as FormArray  
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading contact details","");
+    }
+     
   } 
 
   getQrIdContactFormGroup(): FormGroup{
-    return this.equptFormFieldBuider.group({
-      contactPersonName: [''],
-      countryCallingCode: this.defaultCountryCode,
-      contactMobileNumber: ['',Validators.compose([
-        Validators.minLength(10),
-        Validators.maxLength(10)
-      ])],
-      contactEmailId: ['', Validators.email],
-      contactToBeDisplayed: this.checked,
-      contactId:[''],
-      smsRequired: this.defaultSMSEnable ,
-      emailRequired: this.defaultEmailEnable
-    })
+    try {
+      return this.equptFormFieldBuider.group({
+        contactPersonName: [''],
+        countryCallingCode: this.defaultCountryCode,
+        contactMobileNumber: ['',Validators.compose([
+          Validators.minLength(10),
+          Validators.maxLength(10)
+        ])],
+        contactEmailId: ['', Validators.email],
+        contactToBeDisplayed: this.checked,
+        contactId:[''],
+        smsRequired: this.defaultSMSEnable ,
+        emailRequired: this.defaultEmailEnable
+      });  
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading contact details","");
+    }
+    
   }
 
   
   addQrIdContact()
   {
-    this.qrContactDetailsFormArray.push(this.getQrIdContactFormGroup())
+    try {
+      this.qrContactDetailsFormArray.push(this.getQrIdContactFormGroup());  
+    } catch (error) {
+      this.toastService.error("Something went wrong while adding contact details to page","");
+    }
+    
   }
 
   removeQrIdContact(indexId: number){
-    this.qrContactDetailsFormArray.removeAt(indexId);
+    try {
+      this.qrContactDetailsFormArray.removeAt(indexId);  
+    } catch (error) {
+      this.toastService.error("Something went wrong while removing contact details from page","");
+    }
+    
   }
 
 
   // Logic to populate contact list
-// to be added after jwt implementation
 
-  /*popNotificationContactList():void{
+  popNotificationContactList():void{
 
-    while(this.qrIdContactFormArray.length){
-      this.qrIdContactFormArray.removeAt(0);
-    }
-    
-    const contactRptReqObj: IcontactRptReqStruct={
-      branchMenuName: this.menuPrefNameModel.branchMenuName,
-      complaintMenuName: this.menuPrefNameModel.complaintMenuName,
-      contactActiveStatus: true,
-      equptMenuName: this.menuPrefNameModel.equipmentMenuName,
-      exportToExcel: false,
-      legalEntityId: this.legalEntityId,
-      technicianMenuName: this.menuPrefNameModel.technicianMenuName
-    };
-
-    this.contatServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
-    .subscribe((data:IcontactResponseStruct) => {
-      if (data.errorOccurred){
-        this.toastService.error("Something went wrong while loading contacts list");
-        return false;
+    try {
+      while(this.qrIdContactFormArray.length){
+        this.qrIdContactFormArray.removeAt(0);
       }
-
-      this.contactArr=data.contactList;
-
-      this.contactArr.forEach((indivContactObj: IcontactEquptMappingReqStruct) => {
-        //indivContactObj.contactSelected=false;
-        indivContactObj.contactToBeDisplayed=false;
-        indivContactObj.smsRequired=false;
-        indivContactObj.emailRequired=false;
-        this.addQrIdContactDetailsToFormArray(indivContactObj);
-      });
-
-      this.popQrIdContactDetails();
+      
+      const contactRptReqObj: IcontactRptReqStruct={
+        branchMenuName: this.menuPrefNameModel.branchMenuName,
+        complaintMenuName: this.menuPrefNameModel.complaintMenuName,
+        contactActiveStatus: true,
+        equptMenuName: this.menuPrefNameModel.equipmentMenuName,
+        exportToExcel: false,
+        legalEntityId: this.legalEntityId,
+        technicianMenuName: this.menuPrefNameModel.technicianMenuName,
+        branchId: this.branchId,
+        userId: this.userId,
+        userRole: this.userRole
+      };
   
-
-    }, error => {
+      this.contatServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
+      .subscribe((data:IcontactResponseStruct) => {
+        /*if (data.errorOccurred){
+          this.toastService.error("Something went wrong while loading contacts list");
+          return false;
+        }*/
+  
+        this.contactArr=data.contactList;
+  
+        this.contactArr.forEach((indivContactObj: IcontactEquptMappingReqStruct) => {
+          //indivContactObj.contactSelected=false;
+          indivContactObj.contactToBeDisplayed=false;
+          indivContactObj.smsRequired=false;
+          indivContactObj.emailRequired=false;
+          this.addQrIdContactDetailsToFormArray(indivContactObj);
+        });
+  
+        this.popQrIdContactDetails();
+    
+  
+      }, error => {
+        //this.toastService.error("Something went wrong while loading contacts list");
+      });
+    } catch (error) {
       this.toastService.error("Something went wrong while loading contacts list");
-    });
-  }*/
+    }
+
+    
+  }
 
   get qrIdContactFormArray()
   {
-    return this.equptForm.get('qrContactData') as FormArray;
+    try {
+      return this.equptForm.get('qrContactData') as FormArray;  
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading contacts list");
+    }
+    
   }
 
   addQrIdContactDetailsToFormArray(qrIdContactObj: IcontactEquptMappingReqStruct){
-   
-    this.qrIdContactFormArray.push(this.equptFormFieldBuider.group(qrIdContactObj));
+    try {
+      this.qrIdContactFormArray.push(this.equptFormFieldBuider.group(qrIdContactObj));  
+    } catch (error) {
+      this.toastService.error("Something went wrong while adding contacts to list");
+    }
     
   }
 
@@ -394,7 +436,8 @@ get qrContactDetailsFormArray()
   }*/
 
   smsRequiredAll(event):void{
-    let contactListObj: IcontactEquptMappingReqStruct[] = this.equptForm.get('qrContactData').value;
+    try {
+      let contactListObj: IcontactEquptMappingReqStruct[] = this.equptForm.get('qrContactData').value;
     let contactListObjNew: IcontactEquptMappingReqStruct[] = [];
 
     let selectAllSMSRequired: boolean = event.checked;
@@ -409,10 +452,15 @@ get qrContactDetailsFormArray()
     this.equptForm.patchValue({
       qrContactData: contactListObj
     });
+    } catch (error) {
+      this.toastService.error("Something went wrong in SMS check list functionality");
+    }
+    
   }
 
   emailRequiredAll(event):void{
-    let contactListObj: IcontactEquptMappingReqStruct[] = this.equptForm.get('qrContactData').value;
+    try {
+      let contactListObj: IcontactEquptMappingReqStruct[] = this.equptForm.get('qrContactData').value;
     let contactListObjNew: IcontactEquptMappingReqStruct[] = [];
 
     let selectAllSMSRequired: boolean = event.checked;
@@ -427,11 +475,16 @@ get qrContactDetailsFormArray()
     this.equptForm.patchValue({
       qrContactData: contactListObj
     });
+    } catch (error) {
+      this.toastService.error("Something went wrong in Email check list functionality");
+    }
+    
   }
 
   contactMakeAllPublic(event):void{
 
-    let contactListObj: IcontactEquptMappingReqStruct[] = this.equptForm.get('qrContactData').value;
+    try {
+      let contactListObj: IcontactEquptMappingReqStruct[] = this.equptForm.get('qrContactData').value;
     let contactListObjNew: IcontactEquptMappingReqStruct[] = [];
 
     let makeAllPublicChecked: boolean = event.checked;
@@ -445,20 +498,31 @@ get qrContactDetailsFormArray()
       qrContactData: contactListObj
     });
 
+    } catch (error) {
+      this.toastService.error("Something went wrong in contact make public check list functionality");
+    }
+    
   }
 
   popQrIdFormFieldDetails():void{
    
-    this.addEquptProgressBar=true;
+    try {
+      this.addEquptProgressBar=true;
     
-    this.equptService.getQrIdIndivDetails(this.qrCodeId)
+    this.equptService.getQrIdIndivDetails(
+      this.qrCodeId,
+      this.legalEntityId,
+      this.branchId,
+      this.userId,
+      this.userRole
+      )
     .subscribe((data:IqrIdIndivDetailsResponse) => {
       
-      if (data.errorOccurred){
+      /*if (data.errorOccurred){
         this.toastService.error("Something went wrong while loading QR ID details");
         this.addEquptProgressBar=false;
         return false;
-      }
+      }*/
 
       let formFieldDataObj: IupdateFormFieldDatatStruct[] = data.qrIdData;
 
@@ -494,24 +558,35 @@ get qrContactDetailsFormArray()
      this.addEquptProgressBar=false;
 
     }, error => {
-      this.toastService.error("Something went wrong while loading QR ID details");
+      //this.toastService.error("Something went wrong while loading QR ID details");
       this.addEquptProgressBar=false;
     });
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading QR ID details");
+      this.addEquptProgressBar=false;
+    }
     
   }
 
   popQrIdContactDetails():void{
 
-    this.addEquptProgressBar=true;
+    try {
+      this.addEquptProgressBar=true;
 
-    this.equptService.getQrIdIndivDetails(this.qrCodeId)
+    this.equptService.getQrIdIndivDetails(
+      this.qrCodeId,
+      this.legalEntityId,
+      this.branchId,
+      this.userId,
+      this.userRole
+      )
     .subscribe((data:IqrIdIndivDetailsResponse) => {
       
-      if (data.errorOccurred){
+      /*if (data.errorOccurred){
         this.toastService.error("Something went wrong while loading QR ID details");
         this.addEquptProgressBar=false;
         return false;
-      }
+      }*/
 
 
       let contactDetailsObj:IupdateContactDetailsStruct[] = data.qrContactData;
@@ -551,9 +626,13 @@ get qrContactDetailsFormArray()
      this.addEquptProgressBar=false;
 
     }, error => {
-      this.toastService.error("Something went wrong while loading QR ID details");
+      //this.toastService.error("Something went wrong while loading QR ID details");
       this.addEquptProgressBar=false;
     });
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading QR ID details");
+      this.addEquptProgressBar=false;
+    }
 
   }
 
@@ -646,8 +725,9 @@ get qrContactDetailsFormArray()
   } */
 
   onUpdateClick(){
-    
-    this.addEquptProgressBar=true;
+
+    try {
+      this.addEquptProgressBar=true;
    
     let enteredFormFieldListObj: IqrIdFormFieldObjStruct[] = this.equptForm.value['formFieldData'];
     let updatedFormFieldListObj: IqrIdFormFieldObjStruct[]=[];
@@ -680,7 +760,9 @@ get qrContactDetailsFormArray()
       equptActiveStatus: true,
       formFieldData: [null],
       qrCodeId: this.qrCodeId,
-      qrContactData:[null]
+      qrContactData:[null],
+      userId: this.userId,
+      userRole: this.userRole
     };
     
     equptFormReqObj.formFieldData.pop();
@@ -713,27 +795,36 @@ get qrContactDetailsFormArray()
 
   //  console.log(equptFormReqObj);
 
+  try {
     this.equptService.updateQrIdDetails(equptFormReqObj)
     .subscribe(data => {
-      if (data['errorOccurred']){
+      /*if (data['errorOccurred']){
         this.toastService.error("Something went wrong while updating QR ID details");
         this.addEquptProgressBar=false;
         return false;
-      }
+      }*/
 
       this.toastService.success("QR ID details updated successfully");
       this.addEquptProgressBar=false;
       this.router.navigate(['legalentity','portal','qr-assinged','rpt']);
 
     }, error => {
+      //this.toastService.error("Something went wrong while updating QR ID details");
+      this.addEquptProgressBar=false;
+    });
+  } catch (error) {
       this.toastService.error("Something went wrong while updating QR ID details");
       this.addEquptProgressBar=false;
-    })
+  }
+    } catch (error) {
+        this.toastService.error("Something went wrong while updating QR ID details");
+        this.addEquptProgressBar=false;
+    }
     
-    //console.log(equptFormReqObj);
+
   }
 
-  openAddContactdialog():void{
+  /*openAddContactdialog():void{
 
     let addContatReqDataObj: IaddContactReqUpdatedStruct = {
       contactList: [{
@@ -788,7 +879,7 @@ get qrContactDetailsFormArray()
         
       }
     });
-  }
+  }*/
 
 
   
@@ -824,11 +915,10 @@ get qrContactDetailsFormArray()
     this.menuPrefNameModel = this.utilService.getLegalEntityMenuPrefNames();
     this.utilService.setTitle("Legalentity - Edit " + this.menuPrefNameModel.equipmentMenuName + " | Attendme");
 
-    // to be added after jwt implementation
-
-   // this.getEquptFormfieldPref();
-    //to be added after jwt implementation
-   //this.popQrIdDrp();
+   
+    this.getEquptFormfieldPref();
+    
+    this.popQrIdDrp();
 
     this.defaultCountryCode = 91;
 
@@ -851,10 +941,10 @@ get qrContactDetailsFormArray()
 
     this.popCountryCallingCode();
 
-    // to be added after jwt authentication
-    //this.popNotificationContactList();
+    
+    this.popNotificationContactList();
 
-   //this.popQrIdDetails();
+    ///this.popQrIdDetails();
     
 
   }

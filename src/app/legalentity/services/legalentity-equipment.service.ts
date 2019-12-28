@@ -87,6 +87,8 @@ export interface IqrIdIndivDetailsResponse{
 export interface IupdateQrIdDetailsReqStruct{
    qrCodeId: number,
    branchId: number,
+   userId: number,
+   userRole: string,
    adminApprove: boolean,
    equptActiveStatus: boolean,
    addedByUserId: number,
@@ -160,6 +162,7 @@ export class LegalentityEquipmentService {
   }
 
   updateQrIdDetailsNew(qrIdRequestObj: LegalentityEquipment):Observable<any>{
+    console.log(qrIdRequestObj);
     return this.httpclient.patch(this.util.legalEntityRestApuURL + "/updateEquptDetails", qrIdRequestObj);
   }
   
