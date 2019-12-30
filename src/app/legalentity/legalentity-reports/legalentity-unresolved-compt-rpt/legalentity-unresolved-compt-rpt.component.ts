@@ -226,7 +226,9 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     
   } 
 
-  openComplaintDetailsDialog(complaintId: number):void{
+  //to be added after jwt implementation
+
+  /*openComplaintDetailsDialog(complaintId: number):void{
     try {
       const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
         complaintId: complaintId
@@ -240,7 +242,7 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     }      
     
 
-  }
+  }*/
  // to be added after jwt implementation
 
   popBranchList(){

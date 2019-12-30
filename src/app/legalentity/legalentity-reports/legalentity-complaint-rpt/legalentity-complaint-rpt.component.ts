@@ -217,7 +217,9 @@ getFilteredComplaintObj(allComplaintsObj: IqrIdAllcomplaintDetailsResponse[], co
   return allComplaintsFilterObj;
 }
 
-openComplaintDetailsDialog(complaintId: number):void{
+//to be added after jwt implementation
+
+/*openComplaintDetailsDialog(complaintId: number):void{
 
   const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
     complaintId: complaintId
@@ -227,7 +229,7 @@ openComplaintDetailsDialog(complaintId: number):void{
     data: IndivComplaintReqObj
   });
 
-}
+}*/
 
  // to be added after jwt implmenetation
 

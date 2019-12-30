@@ -177,7 +177,9 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     
   }
 
-  openComplaintDetailsDialog(complaintId: number):void{
+  //to be added after jwt implementation
+
+  /*openComplaintDetailsDialog(complaintId: number):void{
 
     try {
       const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
@@ -193,7 +195,7 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
 
     
 
-  }
+  }*/
 
    // to be added after jwt implementation
 

@@ -85,7 +85,11 @@ export class LegalentityClosedComptRptComponent implements OnInit {
   openComplaintDetailsDialog(complaintId: number):void{
 
     const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
-      complaintId: complaintId
+      complaintId: complaintId,
+      branchId: this.branchId,
+      legalEntityId: this.legalEntityId,
+      userId: this.userId,
+      userRole: this.userRole
     };
     
     const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{

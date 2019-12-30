@@ -66,7 +66,11 @@ export class LegalentityIndivComplaintRptComponent implements OnInit {
     this.indivComplaintProgressBar=true;
 
     let indivComplaintReqObj: IcomplaintIndivReqStruct = {
-      complaintId: this.complaintId
+      complaintId: this.complaintId,
+      legalEntityId: this.legalEntityId,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     try {

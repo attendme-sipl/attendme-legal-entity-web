@@ -20,7 +20,11 @@ export interface IopenComplaintRptResponseStruct{
 };
 
 export interface IcomplaintIndivReqStruct{
-  complaintId: number
+  complaintId: number,
+  legalEntityId: number,
+  branchId: number,
+  userId: number,
+  userRole: string
 };
 
 export interface IcomplaintIndivResponseStruct{
@@ -323,19 +327,24 @@ export class LegalentityComplaintRptService {
 
   getIndivComplaintDetails(indivComplaintReqObj: IcomplaintIndivReqStruct):Observable<IcomplaintIndivResponseStruct>{
    
-    //let params = new URLSearchParams();
+    let params = new URLSearchParams();
 
-   // let indivComplatDetailsForm: FormData = new FormData();
+    //let indivComplatDetailsForm: FormData = new FormData();
 
     //indivComplatDetailsForm.append("complaintId", indivComplaintReqObj.complaintId.toString());
 
-    //for(let key in indivComplaintReqObj){
-      //console.log(key);
-      //params.set(key, indivComplaintReqObj[key]);
-    //}
+    for(let key in indivComplaintReqObj){
+     // console.log(key);
+
+     if (key != 'complaintId'){
+      params.set(key, indivComplaintReqObj[key]);
+     }
+
+      
+    }
 
 
-    return this.httpClient.get<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail/" + indivComplaintReqObj.complaintId);
+    return this.httpClient.get<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail/" + indivComplaintReqObj.complaintId + "?" + params);
   }
 
   assignTechnicianToComplaint(complaintDetails:IAssingTechnicianDialogData):Observable<any>{

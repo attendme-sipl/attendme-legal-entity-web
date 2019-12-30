@@ -325,7 +325,9 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     return openComplaintFilterData;
   }*/
 
-  openComplaintDetailsDialog(complaintId: number):void{
+  //to be added after jwt implementation
+
+  /*openComplaintDetailsDialog(complaintId: number):void{
 
     const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
       complaintId: complaintId
@@ -341,7 +343,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     }
     
     
-  }
+  }*/
 
   openAssingTechnicianDialog(complaintId: number):void{
 
