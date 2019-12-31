@@ -26,6 +26,9 @@ export class LegalentityAddBranch {
  branchUserMobileWoCC:string;
 
  branchMenuName:string;
+
+ userId: number;
+ userRole: string;
  
 
 }

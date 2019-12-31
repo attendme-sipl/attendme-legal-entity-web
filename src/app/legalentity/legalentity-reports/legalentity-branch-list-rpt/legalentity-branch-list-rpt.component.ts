@@ -10,6 +10,8 @@ import { LegalentityBranchService, IbranchListDetailsResponse, IbranchListReport
 //import { IbranchListReportResponse, IbranchListDetailsResponse } from 'attendme-legal-entity-web/src/app/legalentity/services/legalentity-branch.service';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-branch-list-rpt',
@@ -22,6 +24,9 @@ export class LegalentityBranchListRptComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   
   legalEntityId: number;
+  branchId: number;
+  userId: number;
+  userRole: string;
 
   branchMenuName: string;
   technicianMenuName: string;
@@ -56,7 +61,8 @@ export class LegalentityBranchListRptComponent implements OnInit {
     sanitizer: DomSanitizer,
     private menuModel: LegalentityMenuPrefNames,
     private router: Router,
-    private branchServiceAPI: LegalentityBranchService
+    private branchServiceAPI: LegalentityBranchService,
+    private authService: AuthService
   ) { 
     iconRegistry.addSvgIcon(
       'edit-icon',
@@ -74,9 +80,8 @@ export class LegalentityBranchListRptComponent implements OnInit {
     );
   }
 
-   // to be added after jwt implmenetation
 
-  /*popBranchList(exportToExcel: boolean):void{
+  popBranchList(exportToExcel: boolean):void{
     this.enableProgressBar=true;
 
     const branchRptReqObj: IbranchRptReqStruct = {
@@ -85,69 +90,102 @@ export class LegalentityBranchListRptComponent implements OnInit {
       equptMenuName: this.equptMenuName,
       exportToExcel: exportToExcel,
       legalEntityId: this.legalEntityId,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     if (exportToExcel){
-      let fileName: string = this.branchMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+
+      try {
+        let fileName: string = this.branchMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
 
       this.branchServiceAPI.getBranchListExportToExcel(branchRptReqObj)
       .subscribe(data => {
         saveAs(data, fileName + ".xls");
         this.enableProgressBar=false;
       }, error => {
-        this.toastService.error("Something went wrong while downloading excel");
+        //this.toastService.error("Something went wrong while downloading excel");
         this.enableProgressBar=false;
       });
-    }
-    else{
-      this.branchServiceAPI.getBranchListReport(branchRptReqObj)
-    .subscribe((data:IbranchListReportResponse) => {
 
-      if (data.errorOccured){
-        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details");
+      } catch (error) {
+        this.toastService.error("Something went wrong while downloading excel");
         this.enableProgressBar=false;
-        return false;
       }
 
-      this.branchDetailsArray=data.branchDetailsList.map((value,index) => value?{
-        branchId: value['branchId'],
-        branchHeadOffice: value['branchHeadOffice'],
-        branchName: value['branchName'],
-        branchContactPersonName: value['branchContactPersonName'],
-        branchContactMobile: value['branchContactMobile'],
-        branchEmail: value['branchEmail'],
-        branchAddress: value['branchAddress'],
-        allotedQRIdCount: value['allotedQRIdCount'],
-        branchActiveStatus: value['branchActiveStatus']
-      }:null)
-      .filter(value => value.branchHeadOffice == false);
+    }
+    else{
 
-      this.totalRecordCount=this.branchDetailsArray.length;
+      try {
+        this.branchServiceAPI.getBranchListReport(branchRptReqObj)
+        .subscribe((data:IbranchListReportResponse) => {
+    
+          /*if (data.errorOccured){
+            this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details");
+            this.enableProgressBar=false;
+            return false;
+          }*/
+    
+          this.branchDetailsArray=data.branchDetailsList.map((value,index) => value?{
+            branchId: value['branchId'],
+            branchHeadOffice: value['branchHeadOffice'],
+            branchName: value['branchName'],
+            branchContactPersonName: value['branchContactPersonName'],
+            branchContactMobile: value['branchContactMobile'],
+            branchEmail: value['branchEmail'],
+            branchAddress: value['branchAddress'],
+            allotedQRIdCount: value['allotedQRIdCount'],
+            branchActiveStatus: value['branchActiveStatus']
+          }:null)
+          .filter(value => value.branchHeadOffice == false);
+    
+          this.totalRecordCount=this.branchDetailsArray.length;
+    
+          this.branchRecordCount = this.branchDetailsArray.length;
+          this.dataSource=new MatTableDataSource(this.branchDetailsArray);
+          this.dataSource.paginator=this.paginator;
+          this.dataSource.sort=this.sort;
+    
+          this.enableProgressBar=false;
+    
+        }, error => {
+          //this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details");
+          this.enableProgressBar=false;
+        });  
+      } catch (error) {
+        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details");
+        this.enableProgressBar=false;
+      }
 
-      this.branchRecordCount = this.branchDetailsArray.length;
-      this.dataSource=new MatTableDataSource(this.branchDetailsArray);
-      this.dataSource.paginator=this.paginator;
-      this.dataSource.sort=this.sort;
-
-      this.enableProgressBar=false;
-
-    }, error => {
-      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details");
-      this.enableProgressBar=false;
-    });
+      
     }
     
 
     
-  }*/
+  }
 
   addBranchClick():void{
-    this.router.navigate(['legalentity','portal','add-branch']);
+    try {
+      this.router.navigate(['legalentity','portal','add-branch']);  
+    } catch (error) {
+      this.toastService.error("Something went wrong while redirecting to add " + this.branchMenuName + " page.","");
+    }
+    
   }
 
   ngOnInit() {
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+
+    try {
+      const tokenModel:TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -156,7 +194,7 @@ export class LegalentityBranchListRptComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
 
@@ -167,9 +205,12 @@ export class LegalentityBranchListRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - " + this.branchMenuName + " List | Attendme");
 
-     // to be added after jwt implmenetation
+    this.popBranchList(false);
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading page.","");
+    }
 
-   // this.popBranchList(false);
+    
   }
 
   applyFilter(filterValue: string){

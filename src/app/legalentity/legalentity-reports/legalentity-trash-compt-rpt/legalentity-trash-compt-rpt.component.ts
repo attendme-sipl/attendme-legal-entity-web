@@ -172,13 +172,16 @@ export class LegalentityTrashComptRptComponent implements OnInit {
 
    } 
 
-   //to be added after jwt implementation
-
-   /*openComplaintDetailsDialog(complaintId: number):void{
+   
+   openComplaintDetailsDialog(complaintId: number):void{
 
     try {
       const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
-        complaintId: complaintId
+        complaintId: complaintId,
+        branchId: this.branchId,
+        legalEntityId: this.legalEntityId,
+        userId: this.userId,
+        userRole: this.userRole
       };
       
       const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
@@ -188,7 +191,7 @@ export class LegalentityTrashComptRptComponent implements OnInit {
       this.toastService.error("Something went wrong while displaying " +  this.complaintMenuName + " details.");
     }
 
-  }*/
+  }
 
   popBranchList(){
 

@@ -81,17 +81,17 @@ export class LegalentityBranchService {
 
 }
 
-addNewBranchDetails():Observable<LegalentityAddBranch>
+addNewBranchDetails(addBranchModel: LegalentityAddBranch):Observable<LegalentityAddBranch>
 {
 
   //console.log(this.addBranchModel);
 
-  return this.httpClient.post<LegalentityAddBranch>(this.util.legalEntityRestApuURL + "/addOrCreateBranch", this.addBranchModel);
+  return this.httpClient.post<LegalentityAddBranch>(this.util.legalEntityRestApuURL + "/addOrCreateBranch", addBranchModel);
 }
 
-getBranchRuleBook():Observable<LegalentityBranchRulebook>
+getBranchRuleBook(brachRuleBookModel: LegalentityBranchRulebook):Observable<LegalentityBranchRulebook>
 {
-  return this.httpClient.post<LegalentityBranchRulebook>(this.util.legalEntityRestApuURL + "/checkBranchCount",this.branchRuleBookModel)
+  return this.httpClient.post<LegalentityBranchRulebook>(this.util.legalEntityRestApuURL + "/checkBranchCount", this.branchRuleBookModel);
 }
 
 getBranchListReport(branchListRptReqObj: IbranchRptReqStruct):Observable<IbranchListReportResponse>{

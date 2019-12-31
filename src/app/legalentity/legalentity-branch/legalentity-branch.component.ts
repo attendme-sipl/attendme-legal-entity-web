@@ -11,6 +11,9 @@ import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityBranchRulebook } from '../model/legalentity-branch-rulebook';
 import { LegalentityUser } from '../model/legalentity-user';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { ToastrService } from 'ngx-toastr';
 //import { LegalEntity } from './node_modules/src/app/superadmin/model/legal-entity';
 //import { LegalentityLogin } from '../model/legalentity-login';
 //import {first,subscribeOn} from './node_modules/rxjs/operators';
@@ -31,6 +34,8 @@ export class LegalentityBranchComponent implements OnInit {
   legalEntityMenuId:number;
   branchMenuName:string;
   legalEntityId:number;
+  branchId: number;
+  userRole: string;
   branchRuleBookExceed:boolean;
   errorBit:boolean;
  // dateDisp:string;
@@ -54,7 +59,9 @@ dispMessageBit:boolean;
     private branchervice:LegalentityBranchService,
     public addBranchModel:LegalentityAddBranch,
     private userModel: LegalentityUser,
-    private menuModel: LegalentityMenuPrefNames
+    private menuModel: LegalentityMenuPrefNames,
+    private authService: AuthService,
+    private toastService: ToastrService
   ) {
 
     //this.dateDisp = moment().format('MMM DD YYYY HH:mm:ss');
@@ -86,7 +93,7 @@ dispMessageBit:boolean;
 
     popCountryCallingCode()
      {
-      
+       try {
         this.util.countryCallingCode()
         .subscribe((data:any) => {
        
@@ -96,14 +103,21 @@ dispMessageBit:boolean;
          
         },
       error => {
-        console.log(error);
-      })
+        //.log(error);
+      });
+       } catch (error) {
+         this.toastService.error("Something went wrong while loading country calling codes");
+       }
+      
+        
      } 
 
      addNewBranch(addBranchForm:NgForm)
      {
+
+      try {
         
-      if(addBranchForm.invalid)
+        if(addBranchForm.invalid)
       {
         return;
       }
@@ -128,9 +142,15 @@ dispMessageBit:boolean;
 
       this.addBranchModel.branchMenuName = this.branchMenuName; 
 
-      this.branchervice.addNewBranchDetails()
+      this.addBranchModel.branchId=this.branchId;
+      this.addBranchModel.userId=this.userId;
+      this.addBranchModel.userRole=this.userRole;
+
+      try {
+
+        this.branchervice.addNewBranchDetails(this.addBranchModel)
      // .pipe(first())
-      .subscribe((data => {
+      .subscribe(data => {
 //console.log(data);
         this.addBranchModel.branchId = data.branchId;
         this.addBranchModel.branchAdded = data.branchAdded;
@@ -173,14 +193,18 @@ dispMessageBit:boolean;
         this.btnDisabled=false;
         this.loading=false; 
       }
+      , error => {
 
-     
+        this.dispMessageBit = true;
+        this.cssClass ="alert alert-danger";
+        this.userMessage = "There was an error !!!";
 
-       
+        this.btnDisabled=false;
+        this.loading=false; 
 
-      )),
-      error => {
-
+      });
+        
+      } catch (error) {
         this.dispMessageBit = true;
         this.cssClass ="alert alert-danger";
         this.userMessage = "There was an error !!!";
@@ -189,33 +213,53 @@ dispMessageBit:boolean;
         this.loading=false; 
       }
 
+
+      } catch (error) {
+        this.dispMessageBit = true;
+        this.cssClass ="alert alert-danger";
+        this.userMessage = "There was an error !!!";
+
+        this.btnDisabled=false;
+        this.loading=false; 
+      }
+        
      }
 
      resetBranchForm(addBranchForm:NgForm)
      {
-
-      this.checkBranchExceed(); 
+       try {
+        this.checkBranchExceed(); 
 
        addBranchForm.reset({
        contactCountryCode:91,
        userCountryCode:91
-       })
+       });         
+       } catch (error) {
+         this.toastService.error("Something went  wrong while " + this.branchMenuName + " form reset operation","");
+       }
+
      }
 
      checkBranchExceed()
      {
-      this.branchRuleBookModel.legalEntityId = this.legalEntityId;
+
+      try {
+        this.branchRuleBookModel.legalEntityId = this.legalEntityId;
       this.branchRuleBookModel.branchHeadOffice = false;
+
+      this.branchRuleBookModel.branchId=this.branchId;
+      this.branchRuleBookModel.userId=this.userId;
+      this.branchRuleBookModel.userRole=this.userRole; 
  
-      this.branchervice.getBranchRuleBook()
+      this.branchervice.getBranchRuleBook(this.branchRuleBookModel)
       //.pipe(first())
-      .subscribe((data => {
+      .subscribe(data => {
  
-       if (data.errorFlag == true)
+       /*if (data.errorFlag == true)
        {
          this.errorBit = true;
          return;
-       }
+       }*/
  
         this.branchRuleBookModel = data;
        
@@ -234,16 +278,30 @@ dispMessageBit:boolean;
      this.userCountryCode = 91;
     }
  
-      }), error => {this.errorBit=true;})
- 
-      
- 
+      },  error => {this.errorBit=true;} );
+      } catch (error) {
+        this.toastService.error("Something went wrong while setting " + this.branchMenuName + " page details","");
+      }
+
      }
      
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    try {
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while ")
+    }
+
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -252,7 +310,7 @@ dispMessageBit:boolean;
     }
     else{
       this.router.navigate(['legalentity','login']);
-    }
+    }*/
 
     this.menuModel=this.util.getLegalEntityMenuPrefNames();
 
