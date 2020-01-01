@@ -311,7 +311,7 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
     this.legalEntityId=tokenModel.legalEntityId;
     this.branchId=tokenModel.branchId;
-    this.userId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
     this.branchHeadOffice=tokenModel.branchHeadOffice;
 
     /*if (localStorage.getItem('legalEntityUserDetails') != null){

@@ -14,7 +14,11 @@ export interface ItechnicianIndivDetails{
 export interface ItechnicianUpdateReqStruct{
   technicianId: number,
   technicianName: string,
-  technicianMobileNumber: string
+  technicianMobileNumber: string,
+  legalEntityId: number,
+  branchId: number,
+  userId: number,
+  userRole: string
 };
 
 
@@ -42,9 +46,19 @@ export class LegalentityTechnicianService {
     });
   }
 
-  getTechnicianDetails(technicianId: number):Observable<ItechnicianIndivDetails>{
+  getTechnicianDetails(
+    technicianId: number,
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<ItechnicianIndivDetails>{
     return this.httpClient.post<ItechnicianIndivDetails>(this.util.legalEntityRestApuURL + "/individualTechDetail",{
-      technician: technicianId
+      technician: technicianId,
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 
@@ -52,9 +66,19 @@ export class LegalentityTechnicianService {
     return this.httpClient.patch(this.util.legalEntityRestApuURL+"/updateTechnicianDetails", updateTechnicianReqObj);
   }
 
-  deleteTechnicianUser(technicianId: number):Observable<any>{
+  deleteTechnicianUser(
+    technicianId: number,
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<any>{
     return this.httpClient.patch(this.util.legalEntityRestApuURL + "/deleteTechnician",{
-      technician: technicianId
+      technician: technicianId,
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 }

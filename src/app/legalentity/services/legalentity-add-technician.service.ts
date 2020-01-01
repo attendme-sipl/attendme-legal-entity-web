@@ -17,6 +17,9 @@ export interface ItechnicianListRptResponse{
 
 export interface ItechnicianRptReqStruct{
   legalEntityId: number,
+  branchId: number,
+  userId: number,
+  userRole: string,
   exportToExcel: boolean,
   complaintMenuName: string,
   technicianMenuName: string,

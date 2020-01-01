@@ -15,6 +15,8 @@ import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { LegalentityUser } from '../model/legalentity-user';
 import { ToastrService } from 'ngx-toastr';
 import { LegalentityTechnicianService, ItechnicianIndivDetails, ItechnicianUpdateReqStruct } from '../services/legalentity-technician.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-edit-technician',
@@ -30,6 +32,7 @@ export class LegalentityEditTechnicianComponent implements OnInit {
   legalEntityId:number;
   branchId:number;
   userId:number;
+  userRole: string;
 
   menuId:number;
   menuName:string;
@@ -59,13 +62,14 @@ export class LegalentityEditTechnicianComponent implements OnInit {
     private technicianServiceAPI: LegalentityTechnicianService,
     private legalEntityMenuPrefModel: LegalentityMenuPrefNames,
     private legalEntityUserModel: LegalentityUser,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private authService: AuthService
   ) { }
 
   popCountryCallingCode()
   {
-   
-     this.util.countryCallingCode()
+    try {
+      this.util.countryCallingCode()
      .subscribe((data:any) => {
     
      this.callingCodeArr = data;
@@ -74,34 +78,56 @@ export class LegalentityEditTechnicianComponent implements OnInit {
       
      },
    error => {
-     this.toastService.error("Something wne worn while loading page","");
-   })
+     //this.toastService.error("Something wne worn while loading page","");
+   });
+    } catch (error) {
+      this.toastService.error("Something wne worn while loading page","");
+    }
+   
+     
   }
 
   get technicianDetails() {
-    return this.addTechnicianForm.get('technicianDetails') as FormGroup;
+    try {
+      return this.addTechnicianForm.get('technicianDetails') as FormGroup; 
+    } catch (error) {
+      this.toastService.error("Something went wrong while getting " + this.techMenuName + " details","");
+    }
   }
 
   popTechnicianDetails():void{
-     this.technicianServiceAPI.getTechnicianDetails(this.suppliedTechnicianId)
-     .subscribe((data:ItechnicianIndivDetails) => {
-       if (data.errorOccured){
-         this.toastService.error("Something went wrong while loading " + this.techMenuName + " details");
-         return false;
-       }
 
-       let completeTechnicianMobileNumber: string[] = data.technicianMobileNumber.split("-");
+    try {
+      this.technicianServiceAPI.getTechnicianDetails(
+        this.suppliedTechnicianId,
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole
+        )
+      .subscribe((data:ItechnicianIndivDetails) => {
+        /*if (data.errorOccured){
+          this.toastService.error("Something went wrong while loading " + this.techMenuName + " details");
+          return false;
+        }*/
+ 
+        let completeTechnicianMobileNumber: string[] = data.technicianMobileNumber.split("-");
+ 
+        let countryCallingCode: number = parseInt(completeTechnicianMobileNumber[0]);
+        let technicianMobileNumber: string = completeTechnicianMobileNumber[1];
+ 
+        this.addTechnicianForm.get('technicianDetails').patchValue({
+         technicianName: data.technicianName,
+         countryCallingCode: countryCallingCode,
+         userMobileNumber: technicianMobileNumber,
+         userEmailId: data.technicianEmailId,
+        });
+      }); 
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading " + this.techMenuName + " details");
+    }
 
-       let countryCallingCode: number = parseInt(completeTechnicianMobileNumber[0]);
-       let technicianMobileNumber: string = completeTechnicianMobileNumber[1];
-
-       this.addTechnicianForm.get('technicianDetails').patchValue({
-        technicianName: data.technicianName,
-        countryCallingCode: countryCallingCode,
-        userMobileNumber: technicianMobileNumber,
-        userEmailId: data.technicianEmailId,
-       })
-     })
+     
   }
 
   updateTechnician():void{
@@ -113,25 +139,35 @@ export class LegalentityEditTechnicianComponent implements OnInit {
     const technicianDetailsUpdateReqObj:ItechnicianUpdateReqStruct={
       technicianId: this.suppliedTechnicianId,
       technicianMobileNumber: this.addTechnicianForm.get('technicianDetails').value['countryCallingCode'] + '-' + this.addTechnicianForm.get('technicianDetails').value['userMobileNumber'],
-      technicianName: this.addTechnicianForm.get('technicianDetails').value['technicianName']
+      technicianName: this.addTechnicianForm.get('technicianDetails').value['technicianName'],
+      legalEntityId: this.legalEntityId,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
-    this.technicianServiceAPI.updateTechnicianDetails(technicianDetailsUpdateReqObj)
+    try {
+      this.technicianServiceAPI.updateTechnicianDetails(technicianDetailsUpdateReqObj)
     .subscribe(data => {
-      if (data['errorOccurred']){
+      /*if (data['errorOccurred']){
         this.toastService.error("Something when wrong while updating "+ this.techMenuName + " details.");
         this.loadingShow=false;
         return false;
-      }
+      }*/
 
       this.toastService.success(this.techMenuName + " details updated successfully");
       this.loadingShow = false;
 
       this.router.navigate(['legalentity','portal','technician']);
     },error =>{
+      //this.toastService.error("Something when wrong while updating "+ this.techMenuName + " details.");
+      this.loadingShow=false;
+    });
+    } catch (error) {
       this.toastService.error("Something when wrong while updating "+ this.techMenuName + " details.");
       this.loadingShow=false;
-    })
+    }
+
 
     }
 
@@ -140,9 +176,17 @@ export class LegalentityEditTechnicianComponent implements OnInit {
 
   ngOnInit() {
 
-    this.loadingShow = false;
+    try {
+      this.loadingShow = false;
 
-    if (localStorage.getItem('legalEntityUserDetails') != null)
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId = this.legalEntityUserModel.legalEntityUserDetails.legalEntityId;
@@ -153,7 +197,7 @@ export class LegalentityEditTechnicianComponent implements OnInit {
     }
     else{
       this.router.navigate(['legalentity','login']);
-    }
+    }*/
 
     this.legalEntityMenuPrefModel = this.util.getLegalEntityMenuPrefNames();
 
@@ -194,6 +238,8 @@ export class LegalentityEditTechnicianComponent implements OnInit {
      
    });
 
+  this.util.setTitle('Legalentity - Edit ' + this.techMenuName + ' Details | Attendme');
+
   this.addTechnicianForm.get('technicianDetails').get('userEmailId').disable();
 
   this.suppliedTechnicianId=parseInt(this.route.snapshot.paramMap.get('id'));
@@ -202,6 +248,9 @@ export class LegalentityEditTechnicianComponent implements OnInit {
    this.popCountryCallingCode();
 
    this.popTechnicianDetails();
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading " + this.techMenuName + " details.","");
+    }
 
   }
 
