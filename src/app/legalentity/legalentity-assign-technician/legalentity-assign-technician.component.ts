@@ -125,7 +125,8 @@ export class LegalentityAssignTechnicianComponent implements OnInit {
 
   ngOnInit() {
 
-    const tokenModel: TokenModel = this.authService.getTokenDetails();
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
 
     this.legalEntityId=tokenModel.legalEntityId;
     this.branchId=tokenModel.branchId;
@@ -171,7 +172,11 @@ export class LegalentityAssignTechnicianComponent implements OnInit {
 
     //this.technicianId = 0;
   
-     
+    } catch (error) {
+      this.toasterService.error("Something went wrong while loading assign " + this.technicianMenuName + " dialog.","");
+      this.dialogRef.close();
+    }
+   
     
   }
 

@@ -14,6 +14,8 @@ import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { LegalentityUser } from '../model/legalentity-user';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-add-technician-new',
@@ -29,6 +31,7 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
   legalEntityId:number;
   branchId:number;
   userId:number;
+  userRole: string;
 
   menuId:number;
   menuName:string;
@@ -54,7 +57,8 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
     private addTechnicianFormBuilder: FormBuilder,
     private addTechnicianService: LegalentityAddTechnicianService,
     private legalEntityMenuPrefModel: LegalentityMenuPrefNames,
-    private legalEntityUserModel: LegalentityUser
+    private legalEntityUserModel: LegalentityUser,
+    private authService: AuthService
   ) {
 
     
@@ -67,7 +71,8 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
 
    popCountryCallingCode()
      {
-      
+
+      try {
         this.util.countryCallingCode()
         .subscribe((data:any) => {
        
@@ -77,8 +82,12 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
          
         },
       error => {
+        //this.toastService.error("Something wne worn while loading page","");
+      });
+      } catch (error) {
         this.toastService.error("Something wne worn while loading page","");
-      })
+      }
+      
      }
 
      branchListArr:string[];
@@ -108,15 +117,28 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
      }*/
 
      get technicianDetails() {
-       return this.addTechnicianForm.get('technicianDetails') as FormGroup;
+       try {
+        return this.addTechnicianForm.get('technicianDetails') as FormGroup;  
+       } catch (error) {
+         this.toastService.error("Something went wrong while loading " + this.techMenuName + " form details","");
+       }
+       
      }
 
 
   ngOnInit() {
 
-    this.loadingShow = false;
+    try {
+      this.loadingShow = false;
 
-    if (localStorage.getItem('legalEntityUserDetails') != null)
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+    
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    tokenModel.userRole=tokenModel.userRole;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId = this.legalEntityUserModel.legalEntityUserDetails.legalEntityId;
@@ -127,7 +149,7 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
     }
     else{
       this.router.navigate(['legalentity','login']);
-    }
+    }*/
 
     this.legalEntityMenuPrefModel = this.util.getLegalEntityMenuPrefNames();
 
@@ -200,9 +222,12 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
       countryCallingCode: [''],
       userMobileNumber: ['',[Validators.required,Validators.minLength(10),Validators.maxLength(10),Validators.pattern('[0-9]+')]],
       userEmailId: ['',[Validators.required,Validators.email]],
-      userRole: ['technician'],
+      assignUserRole: ['technician'],
       userActiveStatus: [true],
-      passwordChange: [false]
+      passwordChange: [false],
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
       //defaultAssign: [false]
     }),
 
@@ -244,6 +269,14 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
 
    //this.popBranchList();
 
+      
+    } catch (error) {
+    
+      this.loadingShow = false;
+      this.toastService.error("Something went wrong while loading " + this.techMenuName + " page.","");
+      
+    }
+    
   
   }
 
@@ -251,101 +284,136 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
 
   addTechnician() {
 
-    if (this.addTechnicianForm.invalid)
-    {
-      this.loadingShow = false;
-      this.disableBtn = false;
-    
-    }
-    else
-    {
-      this.loadingShow = true;
-      this.disableBtn = false;
-    }
-
-    
+    try {
       
-    this.technicianDetails.get('technicianName').markAsTouched({onlySelf:true});
-    this.technicianDetails.get('userMobileNumber').markAsTouched({onlySelf:true});
-    this.technicianDetails.get('userEmailId').markAsTouched({onlySelf:true});
+
+      if (this.addTechnicianForm.invalid)
+      {
+        this.loadingShow = false;
+        this.disableBtn = false;
+      
+      }
+      else
+      {
+        this.loadingShow = true;
+        this.disableBtn = false;
+      }
   
-    const selectedBranchIdList = this.addTechnicianForm.value['techicianToBranchMapping']['branchIdList']
-    .map((value,index) => value? {
-      branchId:this.branchListArr[index]['branchId'],
-      techBranchActive:true
-    }: null)
-    .filter(value => value!= null);
-
-    this.technicianDetails.patchValue({
-      technicianMenuName: this.menuName
-    });
-
-    if (this.addTechnicianForm.valid)
-    {
-      this.addTechnicianService.addTechnicianDetails(this.technicianDetails.value)
-      .pipe(first())
-      .subscribe(data => {
-
-       // console.log(data);
+      
         
-        if (data['errorOccured'] == true)
-        {
+      this.technicianDetails.get('technicianName').markAsTouched({onlySelf:true});
+      this.technicianDetails.get('userMobileNumber').markAsTouched({onlySelf:true});
+      this.technicianDetails.get('userEmailId').markAsTouched({onlySelf:true});
+    
+      const selectedBranchIdList = this.addTechnicianForm.value['techicianToBranchMapping']['branchIdList']
+      .map((value,index) => value? {
+        branchId:this.branchListArr[index]['branchId'],
+        techBranchActive:true
+      }: null)
+      .filter(value => value!= null);
+  
+      this.technicianDetails.patchValue({
+        technicianMenuName: this.menuName
+      });
+  
+      
+  
+      if (this.addTechnicianForm.valid)
+      {
+  
+        try {
+  
+          this.addTechnicianService.addTechnicianDetails(this.technicianDetails.value)
+        .pipe(first())
+        .subscribe(data => {
+  
+         // console.log(data);
+          
+          /*if (data['errorOccured'] == true)
+          {
+            this.toastService.error("Something went wrong while adding technician, please try again");
+            this.loadingShow = false;
+            this.disableBtn = false;
+            return false; 
+          }*/
+  
+          if (data['mobileEmailExisits']== true)
+          {
+            this.toastService.error("Entered email id already exists. Please enter another email id");
+            this.loadingShow = false;
+              this.disableBtn = false;
+            return false;
+          }
+  
+          this.technicianID = data['technicianId'];
+  
+          try {
+            this.addTechnicianService.assignBranchToTechnician(
+              this.technicianID,
+              selectedBranchIdList,
+              this.legalEntityId,
+              this.branchId,
+              this.userId,
+              this.userRole
+              )
+          .pipe(first())
+          .subscribe(data => {
+            
+            /*if (data['errorOccured'] == true)
+            {
+              this.loadingShow = false;
+              this.disableBtn = false;
+              this.toastService.error("Something went wrong while adding technician, please try again");
+              return false;
+            }*/
+  
+            if (data['technicianToBranchMapped'] == false)
+            {
+              this.loadingShow = false;
+              this.disableBtn = false;
+              this.toastService.error("Something went wrong while adding technician, please try again");
+              return false;
+            }
+            else{
+              this.loadingShow = false;
+              this.disableBtn = false;
+              this.toastService.success("Technician added successfully");
+  
+              this.resetAll();
+            }
+            
+          }, error => {
+              this.loadingShow = false;
+              this.disableBtn = false;
+              //this.toastService.error("Something went wrong while adding technician, please try again");
+              return false;
+          });
+          } catch (error) {
+              this.loadingShow = false;
+              this.disableBtn = false;
+              this.toastService.error("Something went wrong while adding technician, please try again");
+          }
+  
+        }, error => {
+          //this.toastService.error("Something went wrong while adding technician, please try again");
+          this.loadingShow = false;
+          this.disableBtn = false;
+          return false;
+        });
+        
+        } catch (error) {
           this.toastService.error("Something went wrong while adding technician, please try again");
           this.loadingShow = false;
           this.disableBtn = false;
-          return false; 
         }
+  
+        
+      }
 
-        if (data['mobileEmailExisits']== true)
-        {
-          this.toastService.error("Entered email id already exists. Please enter another email id");
-          this.loadingShow = false;
-            this.disableBtn = false;
-          return false;
-        }
-
-        this.technicianID = data['technicianId'];
-
-        this.addTechnicianService.assignBranchToTechnician(this.technicianID,selectedBranchIdList)
-        .pipe(first())
-        .subscribe(data => {
-          
-          if (data['errorOccured'] == true)
-          {
-            this.loadingShow = false;
-            this.disableBtn = false;
-            this.toastService.error("Something went wrong while adding technician, please try again");
-            return false;
-          }
-
-          if (data['technicianToBranchMapped'] == false)
-          {
-            this.loadingShow = false;
-            this.disableBtn = false;
-            this.toastService.error("Something went wrong while adding technician, please try again");
-            return false;
-          }
-          else{
-            this.loadingShow = false;
-            this.disableBtn = false;
-            this.toastService.success("Technician added successfully");
-
-            this.resetAll();
-          }
-          
-        }, error => {
-            this.loadingShow = false;
-            this.disableBtn = false;
-            this.toastService.error("Something went wrong while adding technician, please try again");
-            return false;
-        });
-
-      }, error => {
+    } catch (error) {
         this.toastService.error("Something went wrong while adding technician, please try again");
         this.loadingShow = false;
         this.disableBtn = false;
-        return false;
-      })
     }
     
   }
@@ -357,22 +425,27 @@ export class LegalentityAddTechnicianNewComponent implements OnInit {
       this.branchData.removeAt(0);  
     }*/
 
+    try {
+      this.addTechnicianForm.reset({
+        technicianDetails: {
+          legalEntityId: this.legalEntityId,
+          adminApprove: true,
+          technicianActiveStatus: true,
+          addedByUserId: this.userId,
+          technicianMenuName: this.menuName,
+          countryCallingCode: 91,
+          userRole: 'technician',
+          userActiveStatus: true,
+          passwordChange: false
+          //defaultAssign: false
+        }
+        
+       });
+    } catch (error) {
+      this.toastService.error("Something went wrong while rest form functionality","");
+    }
     
-     this.addTechnicianForm.reset({
-      technicianDetails: {
-        legalEntityId: this.legalEntityId,
-        adminApprove: true,
-        technicianActiveStatus: true,
-        addedByUserId: this.userId,
-        technicianMenuName: this.menuName,
-        countryCallingCode: 91,
-        userRole: 'technician',
-        userActiveStatus: true,
-        passwordChange: false
-        //defaultAssign: false
-      }
-      
-     });
+     
 
    // this.popBranchList();
   

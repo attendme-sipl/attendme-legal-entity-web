@@ -131,7 +131,9 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
           legalEntityId: this.legalEntityId,
           technicianMenuName: this.technicianMenuName,
           unresolvedDayCount: this.moreThanUptoDays,
-          unresolvedMoreThanUpToDays: this.moreThanUptoFlag
+          unresolvedMoreThanUpToDays: this.moreThanUptoFlag,
+          userId: this.userId,
+          userRole: this.userRole
         };
         //console.log(exportToExcel);
         if (exportToExcel){
@@ -310,7 +312,7 @@ export class LegalentityUnresolvedComptRptComponent implements OnInit {
     }*/
 
     if (this.branchData.branchDetails != null){
-      console.log(this.branchData.branchDetails['branchId']);
+      //console.log(this.branchData.branchDetails['branchId']);
       this.branchId=this.branchData.branchDetails['branchId'];
     }
     else{

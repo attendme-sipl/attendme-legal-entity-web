@@ -268,6 +268,8 @@ export interface IunresolvedComplaintReqStruct{
   allBranch: boolean,
   branchId: number,
   legalEntityId: number,
+  userId: number,
+  userRole: string,
   unresolvedDayCount: number,
   exportToExcel: boolean,
   complaintMenuName: string,

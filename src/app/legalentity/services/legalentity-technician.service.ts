@@ -42,7 +42,10 @@ export class LegalentityTechnicianService {
   {
     return this.httpClient.post(this.util.legalEntityRestApuURL + "/getTechnicianList",{
       legalEntityId: legalEntityId,
-      technicianActiveStatus: technicianActiveStatus
+      technicianActiveStatus: technicianActiveStatus,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 

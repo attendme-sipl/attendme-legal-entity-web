@@ -47,15 +47,26 @@ export class LegalentityAddTechnicianService {
 
   addTechnicianDetails(technicianDetails:object):Observable<any>
   {
-    console.log(technicianDetails);
+    //console.log(technicianDetails);
     return this.httpClient.post(this.util.legalEntityRestApuURL + "/addFullTechnicianDetails", technicianDetails);
   }
 
-  assignBranchToTechnician(technicianId:number,branchIdList:string[]):Observable<any>
+  assignBranchToTechnician(
+    technicianId:number,
+    branchIdList:string[],
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<any>
   {
     return this.httpClient.post(this.util.legalEntityRestApuURL + "/assignBranchToTechnician", {
       technicianId:technicianId,
-      branchIdList: branchIdList
+      branchIdList: branchIdList,
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 
