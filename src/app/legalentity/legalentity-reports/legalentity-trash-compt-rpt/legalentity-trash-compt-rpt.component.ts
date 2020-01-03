@@ -87,7 +87,7 @@ export class LegalentityTrashComptRptComponent implements OnInit {
        branchMenuName: this.branchMenuName,
        complaintMenuName: this.complaintMenuName,
        complaintStatus: 'open',
-       complaintTrash: true,
+       complaintTrash: false,
        equptMenuName: this.equptMenuName,
        exportToExcel: exportToExcel,
        fromDate: null,

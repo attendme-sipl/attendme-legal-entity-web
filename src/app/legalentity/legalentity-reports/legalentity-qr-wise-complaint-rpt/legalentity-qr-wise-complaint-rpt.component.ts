@@ -6,6 +6,8 @@ import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-qr-wise-complaint-rpt',
@@ -17,6 +19,7 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
   legalEntityId: number;
   branchId: number;
   userId: number;
+  userRole: string;
 
   qrCodeId: number;
 
@@ -38,7 +41,8 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
     sanitizer: DomSanitizer,
     private menuModel: LegalentityMenuPrefNames,
     private activatedRoute: ActivatedRoute,
-    private toastService: ToastrService
+    private toastService: ToastrService,
+    private authService: AuthService
   ) {
     iconRegistry.addSvgIcon(
       'refresh-icon',
@@ -48,7 +52,14 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole= tokenModel.userRole;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
       this.branchId=this.userModel.legalEntityBranchDetails.branchId;
@@ -57,7 +68,7 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
     else {
       this.router.navigate(['legalentity', 'login']);
       return false;
-    }
+    }*/
 
     this.menuModel=this.utilService.getLegalEntityMenuPrefNames();
 
