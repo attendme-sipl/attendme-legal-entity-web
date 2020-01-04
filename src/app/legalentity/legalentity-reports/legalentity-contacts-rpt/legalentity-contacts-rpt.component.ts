@@ -11,6 +11,8 @@ import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../leg
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { AuthService } from 'src/app/Auth/auth.service';
 
 export interface IaddContactReqStruct{
   legalEntityId: number,
@@ -26,7 +28,10 @@ export interface IcontactListDetailsStruct{
 };
 
 export interface IaddContactReqUpdatedStruct{
-  legalEntityId: number;
+  legalEntityId: number,
+  branchId: number,
+  userId: number,
+  userRole: string,
   contactList: {
     contactPersonName: string,
     contactMobileNumber: string,
@@ -50,6 +55,7 @@ export class LegalentityContactsRptComponent implements OnInit {
   legalEntityId: number;
   branchId: number;
   userId: number;
+  userRole: string;
   headOffice: boolean;
 
   contactSearch: string;
@@ -88,7 +94,8 @@ export class LegalentityContactsRptComponent implements OnInit {
     private router: Router,
     private dialog: MatDialog,
     private contactServiceAPI: LegalentityContactsService,
-    private menuModel: LegalentityMenuPrefNames
+    private menuModel: LegalentityMenuPrefNames,
+    private authService: AuthService
   ) { 
     iconRegistry.addSvgIcon(
       'contact-icon',
@@ -113,9 +120,8 @@ export class LegalentityContactsRptComponent implements OnInit {
    
   }
 
-  // to be added after jwt authentication
 
-  /*popLegalEntityContactRpt(exportToExcel: boolean):void{
+  popLegalEntityContactRpt(exportToExcel: boolean):void{
 
     this.enableProgressBar=true;
 
@@ -128,29 +134,40 @@ export class LegalentityContactsRptComponent implements OnInit {
       equptMenuName: this.equptMenuName,
       exportToExcel: exportToExcel,
       legalEntityId: this.legalEntityId,
-      technicianMenuName: this.technicianMenuName
+      technicianMenuName: this.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     if (exportToExcel){
-      let fileName: string = "Contacts-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
-      this.contactServiceAPI.getLegalEntityContactListExportToExcel(contactRptReqObj)
-      .subscribe(data => {
-        saveAs(data, fileName + ".xls");
-        this.enableProgressBar=false;
-      }, error => {
+      try {
+        let fileName: string = "Contacts-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+        this.contactServiceAPI.getLegalEntityContactListExportToExcel(contactRptReqObj)
+        .subscribe(data => {
+          saveAs(data, fileName + ".xls");
+          this.enableProgressBar=false;
+        }, error => {
+          //this.toastService.error("Something went wrong while downloading excel");
+          this.enableProgressBar=false;
+        });  
+      } catch (error) {
         this.toastService.error("Something went wrong while downloading excel");
         this.enableProgressBar=false;
-      });
+      }
+      
     }
     else{
-      this.contactServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
+
+      try {
+        this.contactServiceAPI.getLegalEntityContactListRpt(contactRptReqObj)
     .subscribe((data:IcontactResponseStruct) => {
 
-      if (data.errorOccurred){
+      /*if (data.errorOccurred){
         this.enableProgressBar=false;
         this.toastService.error("Something went wrong while loading contact list report");
         return false;
-      }
+      }*/
 
       this.contactListObj = data.contactList.map((value,index) => value ? {
         contactId: value['contactId'],
@@ -173,119 +190,159 @@ export class LegalentityContactsRptComponent implements OnInit {
      
     }, error => {
       this.enableProgressBar=false;
-      this.toastService.error("Something went wrong while loading contact list report");
+      //this.toastService.error("Something went wrong while loading contact list report");
     });
+      } catch (error) {
+        this.enableProgressBar=false;
+        this.toastService.error("Something went wrong while loading contact list report");
+      }
+
+      
     }
 
     
-  }*/
+  }
 
   openAddContactDialog(){
 
-    let addContatReqDataObj: IaddContactReqUpdatedStruct = {
-      contactList: [{
-        contactActiveStatus: null,
-        contactMobileNumber: null,
-        contactEmailId: null,
-        contactPersonName: null,
-        countryCallingCode: null
-      }],
-      legalEntityId: this.legalEntityId,
-      cancelClick: false
-    };
-
-    const dialogRef = this.dialog.open(LegalentityAddContactComponent,{
-      panelClass: 'custom-dialog-container',
-      width: '800px',
-      data: addContatReqDataObj
-    });
-
-    dialogRef.afterClosed()
-    .subscribe((result:IaddContactReqUpdatedStruct) => {
-      
-      if (!addContatReqDataObj.cancelClick){
-
-        this.enableProgressBar=true;
+    try {
+      let addContatReqDataObj: IaddContactReqUpdatedStruct = {
+        contactList: [{
+          contactActiveStatus: null,
+          contactMobileNumber: null,
+          contactEmailId: null,
+          contactPersonName: null,
+          countryCallingCode: null
+        }],
+        legalEntityId: this.legalEntityId,
+        branchId: this.branchId,
+        userId: this.userId,
+        userRole: this.userRole,
+        cancelClick: false
+      };
   
-
-    this.contactServiceAPI.addContacts(addContatReqDataObj)
-    .subscribe(data => {
-
-      //console.log(data);
-
-      if (data['errorOccurred'])
-      {
-        this.enableProgressBar=false;
-        this.toastService.error("Something went wrong while saving contacts");
-        return false; 
-      } 
-
-      this.enableProgressBar=false;
-      this.toastService.success("Contacts added successfully");
-
-      // to be added after jwt authentication
-      //this.popLegalEntityContactRpt(false);
-
-    }, error => {
-      this.enableProgressBar=false;
-      this.toastService.error("Something went wrong while saving contacts");
-    });
+      const dialogRef = this.dialog.open(LegalentityAddContactComponent,{
+        panelClass: 'custom-dialog-container',
+        width: '800px',
+        data: addContatReqDataObj
+      });
+  
+      dialogRef.afterClosed()
+      .subscribe((result:IaddContactReqUpdatedStruct) => {
         
-      }
-
-    
+        if (!addContatReqDataObj.cancelClick){
+  
+          this.enableProgressBar=true;
       
-    });
+          try {
+            this.contactServiceAPI.addContacts(addContatReqDataObj)
+      .subscribe(data => {
+  
+        //console.log(data);
+  
+        /*if (data['errorOccurred'])
+        {
+          this.enableProgressBar=false;
+          this.toastService.error("Something went wrong while saving contacts");
+          return false; 
+        }*/
+  
+        this.enableProgressBar=false;
+        this.toastService.success("Contacts added successfully");
+  
+        this.popLegalEntityContactRpt(false);
+  
+      }, error => {
+        this.enableProgressBar=false;
+        //this.toastService.error("Something went wrong while saving contacts");
+      });
+          } catch (error) {
+            this.enableProgressBar=false;
+            this.toastService.error("Something went wrong while saving contacts");
+          }
+          
+        }
+
+      }); 
+    } catch (error) {
+      this.toastService.error("Something went wrong while opening add contacts dialog","");
+    }
 
   }
 
   removeContact(contactId: number):void{
     
-    const confirmAlertDialogObj: IConfirmAlertStruct = {
-      alertMessage: "Are you sure you want to remove contact",
-      confirmBit: false
-    };
-
-    let alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent, {
-      data: confirmAlertDialogObj,
-      panelClass: 'custom-dialog-container'
-    });
-
-    alertDialogRef.afterClosed().subscribe(result => {
-      
-      if (confirmAlertDialogObj.confirmBit){
-        this.enableProgressBar=true;
-
-        const deactiveContactReqObj: IdeactivateContactReqStruct = {
-          contactActiveStatus: false,
-          contactId: contactId
-        };
-
-        this.contactServiceAPI.deactiveContact(deactiveContactReqObj)
-        .subscribe(data => {
-          if (data['errorOccurred']) {
-            this.enableProgressBar=false;
-            this.toastService.error("Something went wrong while removing contact, please try again later");
-            return false;
+    try {
+      const confirmAlertDialogObj: IConfirmAlertStruct = {
+        alertMessage: "Are you sure you want to remove contact",
+        confirmBit: false
+      };
+  
+      let alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent, {
+        data: confirmAlertDialogObj,
+        panelClass: 'custom-dialog-container'
+      });
+  
+      alertDialogRef.afterClosed().subscribe(result => {
+        
+        if (confirmAlertDialogObj.confirmBit){
+          this.enableProgressBar=true;
+  
+          const deactiveContactReqObj: IdeactivateContactReqStruct = {
+            contactActiveStatus: false,
+            contactId: contactId,
+            branchId: this.branchId,
+            legalEntityId: this.legalEntityId,
+            userId: this.userId,
+            userRole: this.userRole
+          };
+  
+          try {
+            this.contactServiceAPI.deactiveContact(deactiveContactReqObj)
+          .subscribe(data => {
+            /*if (data['errorOccurred']) {
+              this.enableProgressBar=false;
+              this.toastService.error("Something went wrong while removing contact, please try again later");
+              return false;
+            }*/
+            
+            this.enableProgressBar = false;
+            this.toastService.success("Contact removed successfully");
+  
+            this.popLegalEntityContactRpt(false);
+          }, error => {
+            this.enableProgressBar = false;
+            //this.toastService.error("Something went wrong while removing contact, please try again later");
+          });
+          } catch (error) {
+            this.enableProgressBar = false;
+            this.toastService.error("Something went wrong while removing contact, please try again later"); 
           }
+  
           
-          this.enableProgressBar = false;
-          this.toastService.success("Contact removed successfully");
-
-          // to be added after jwt authentication
-          //this.popLegalEntityContactRpt(false);
-        }, error => {
-          this.toastService.error("Something went wrong while removing contact, please try again later");
-        })
-      }
-
-    })
+        }
+  
+      });
+  
+    } catch (error) {
+      this.toastService.error("Something went wrong while deleting contact from the list","");
+    }
 
   }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.headOffice=tokenModel.branchHeadOffice;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.legalEntityUserModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.legalEntityUserModel.legalEntityUserDetails.legalEntityId;
@@ -301,7 +358,7 @@ export class LegalentityContactsRptComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']); 
       return false;
-    }
+    }*/
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
 
@@ -312,10 +369,13 @@ export class LegalentityContactsRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - Contacts | Attendme");
 
-    // to be added after jwt authentication
-    //this.popLegalEntityContactRpt(false);
+    this.popLegalEntityContactRpt(false);
 
-   // console.log(this.displayedColumns[5]);
+   // console.log(this.displayedColumns[5]);      
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading this page","");
+    }
+
   }
 
   applyFilter(filterValue: string):void{

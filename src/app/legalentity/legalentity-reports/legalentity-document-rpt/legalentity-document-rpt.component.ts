@@ -11,6 +11,8 @@ import { Observable } from 'rxjs';
 import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IuploadDocumentReq, IlegalEntityDocumentRptDetails } from '../../services/legalentity-document-service.service';
 import {saveAs} from 'file-saver';
 import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../legalentity-confirm-alert/legalentity-confirm-alert.component';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-document-rpt',
@@ -27,6 +29,9 @@ export class LegalentityDocumentRptComponent implements OnInit {
   uploadDocForm: FormGroup;
 
   legalEntityId: number;
+  branchId: number;
+  userId: number;
+  userRole: string;
   branchHeadOffice: boolean;
 
   dataSource;
@@ -60,7 +65,8 @@ export class LegalentityDocumentRptComponent implements OnInit {
     private host: ElementRef<HTMLInputElement>,
     private httpClient: HttpClient,
     private documentServiceAPI: LegalentityDocumentServiceService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService
   ) {
     iconRegistry.addSvgIcon(
       'refresh-icon',
@@ -69,24 +75,34 @@ export class LegalentityDocumentRptComponent implements OnInit {
    }
 
    uploadDocument(){
-     this.router.navigate(['legalentity','portal','upload','document']);
+     try {
+      this.router.navigate(['legalentity','portal','upload','document']); 
+     } catch (error) {
+       this.toastService.error("Something went wrong while redirecting to upload documents page","");
+     }
    }
 
-   //to be added after jwt implementation
-   /*popLegalEntityDocument(){
 
-    this.enableProgressBar=true;
+   popLegalEntityDocument(){
+
+    try {
+      this.enableProgressBar=true;
     this.searchKey='';
 //console.log(this.legalEntityId);
-     this.documentServiceAPI.getLegalEntityDocumentsRpt(this.legalEntityId)
+     this.documentServiceAPI.getLegalEntityDocumentsRpt(
+       this.legalEntityId,
+       this.branchId,
+       this.userId,
+       this.userRole
+       )
      .subscribe((data: IlegalEntityDocumentRptResponse) => {
        //console.log(data);
 
-       if (data.errorOccurred){
+       /*if (data.errorOccurred){
          this.enableProgressBar=false;
          this.toastService.error("Something went wrong while loading document details");
          return false;
-       }
+       }*/
 
       const documentRptFilteredList = data.documentList.map((value,index) => value ? {
         docActiveStatus: value['docActiveStatus'],
@@ -113,9 +129,14 @@ export class LegalentityDocumentRptComponent implements OnInit {
 
      },error => {
       this.enableProgressBar=false;
-      this.toastService.error("Something went wrong while loading document details");
+      //this.toastService.error("Something went wrong while loading document details");
      });
-   }*/
+    } catch (error) {
+      this.enableProgressBar=false;
+      this.toastService.error("Something went wrong while loading document details");
+    }
+
+   }
 
   /*onSubmitClick(){
   
@@ -170,8 +191,7 @@ export class LegalentityDocumentRptComponent implements OnInit {
           this.enableProgressBar=false;
           this.toastService.success("Document deleted successfully");
 
-//to be added after jwt implementation
-          //this.popLegalEntityDocument();
+          this.popLegalEntityDocument();
         }, error => {
           this.toastService.error("Something went wrong while deleting document");
           this.enableProgressBar=false;
@@ -216,8 +236,15 @@ export class LegalentityDocumentRptComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.branchId;
+    this.userRole=tokenModel.userRole;
     
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -226,7 +253,7 @@ export class LegalentityDocumentRptComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     this.utilServiceAPI.setTitle("Legalentity - Documents | Attendme");
 

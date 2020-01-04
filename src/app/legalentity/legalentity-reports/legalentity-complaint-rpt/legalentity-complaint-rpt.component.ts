@@ -11,6 +11,8 @@ import {saveAs} from 'file-saver';
 import *as moment from 'moment';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 import { IbranchRptReqStruct, IbranchListReportResponse, IbranchListDetailsResponse, LegalentityBranchService } from '../../services/legalentity-branch.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-complaint-rpt',
@@ -24,6 +26,8 @@ export class LegalentityComplaintRptComponent implements OnInit {
 
   legalEntityId: number;
   branchId: number;
+  userId: number;
+  userRole: string;
 
   complaintMenuName: string;
   technicianMenuName: string; 
@@ -71,7 +75,8 @@ export class LegalentityComplaintRptComponent implements OnInit {
     private complaintRtpServiceAPI: LegalentityComplaintRptService,
     private menuModel: LegalentityMenuPrefNames,
     private dialog:MatDialog,
-    private branchServiceAPI: LegalentityBranchService
+    private branchServiceAPI: LegalentityBranchService,
+    private authService: AuthService
   ) { 
     iconRegistry.addSvgIcon(
       'refresh-icon',
@@ -79,9 +84,7 @@ export class LegalentityComplaintRptComponent implements OnInit {
     );
   }
 
-  // to be done after jwt implementation
-
-  /*popQrIdAllComplaintRpt(exportToExcel: boolean):void{
+  popQrIdAllComplaintRpt(exportToExcel: boolean):void{
     this.enableProgressBar=true;
     this.searchKey='';
 
@@ -97,34 +100,41 @@ export class LegalentityComplaintRptComponent implements OnInit {
       equptMenuName: this.equptMenuName,
       exportToExcel: exportToExcel,
       technicianMenuName: this.technicianMenuName,
-      complaintTrash: false
+      complaintTrash: false,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     //console.log(qrIdComplaintArrRptReqObj);
 
     if (exportToExcel){
-      this.complaintRtpServiceAPI.getQrIdAllComplaintsExportToExcel(qrIdComplaintArrRptReqObj)
+
+      try {
+        this.complaintRtpServiceAPI.getQrIdAllComplaintsExportToExcel(qrIdComplaintArrRptReqObj)
       .subscribe(data => {
         let fileName: string = "All-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
         saveAs(data, fileName + ".xls");
         this.enableProgressBar=false;
       }, error => {
-        this.toastService.error("Something went wrong while downloading excel");
+        //this.toastService.error("Something went wrong while downloading excel");
         this.enableProgressBar=false;
       });
+      } catch (error) {
+        this.toastService.error("Something went wrong while downloading excel");
+      }
+
+      
     }
     else{
-      this.complaintRtpServiceAPI.getQrIdAllComplaintsRpt(qrIdComplaintArrRptReqObj)
+      try {
+        this.complaintRtpServiceAPI.getQrIdAllComplaintsRpt(qrIdComplaintArrRptReqObj)
     .subscribe((data: IqrIdAllcomplaintRptResponse) => {
     
-        if (data.errorOccurred){
+        /*if (data.errorOccurred){
           this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details report");
           this.enableProgressBar=false;
           return false;
-        }
-
-    
-       
+        }*/
 
         this.qrIdCAllomplaintListDetailsObj=data.complaintList;
 
@@ -155,115 +165,153 @@ export class LegalentityComplaintRptComponent implements OnInit {
         
         this.enableProgressBar=false;
     }, error => {
-        this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details report");
+        //this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details report");
         this.enableProgressBar=false;
     });
+      } catch (error) {
+          this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details report");
+          this.enableProgressBar=false;
+      }
     }
 
     
-  }*/
+  }
 
   onFilterItemChange(){
     
-    let filteredComplaintObj: IqrIdAllcomplaintDetailsResponse[];
+    try {
+      let filteredComplaintObj: IqrIdAllcomplaintDetailsResponse[];
 
-    if (this.complaintFilterType == 0){
-      filteredComplaintObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, false);
+      if (this.complaintFilterType == 0){
+        filteredComplaintObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, false);
+      }
+  
+      if (this.complaintFilterType == 1){
+        filteredComplaintObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, true);
+      }
+  
+      if (this.complaintFilterType == 2){
+        filteredComplaintObj = this.qrIdCAllomplaintListDetailsObj;
+      }
+  
+      this.totalRecordCount=filteredComplaintObj.length;
+          
+      this.dataSource=new MatTableDataSource(filteredComplaintObj);
+      this.dataSource.paginator=this.paginator;
+      this.dataSource.sort=this.sort
+  
+      const sortState: Sort = {active: 'openDateTime', direction: 'desc'};
+      this.sort.active = sortState.active;
+      this.sort.direction = sortState.direction;
+      this.sort.sortChange.emit(sortState); 
+    } catch (error) {
+      this.toastService.error("Something went wrong in filter functionality","");
     }
-
-    if (this.complaintFilterType == 1){
-      filteredComplaintObj = this.getFilteredComplaintObj(this.qrIdCAllomplaintListDetailsObj, true);
-    }
-
-    if (this.complaintFilterType == 2){
-      filteredComplaintObj = this.qrIdCAllomplaintListDetailsObj;
-    }
-
-    this.totalRecordCount=filteredComplaintObj.length;
-        
-    this.dataSource=new MatTableDataSource(filteredComplaintObj);
-    this.dataSource.paginator=this.paginator;
-    this.dataSource.sort=this.sort
-
-    const sortState: Sort = {active: 'openDateTime', direction: 'desc'};
-    this.sort.active = sortState.active;
-    this.sort.direction = sortState.direction;
-    this.sort.sortChange.emit(sortState);
 
   }
 
 getFilteredComplaintObj(allComplaintsObj: IqrIdAllcomplaintDetailsResponse[], complaintTrash: boolean){
-
-  const allComplaintsFilterObj = allComplaintsObj.map((value,index) => value ? {
-    complaintId: value['complaintId'],
-    complaintNumber: value['complaintNumber'],
-    qrCodeId: value['qrCodeId'],
-    qrId: value['qrId'],
-    regsiteredByName: value['regsiteredByName'],
-    registeredByMobileNumber: value['registeredByMobileNumber'],
-    assignedTechnicianName: value['asignedTechnicianMobile'],
-    asignedTechnicianMobile: value['assignedTechnicianName'], 
-    openDateTime: value['openDateTime'],
-    assignedDateTime: value['assignedDateTime'],
-    inProgressDateTime: value['inProgressDateTime'],
-    closedDateTime: value['closedDateTime'],
-    actionTaken: value['actionTaken'],
-    failureReason: value['failureReason'],
-    currentComplaintStatus: value['currentComplaintStatus'],
-    complaintTrash: value['complaintTrash']
-  } : null)
-  .filter(value => value.complaintTrash == complaintTrash);
-
-  return allComplaintsFilterObj;
+  try {
+    const allComplaintsFilterObj = allComplaintsObj.map((value,index) => value ? {
+      complaintId: value['complaintId'],
+      complaintNumber: value['complaintNumber'],
+      qrCodeId: value['qrCodeId'],
+      qrId: value['qrId'],
+      regsiteredByName: value['regsiteredByName'],
+      registeredByMobileNumber: value['registeredByMobileNumber'],
+      assignedTechnicianName: value['asignedTechnicianMobile'],
+      asignedTechnicianMobile: value['assignedTechnicianName'], 
+      openDateTime: value['openDateTime'],
+      assignedDateTime: value['assignedDateTime'],
+      inProgressDateTime: value['inProgressDateTime'],
+      closedDateTime: value['closedDateTime'],
+      actionTaken: value['actionTaken'],
+      failureReason: value['failureReason'],
+      currentComplaintStatus: value['currentComplaintStatus'],
+      complaintTrash: value['complaintTrash']
+    } : null)
+    .filter(value => value.complaintTrash == complaintTrash);
+  
+    return allComplaintsFilterObj;
+  } catch (error) {
+    this.toastService.error("Something went wrong in filter functionality","");
+  }
+  
 }
 
-//to be added after jwt implementation
 
-/*openComplaintDetailsDialog(complaintId: number):void{
+openComplaintDetailsDialog(complaintId: number):void{
 
-  const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
-    complaintId: complaintId
-  };
-  
-  const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
-    data: IndivComplaintReqObj
-  });
+  try {
+    const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+      complaintId: complaintId,
+      branchId: this.branchId,
+      legalEntityId: this.legalEntityId,
+      userId: this.userId,
+      userRole: this.userRole
+    };
+    
+    const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
+      data: IndivComplaintReqObj
+    });    
+  } catch (error) {
+    this.toastService.error("Something went wrong while opening " + this.complaintMenuName + " details dialog","");
+  }
 
-}*/
 
- // to be added after jwt implmenetation
+}
 
-/*popBranchList(){
+ 
+popBranchList(){
 
   //this.openComplaintProgressBar=true;
 
-  const branchListReqObj: IbranchRptReqStruct = {
-    branchMenuName: this.branchMenuName,
-    complaintMenuName: this.complaintMenuName,
-    equptMenuName: this.equptMenuName,
-    exportToExcel: false,
-    legalEntityId: this.legalEntityId,
-    technicianMenuName: this.technicianMenuName
-  };
-
-  this.branchServiceAPI.getBranchListReport(branchListReqObj)
-  .subscribe((data: IbranchListReportResponse) => {
-    //console.log(data);
-    if (data.errorOccured){
-      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
-      return false;
-    }
-
-    this.branchListArr=data.branchDetailsList;
-
-  }, error => {
+  try {
+    const branchListReqObj: IbranchRptReqStruct = {
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: false,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
+    };
+  
+    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    .subscribe((data: IbranchListReportResponse) => {
+      //console.log(data);
+      /*if (data.errorOccured){
+        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+        return false;
+      }*/
+  
+      this.branchListArr=data.branchDetailsList;
+  
+    }, error => {
+      //this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+    }); 
+  } catch (error) {
     this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
-  });
-}*/
+  }
+
+  
+}
 
   ngOnInit() {
 
-    if(localStorage.getItem('legalEntityUserDetails') != null){
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.branchHeadOffice=tokenModel.branchHeadOffice;
+
+    /*if(localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.branchId=this.userModel.legalEntityBranchDetails.branchId;
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -273,7 +321,7 @@ getFilteredComplaintObj(allComplaintsObj: IqrIdAllcomplaintDetailsResponse[], co
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.complaintMenuName=this.menuModel.complaintMenuName;
@@ -285,15 +333,15 @@ getFilteredComplaintObj(allComplaintsObj: IqrIdAllcomplaintDetailsResponse[], co
 
     this.complaintFilterType="0";
 
-     // to be added after jwt implmenetation
-
-    /*if (this.branchHeadOffice){
+    if (this.branchHeadOffice){
       this.popBranchList();
-    }*/
+    }
 
-// to be done after jwt implementation
+    this.popQrIdAllComplaintRpt(false);      
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading this page","");
+    }
 
-    ///this.popQrIdAllComplaintRpt(false);
   }
 
   applyFilter(filterValue: string){

@@ -52,7 +52,9 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
 
   ngOnInit() {
 
-    const tokenModel: TokenModel = this.authService.getTokenDetails();
+    try {
+
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
 
     this.legalEntityId=tokenModel.legalEntityId;
     this.branchId=tokenModel.branchId;
@@ -115,6 +117,12 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
         });
 
     }*/
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while loadin QR ID wise " + this.complaintMenuName + " report.","");
+    }
+
+    
 
   }
 

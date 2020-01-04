@@ -50,7 +50,9 @@ export interface IallotQrIdToBranchNewReq{
    qrActiveStatus: boolean,
    qrAssignStatus: boolean,
    totalQrAssignCount: number,
-   qrAllotStatus: boolean
+   qrAllotStatus: boolean,
+   userId: number,
+   userRole: string
 };
 
 export interface IqrIdRptReqStruct{

@@ -8,6 +8,8 @@ import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { FormGroup, FormBuilder, Validators, NgForm } from '@angular/forms';
 import { IbranchListDetailsResponse, LegalentityBranchService, IbranchListReportResponse, IbranchRptReqStruct } from '../services/legalentity-branch.service';
 import { LegalentityQrService, IallotQrIdToBranchResponseStruct, IavailbleQrIdCountReqStruct, IallotQrIdToBranchNewReq } from '../services/legalentity-qr.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 export interface IupdatedBranchDetailsResponse{
   branchId: number,
@@ -40,8 +42,12 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
   errorMessage: string;
 
   branchId: number;
+  userId: number;
+  userRole: string;
 
   updatedBranchList:IupdatedBranchDetailsResponse[];
+
+  branchHeadOffice: boolean;
 
   availableQrIdAllotCount: number;
 
@@ -53,65 +59,75 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     private menuModel: LegalentityMenuPrefNames,
     private fb: FormBuilder,
     private branchServiceAPI: LegalentityBranchService,
-    private qrIdServiceAPI: LegalentityQrService
+    private qrIdServiceAPI: LegalentityQrService,
+    private authService: AuthService
   ) { }
 
-  // to be added after jwt implmenetation
 
-  /*popBranchList(exportToExcel: boolean):void{
+  popBranchList(exportToExcel: boolean):void{
 
-    const branchRptReqObj: IbranchRptReqStruct = {
-      branchMenuName: this.branchMenuName,
-      complaintMenuName: this.complaintMenuName,
-      equptMenuName: this.equptMenuName,
-      exportToExcel: exportToExcel,
-      legalEntityId: this.legalEntityId,
-      technicianMenuName: this.technicianMenuName
-    };
+    try {
+      const branchRptReqObj: IbranchRptReqStruct = {
+        branchMenuName: this.branchMenuName,
+        complaintMenuName: this.complaintMenuName,
+        equptMenuName: this.equptMenuName,
+        exportToExcel: exportToExcel,
+        legalEntityId: this.legalEntityId,
+        technicianMenuName: this.technicianMenuName,
+        branchId: this.branchId,
+        userId: this.userId,
+        userRole: this.userRole
+      };
+      this.branchServiceAPI.getBranchListReport(branchRptReqObj)
+      .subscribe((data:IbranchListReportResponse) => {
+        
+        /*if (data.errorOccured){
+          this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
+          return false;
+        }*/
+        this.branchListArray=data.branchDetailsList;
+        this.updatedBranchList = this.branchListArray.map((value,index) => value?{
+          branchId: value['branchId'],
+          branchHeadOffice: value['branchHeadOffice'],
+          branchName: value['branchName']
+        }:null)
+        .filter(value => value.branchHeadOffice == false);
+         
+      }); 
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading " + this.branchMenuName + " details.","");
+    }
+    
+  }
 
-    this.branchServiceAPI.getBranchListReport(branchRptReqObj)
-    .subscribe((data:IbranchListReportResponse) => {
-      
-      if (data.errorOccured){
-        this.toastService.error("Something went wrong while loading " + this.branchMenuName + " list");
-        return false;
-      }
 
-      this.branchListArray=data.branchDetailsList;
-
-      this.updatedBranchList = this.branchListArray.map((value,index) => value?{
-        branchId: value['branchId'],
-        branchHeadOffice: value['branchHeadOffice'],
-        branchName: value['branchName']
-      }:null)
-      .filter(value => value.branchHeadOffice == false);
-       
-    });
-  }*/
-
-  //to be added after jwt implementation
-
-  /*getAvailableQrToAllot():void{
+  getAvailableQrToAllot():void{
     const availableQrToAllotReqObj: IavailbleQrIdCountReqStruct = {
       branchId: this.branchId,
       legalEntityId: this.legalEntityId,
       qrActiveStatus: true,
-      qrAssignStatus: true
+      qrAssignStatus: true,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
-    this.qrIdServiceAPI.getNumOfQrIdAvailableHeadOffice(availableQrToAllotReqObj)
-    .subscribe(data => {
-      if (data['errorOccurred']){
-        this.toastService.error("Something went wrong while loading number of available QR IDs to allot");
-        return false;
-      }
-
-      this.availableQrIdAllotCount = data['availabledQrIdAllotCount'];
-
-    }, error => {
+    try {
+      this.qrIdServiceAPI.getNumOfQrIdAvailableHeadOffice(availableQrToAllotReqObj)
+      .subscribe(data => {
+        /*if (data['errorOccurred']){
+          this.toastService.error("Something went wrong while loading number of available QR IDs to allot");
+          return false;
+        }*/
+        this.availableQrIdAllotCount = data['availabledQrIdAllotCount'];
+      }, error => {
+        //this.toastService.error("Something went wrong while loading number of available QR IDs to allot");
+      });  
+    } catch (error) {
       this.toastService.error("Something went wrong while loading number of available QR IDs to allot");
-    });
-  }*/
+    }
+
+    
+  }
 
   onSubmitClick(form:NgForm){
 
@@ -126,20 +142,23 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
         qrActiveStatus: true,
         qrAllotStatus: true,
         qrAssignStatus: true,
-        totalQrAssignCount: parseInt(this.allotQrIdBranchFormGroup.get('numOfQRId').value)
+        totalQrAssignCount: parseInt(this.allotQrIdBranchFormGroup.get('numOfQRId').value),
+        userId: this.userId,
+        userRole: this.userRole
       };
 
       //console.log(allotQrIdToBranchObj);
 
-      this.qrIdServiceAPI.allotQrIdtoBrachNew(allotQrIdToBranchObj)
+      try {
+        this.qrIdServiceAPI.allotQrIdtoBrachNew(allotQrIdToBranchObj)
       .subscribe(data => {
 
         ///console.log(data);
-        if (data['errorOccurred']){
+        /*if (data['errorOccurred']){
           this.toastService.error("Something went wrong while alloting QR IDs");
           this.enableProgressBar=false;
           return false;
-        }
+        }*/
 
         if (data['qrCountExceed']){
           this.toastService.error("Entered number of QR IDs are not available. Please enter number of QR IDs lesser or equal to available QR ID");
@@ -160,25 +179,26 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
         this.resetForm(form);
 
       }, error => {
-        this.toastService.error("Something went wrong while alloting QR IDs");
+        //this.toastService.error("Something went wrong while alloting QR IDs");
         this.enableProgressBar=false;
       });
+      } catch (error) {
+        this.toastService.error("Something went wrong while alloting QR IDs");
+        this.enableProgressBar=false;
+      }
 
       /*this.qrIdServiceAPI.allotQrIdToBranch(this.allotQrIdBranchFormGroup.value)
       .subscribe((data: IallotQrIdToBranchResponseStruct) => {
-
         if (data.errorOccured){
           this.toastService.error("Something went wrong while alloting QR IDs");
           this.enableProgressBar=false;
           return false;
         }
-
         if (data.numOfQRIdExceed){
           this.toastService.error("Entered number of QR IDs are not available. Please enter number of QR IDs lesser or equal to available QR ID");
           this.enableProgressBar=false;
           return false;
         }
-
         if (data.branchQRAttloted){
           this.toastService.success("QR Ids alloted to " + this.branchMenuName + " successfully.");
           this.enableProgressBar=false;
@@ -190,9 +210,7 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
           this.enableProgressBar=false;
           return false;
         }
-
         this.resetForm(form);
-
       }, error => {
         this.toastService.error("Something went wrong while alloting QR IDs");
         this.enableProgressBar=false;
@@ -203,20 +221,23 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
   }
 
   resetForm(form:NgForm){
-    this.formSubmit=false;
 
-    this.enableProgressBar=false;
+    try {
+      this.formSubmit=false;
 
-    this.errorMessage="";
-    this.dispErrorMessage=false;
+      this.enableProgressBar=false;
+  
+      this.errorMessage="";
+      this.dispErrorMessage=false;
+  
+      this.form.resetForm();
 
-    this.form.resetForm();
-
-    // to be added after jwt implementation
-   // this.getAvailableQrToAllot();
-
-    this.setFormGroup();
-
+      this.getAvailableQrToAllot();
+  
+      this.setFormGroup(); 
+    } catch (error) {
+      this.toastService.error("Something went wrong in reset functionality");
+    }
 
   }
 
@@ -235,7 +256,22 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.branchHeadOffice=tokenModel.branchHeadOffice;
+
+    if (tokenModel.branchHeadOffice==false){
+      this.router.navigate(['legalentity','login']);
+      return false;   
+    }
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
 
@@ -249,7 +285,7 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.branchMenuName=this.menuModel.branchMenuName;
@@ -259,11 +295,13 @@ export class LegalentityAllotQrBranchComponent implements OnInit {
  
     this.setFormGroup();
     
-     // to be added after jwt implmenetation
-    //this.popBranchList(false);
+    this.popBranchList(false);
     
- // to be added after jwt implmenetation
-    //this.getAvailableQrToAllot();
+    this.getAvailableQrToAllot();      
+    } catch (error) {
+     this.toastService.error("Something went wrong while loading this page","");
+    }
+
   }
   
 }

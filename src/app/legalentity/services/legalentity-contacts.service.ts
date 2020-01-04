@@ -22,7 +22,11 @@ export interface IcontactResponseStruct{
 
 export interface IdeactivateContactReqStruct{
    contactId: number,
-   contactActiveStatus: boolean
+   contactActiveStatus: boolean,
+   legalEntityId: number,
+   branchId: number,
+   userId: number,
+   userRole: string
 };
 
 export interface IcontactRptReqStruct{
