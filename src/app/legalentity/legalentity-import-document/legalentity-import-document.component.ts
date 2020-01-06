@@ -10,6 +10,8 @@ import *as moment from 'moment';
 import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 @Component({
   selector: 'app-legalentity-import-document',
@@ -19,6 +21,9 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 export class LegalentityImportDocumentComponent implements OnInit {
 
   legalEntityId: number;
+  branchId: number;
+  userId: number;
+  userRole: string;
   branchHeadOffice: boolean;
 
   equptMenuName: string;
@@ -43,7 +48,8 @@ export class LegalentityImportDocumentComponent implements OnInit {
     private router: Router,
     private iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
-    private importDocExcelFormBuilder: FormBuilder
+    private importDocExcelFormBuilder: FormBuilder,
+    private authService: AuthService
   ) {
     iconRegistry.addSvgIcon(
       'back-icon',
@@ -52,7 +58,18 @@ export class LegalentityImportDocumentComponent implements OnInit {
    }
 
   ngOnInit() {
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.branchHeadOffice=tokenModel.branchHeadOffice;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -66,6 +83,11 @@ export class LegalentityImportDocumentComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
+    }*/
+
+    if (!this.branchHeadOffice){
+      this.router.navigate(['legalentity','portal','rpt','document']);
+      return false;
     }
 
     this.utilServiceAPI.setTitle('Legalentity - Import Document | Attendme');
@@ -78,33 +100,57 @@ export class LegalentityImportDocumentComponent implements OnInit {
       docSpecificToQrId: false,
       excelData: ['', [Validators.required]]
     });
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading this page","");
+    }
+
+    
   }
 
   backToDocumentRpt(){
-    this.router.navigate(['legalentity','portal','rpt','document']);
-    return false;
+    try {
+      this.router.navigate(['legalentity','portal','rpt','document']);
+      return false; 
+    } catch (error) {
+      this.toastService.error("Something went wrong while redirecting to document report page","");
+    }
   }
 
   downloadEquptDocTemplate(){
-    this.enableDownloadProgressBar=true;
+
+    try {
+      this.enableDownloadProgressBar=true;
     this.downloadButtonEnableDisable=true;
     let fileName: string = this.equptMenuName + "-Document-List" + moment().format("YYYY-MM-DD-HH-mm-SSS");
 
-    this.documenServiceAPI.downloadEquptDocTemplate(this.legalEntityId)
+    this.documenServiceAPI.downloadEquptDocTemplate(
+      this.legalEntityId,
+      this.branchId,
+      this.userId,
+      this.userRole
+      )
     .subscribe(data => {
       saveAs(data, fileName + ".xls");
       this.enableDownloadProgressBar=false;
       this.downloadButtonEnableDisable=false;
     }, error => {
       
-      this.toastService.error("Something went wrong while downloading excel file");
+      //this.toastService.error("Something went wrong while downloading excel file");
       this.enableDownloadProgressBar=false;
       this.downloadButtonEnableDisable=false;
     });
+    } catch (error) {
+      this.toastService.error("Something went wrong while downloading excel file");
+      this.enableDownloadProgressBar=false;
+      this.downloadButtonEnableDisable=false;
+    }
+
   }
 
   onFileChange(event){
-    this.uploadedFileObj=event.target.files[0];
+
+    try {
+      this.uploadedFileObj=event.target.files[0];
 
     if (this.uploadedFileObj != null){
      // console.log(this.uploadedFileObj.type);
@@ -117,40 +163,62 @@ export class LegalentityImportDocumentComponent implements OnInit {
         this.toastService.error("Selected file type not supported");
         return false;
       }
+    }      
+    } catch (error) {
+      this.toastService.error("Something went wrong while attaching document","");
     }
+
   }
 
   onUploadClick(){
     this.formSubmit=true;
 
-    if (this.importDocumentExcelFormGroup.valid){
+    try {
+      if (this.importDocumentExcelFormGroup.valid){
 
-      this.enableImportProgressBar=true;
-      this.importButtonEnableDisable=true;
-    
-     const importDocumentQrIdMapReqObj: IimportDocumentQrIdReq = {
-       docSpecificToQrId: this.importDocumentExcelFormGroup.get('docSpecificToQrId').value,
-       excelData: this.uploadedFileObj,
-       legalEntityId: this.importDocumentExcelFormGroup.get('legalEntityId').value
-     };
-
-     this.documenServiceAPI.importDocumentQrIExcel(importDocumentQrIdMapReqObj)
-     .subscribe(data => {
-
-      this.toastService.success("Excel sheet import successfull");
+        this.enableImportProgressBar=true;
+        this.importButtonEnableDisable=true;
+      
+       const importDocumentQrIdMapReqObj: IimportDocumentQrIdReq = {
+         docSpecificToQrId: this.importDocumentExcelFormGroup.get('docSpecificToQrId').value,
+         excelData: this.uploadedFileObj,
+         legalEntityId: this.importDocumentExcelFormGroup.get('legalEntityId').value,
+         branchId: this.branchId,
+         userId: this.userId,
+         userRole: this.userRole
+       };
+  
+       try {
+        this.documenServiceAPI.importDocumentQrIExcel(importDocumentQrIdMapReqObj)
+        .subscribe(data => {
+   
+         this.toastService.success("Excel sheet import successfull");
+         this.enableImportProgressBar=false;
+         this.importButtonEnableDisable=false;
+   
+         this.importDocumentExcelFormGroup.patchValue({
+           excelData: ['']
+         });
+   
+        }, error => {
+           //this.toastService.error("Something went wrong while importing excel sheet");
+           this.enableImportProgressBar=false;
+           this.importButtonEnableDisable=false;
+        });  
+       } catch (error) {
+        this.toastService.error("Something went wrong while importing excel sheet");
+        this.enableImportProgressBar=false;
+        this.importButtonEnableDisable=false;
+       }
+  
+       
+      }      
+    } catch (error) {
+      this.toastService.error("Something went wrong while importing excel sheet");
       this.enableImportProgressBar=false;
       this.importButtonEnableDisable=false;
-
-      this.importDocumentExcelFormGroup.patchValue({
-        excelData: ['']
-      });
-
-     }, error => {
-       this.toastService.error("Something went wrong while importing excel sheet");
-      this.enableImportProgressBar=false;
-      this.importButtonEnableDisable=false;
-     });
     }
+
   }
 
 }

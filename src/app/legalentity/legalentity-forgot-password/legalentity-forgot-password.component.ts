@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ErrorHandler } from '@angular/core';
 import { MatIcon, MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { LegalentityUserService, IforgotPasswordOtpResponse, IverifyOtpReq, IverifyOtpResponse } from '../services/legalentity-user.service';
 import *as md5 from 'md5';
+import { ErrorHandlerService } from 'src/app/Auth/error-handler.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { LegalentityUtilService } from '../services/legalentity-util.service';
 
 @Component({
   selector: 'app-legalentity-forgot-password',
@@ -36,7 +39,9 @@ export class LegalentityForgotPasswordComponent implements OnInit {
     private iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
     private forgotPasswordFb: FormBuilder,
-    private userServiceAPI: LegalentityUserService
+    private userServiceAPI: LegalentityUserService,
+    private errorHandler: ErrorHandlerService,
+    private utilServiceAPI: LegalentityUtilService
   ) { 
 
     iconRegistry.addSvgIcon(
@@ -47,7 +52,7 @@ export class LegalentityForgotPasswordComponent implements OnInit {
   }
 
   onSendOTPClick():void{
-    console.log(this.forgotPasswordForm.value);
+    //console.log(this.forgotPasswordForm.value);
     this.forgorPasswordFormSubmit=true;
 
     this.dispableSendOtpBtn=true;
@@ -61,17 +66,18 @@ export class LegalentityForgotPasswordComponent implements OnInit {
 
       let emailId: string = this.forgotPasswordForm.value['emailId'];
 
-      this.userServiceAPI.requestOTP(emailId,'user')
+      try {
+        this.userServiceAPI.requestOTP(emailId,'user')
       .subscribe((data:IforgotPasswordOtpResponse) => {
-        console.log(data);
-        if (data.errorOccured){
+        //console.log(data);
+        /*if (data.errorOccured){
           
           this.errorMsgEnableDisplay = true;
           this.errorMsgText="Something whet wrong. Please try again later.";
           this.forgotPasswordFormProgressBar=false;
           this.dispableSendOtpBtn=false;
           return false;
-        }
+        }*/
 
         if (data.invalidEmail){
           this.errorMsgEnableDisplay = true;
@@ -100,10 +106,22 @@ export class LegalentityForgotPasswordComponent implements OnInit {
       
       }, error => {
           this.errorMsgEnableDisplay = true;
+          //this.errorMsgText="Something whet wrong. Please try again later.";
+          if (error instanceof HttpErrorResponse){
+            this.errorMsgText= this.errorHandler.getErrorStatusMessage(error.status);  
+          }
+          else{this.errorMsgText="Something whet wrong. Please try again later.";}
+          
+          this.forgotPasswordFormProgressBar=false;
+          this.dispableSendOtpBtn=false;
+      });
+      } catch (error) {
+          this.errorMsgEnableDisplay = true;
           this.errorMsgText="Something whet wrong. Please try again later.";
           this.forgotPasswordFormProgressBar=false;
           this.dispableSendOtpBtn=false;
-      }); 
+      }
+ 
     }
 
   }
@@ -210,6 +228,8 @@ export class LegalentityForgotPasswordComponent implements OnInit {
 
     this.dispableSendOtpBtn= false;
     this.disableVerifyOtpBtn= false;
+
+    this.utilServiceAPI.setTitle("Legalentity - Forgot Password | Attendme");
 
   }
 

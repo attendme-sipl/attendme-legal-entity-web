@@ -3,6 +3,7 @@ import { LegalentityUtilService } from './legalentity-util.service';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LegalentityUser } from '../model/legalentity-user';
+import { AuthService } from 'src/app/Auth/auth.service';
 
 
 export interface IuserLoginReqStruct{
@@ -69,7 +70,8 @@ export class LegalentityUserService {
 
   constructor(
     private utilServiceAPI: LegalentityUtilService,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private authService: AuthService
   ) { }
 
   getLegalEntityUserDetails(userReqObj: IuserLoginReqStruct):Observable<any>{
@@ -82,11 +84,18 @@ export class LegalentityUserService {
   
 
   requestOTP(emailId: string, userRole: string):Observable<IforgotPasswordOtpResponse>{
-    console.log(userRole);
-    return this.httpClient.post<IforgotPasswordOtpResponse>(this.utilServiceAPI.legalEntityRestApuURL + "/forgotPassword", {
+    //console.log(userRole);
+
+    const headers = this.authService.getBaseAuthHeaderDetails();
+    console.log(headers);
+    return this.httpClient.post<IforgotPasswordOtpResponse>(
+      this.utilServiceAPI.legalEntityAPIURLWoApi + "/forgotPassword", 
+      {
       emailId: emailId,
       userRole: userRole
-    });
+    }, 
+    {headers}
+    );
   }
 
   verifyOTP(verifyOtpReqObj: IverifyOtpReq):Observable<IverifyOtpResponse>{

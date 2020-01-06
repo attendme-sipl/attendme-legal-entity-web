@@ -14,6 +14,8 @@ import 'rxjs/add/operator/map';
 import { saveAs } from 'file-saver';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { LegalentityDocumentServiceService, IuploadDocumentReq } from '../services/legalentity-document-service.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 
 
@@ -26,6 +28,9 @@ export class LegalentityUploadDocumentComponent implements OnInit {
   //@ViewChild('form') form;
 
   legalEntityId: number;
+  branchId: number;
+  userId: number;
+  userRole: string;
 
   addDocumentFormGroup: FormGroup;
   enableProgressBar: boolean;
@@ -44,7 +49,8 @@ export class LegalentityUploadDocumentComponent implements OnInit {
     sanitizer: DomSanitizer,
     private httpClient: HttpClient,
     private addDocumentFb: FormBuilder,
-    private documentServiceAPI: LegalentityDocumentServiceService
+    private documentServiceAPI: LegalentityDocumentServiceService,
+    private authService: AuthService
   ) {
     iconRegistry.addSvgIcon(
       'refresh-icon',
@@ -72,28 +78,38 @@ export class LegalentityUploadDocumentComponent implements OnInit {
         docData: this.uploadedFileObj,
         docDesc: this.addDocumentFormGroup.get('docDesc').value,
         legalEntityId: this.legalEntityId,
-        specificToQr: false
+        specificToQr: false,
+        branchId: this.branchId,
+        userId: this.userId,
+        userRole: this.userRole
       };
 
-      this.documentServiceAPI.uploadLegalEntityDocument(documentUploadObj)
+      try {
+        this.documentServiceAPI.uploadLegalEntityDocument(documentUploadObj)
       .subscribe(data => {
         //console.log(data);
-        if (data['errorOccured']){
+        /*if (data['errorOccured']){
           this.toastService.error("Something went wrong while uploading document","");
           this.enableProgressBar=false;
           this.disableSubmitButton=false;
           return false;
-        }
+        }*/
 
         this.enableProgressBar=false;
         this.toastService.success("Document upload successful");
         this.resetForm();
       }, error => {
         //console.log(error);
+        //this.toastService.error("Something went wrong while uploading document","");
+        this.disableSubmitButton=false;
+        this.enableProgressBar=false;
+      });
+      } catch (error) {
         this.toastService.error("Something went wrong while uploading document","");
         this.disableSubmitButton=false;
         this.enableProgressBar=false;
-      })
+      }
+
     }
 
     //let fileUpload:File = this.addDocumentFormGroup.get('docData');
@@ -105,7 +121,9 @@ export class LegalentityUploadDocumentComponent implements OnInit {
   }
 
   onFileChange(event){
-    //console.log(event.target.files);
+
+    try {
+      //console.log(event.target.files);
 
     this.uploadedFileObj= event.target.files[0];
 
@@ -138,21 +156,35 @@ export class LegalentityUploadDocumentComponent implements OnInit {
       return false;
     }
   }
-
-    
-
-    
+    } catch (error) {
+      this.toastService.error("Something went wrong while attaching document","");
+    }
     
   }
 
   backToDocumentRpt(){
-    this.router.navigate(['legalentity','portal','rpt','document']);
-    return false;
+    try {
+      this.router.navigate(['legalentity','portal','rpt','document']);
+      return false;  
+    } catch (error) {
+      this.toastService.error("Something went wrong while redirecting to documents report page","");
+    }
+    
   }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.branchHeadOffice=tokenModel.branchHeadOffice;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -167,6 +199,11 @@ export class LegalentityUploadDocumentComponent implements OnInit {
     else{
       this.router.navigate(['legalentity','login']);
       return false;
+    }*/
+
+    if (!this.branchHeadOffice){
+      this.router.navigate(['legalentity','portal','dashboard']);
+      return false;
     }
 
     this.utilServiceAPI.setTitle("Legalentity - Upload Document | Attendme");
@@ -180,21 +217,28 @@ export class LegalentityUploadDocumentComponent implements OnInit {
      // console.log(data);
        //saveAs(data,'excelReport');
    //})
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading this page","");
+    }
 
   }
 
   resetForm(){
-    this.enableProgressBar=false;
-    this.formSubmit=false;
-    //this.form.resetForm();
-    this.disableSubmitButton=false;
-    this.addDocumentFormGroup.reset();     
+    try {
+      this.enableProgressBar=false;
+      this.formSubmit=false;
+      //this.form.resetForm();
+      this.disableSubmitButton=false;
+      this.addDocumentFormGroup.reset();      
+    } catch (error) {
+      this.toastService.error("Something went wrong in form reset functionality");
+    }
   }
  
 
 
 
-  DownloadFile(): Observable<any>{
+  /*DownloadFile(): Observable<any>{
     //let fileExtension = fileType;
     //let input = filePath;
     return this.httpClient.post("http://192.168.0.99:4201/api/complaintsExcelReport",{
@@ -212,7 +256,7 @@ export class LegalentityUploadDocumentComponent implements OnInit {
             var blob = new Blob([res], {type: 'application/vnd.ms-excel'} )
             return blob;            
       });
-  }
+  }*/
    
 
 }

@@ -166,38 +166,58 @@ export class LegalentityDocumentRptComponent implements OnInit {
   }*/
 
   deleteDocument(documentId: number){
-    const confirmAlertDialogObj: IConfirmAlertStruct = {
-      alertMessage: "Are you sure you want to delete the document",
-      confirmBit: false
-    };
 
-    let alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent, {
-      data: confirmAlertDialogObj,
-      panelClass: 'custom-dialog-container'
-    });
+    try {
+      const confirmAlertDialogObj: IConfirmAlertStruct = {
+        alertMessage: "Are you sure you want to delete the document",
+        confirmBit: false
+      };
+  
+      let alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent, {
+        data: confirmAlertDialogObj,
+        panelClass: 'custom-dialog-container'
+      });
+      
+      alertDialogRef.afterClosed().subscribe(result => {
+        if (confirmAlertDialogObj.confirmBit){
+          this.enableProgressBar =true;
+  
+          try {
+            this.documentServiceAPI.deleteDocumentRequest(
+              documentId,
+              this.legalEntityId,
+              this.branchId,
+              this.userId,
+              this.userRole
+              )
+            .subscribe(data => {
+              /*if (data['errorOccured'] == true){
+                this.toastService.error("Something went wrong while deleting document");
+                this.enableProgressBar=false;
+                return false;
+              }*/
     
-    alertDialogRef.afterClosed().subscribe(result => {
-      if (confirmAlertDialogObj.confirmBit){
-        this.enableProgressBar =true;
-
-        this.documentServiceAPI.deleteDocumentRequest(documentId)
-        .subscribe(data => {
-          if (data['errorOccured'] == true){
+              this.enableProgressBar=false;
+              this.toastService.success("Document deleted successfully");
+    
+              this.popLegalEntityDocument();
+            }, error => {
+              //this.toastService.error("Something went wrong while deleting document");
+              this.enableProgressBar=false;
+            });
+          } catch (error) {
             this.toastService.error("Something went wrong while deleting document");
             this.enableProgressBar=false;
-            return false;
           }
+  
+        }
+      });
+    } catch (error) {
+        this.toastService.error("Something went wrong while deleting document");
+        this.enableProgressBar=false;
+    }
 
-          this.enableProgressBar=false;
-          this.toastService.success("Document deleted successfully");
-
-          this.popLegalEntityDocument();
-        }, error => {
-          this.toastService.error("Something went wrong while deleting document");
-          this.enableProgressBar=false;
-        });
-      }
-    });
+    
   }
 
   applyFilter(filterValue: string){
@@ -220,29 +240,48 @@ export class LegalentityDocumentRptComponent implements OnInit {
       documentName = filteredDocObj[0]['docName'];
     }
 
-    this.documentServiceAPI.requestDocDownloadData(documentId)
-    .subscribe(data => {
-      saveAs(data, documentName);
-      this.enableProgressBar=false;
-    }, error => {
+    try {
+      this.documentServiceAPI.requestDocDownloadData(
+        documentId,
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole
+        )
+      .subscribe(data => {
+        saveAs(data, documentName);
+        this.enableProgressBar=false;
+      }, error => {
+        //this.toastService.error("Something went wrong while downloading the document");
+        this.enableProgressBar=false;
+      });
+    } catch (error) {
       this.toastService.error("Something went wrong while downloading the document");
       this.enableProgressBar=false;
-    });
+    }
 
   }
 
   importDocument(){
-    this.router.navigate(['legalentity','portal','document','import']);
+    try {
+      this.router.navigate(['legalentity','portal','document','import']);    
+    } catch (error) {
+      this.toastService.error("Something went wrong while redirecting to import documents page");
+    }
+  
   }
 
   ngOnInit() {
 
-    const tokenModel: TokenModel = this.authService.getTokenDetails();
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
 
     this.legalEntityId=tokenModel.legalEntityId;
     this.branchId=tokenModel.branchId;
-    this.userId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
     this.userRole=tokenModel.userRole;
+
+    this.branchHeadOffice=tokenModel.branchHeadOffice;
     
     /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
@@ -257,8 +296,11 @@ export class LegalentityDocumentRptComponent implements OnInit {
 
     this.utilServiceAPI.setTitle("Legalentity - Documents | Attendme");
 
-    //to be added after jwt implementation
-    //this.popLegalEntityDocument();
+  
+    this.popLegalEntityDocument();
+    } catch (error) {
+      this.toastService.error("Something went wrong in loading this page","");
+    }
 
   }
 

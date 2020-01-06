@@ -44,4 +44,9 @@ export class AuthService {
     return tokenModel;
   }
 
+  getBaseAuthHeaderDetails(): HttpHeaders{
+    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(this.utilServiceAPI.basicAuthUserName + ":" + this.utilServiceAPI.basicAuthPassword)});
+    return headers;
+  }
+
 }

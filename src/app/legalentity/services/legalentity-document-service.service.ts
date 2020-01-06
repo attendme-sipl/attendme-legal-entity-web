@@ -43,6 +43,9 @@ export interface IlegalEntityDocumentRptWithSelect{
 
 export interface IuploadDocumentReq{
   legalEntityId: number,
+  branchId: number,
+  userId: number,
+  userRole: string,
   docData: File,
   docDesc: string,
   specificToQr: boolean,
@@ -52,7 +55,10 @@ export interface IuploadDocumentReq{
 export interface IimportDocumentQrIdReq{
   legalEntityId: number,
   docSpecificToQrId: boolean,
-  excelData: File
+  excelData: File,
+  branchId: number,
+  userId: number,
+  userRole: string
 };
 
 @Injectable({
@@ -85,6 +91,9 @@ export class LegalentityDocumentServiceService {
     
     formData.append("docData",uploadedFileObject.docData, uploadedFileObject.docData.name);
     formData.append("legalEntityId", uploadedFileObject.legalEntityId.toString());
+    formData.append("branchId", uploadedFileObject.branchId.toString());
+    formData.append("userId", uploadedFileObject.userId.toString());
+    formData.append("userRole", uploadedFileObject.userRole);
     formData.append("docDesc", uploadedFileObject.docDesc);
     formData.append("docActiveStatus", String(uploadedFileObject.docActiveStatus));
     formData.append("specificToQr", String(uploadedFileObject.specificToQr));
@@ -119,15 +128,28 @@ export class LegalentityDocumentServiceService {
     const formData: FormData = new FormData();
 
     formData.append("legalEntityId", importDocumentQrIdExcelReqObj.legalEntityId.toString());
+    formData.append("branchId", importDocumentQrIdExcelReqObj.branchId.toString());
+    formData.append("userId", importDocumentQrIdExcelReqObj.userId.toString());
+    formData.append("userRole", importDocumentQrIdExcelReqObj.userRole);
     formData.append("docSpecificToQrId", String(importDocumentQrIdExcelReqObj.docSpecificToQrId));
     formData.append("excelData",importDocumentQrIdExcelReqObj.excelData, importDocumentQrIdExcelReqObj.excelData.name);
 
     return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/importEquipmentExcel", formData);
   }
 
-  requestDocDownloadData(documentId: number): Observable<any>{
+  requestDocDownloadData(
+    documentId: number,
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ): Observable<any>{
     return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/downloadDocument",{
-      documentId: documentId
+      documentId: documentId,
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     }, {responseType: 'blob' as 'json'})
     .map(
       (res: Blob) => {
@@ -137,21 +159,39 @@ export class LegalentityDocumentServiceService {
     );
   }
 
-  deleteDocumentRequest(documentId: number):Observable<any>{
+  deleteDocumentRequest(
+    documentId: number,
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<any>{
     return this.httpClient.patch(this.utilServiceAPI.legalEntityRestApuURL + "/deleteDocument", {
-      documentId: documentId
+      documentId: documentId,
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 
-  downloadEquptDocTemplate(legalEntityId: number):Observable<any>{
+  downloadEquptDocTemplate(
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<any>{
     return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/qrIdExcelTemplate",{
-      legalEntityId: legalEntityId
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      uerRole: userRole
     }, {responseType: 'blob' as 'json'})
     .map(
       (res: Blob) => {
         var blob = new Blob([res], {type: 'application/vnd.ms-excel'} )
         return blob;
       }
-    )
+    );
   }
 }
