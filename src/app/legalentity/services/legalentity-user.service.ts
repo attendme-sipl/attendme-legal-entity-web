@@ -87,7 +87,7 @@ export class LegalentityUserService {
     //console.log(userRole);
 
     const headers = this.authService.getBaseAuthHeaderDetails();
-    console.log(headers);
+    
     return this.httpClient.post<IforgotPasswordOtpResponse>(
       this.utilServiceAPI.legalEntityAPIURLWoApi + "/forgotPassword", 
       {
@@ -99,12 +99,17 @@ export class LegalentityUserService {
   }
 
   verifyOTP(verifyOtpReqObj: IverifyOtpReq):Observable<IverifyOtpResponse>{
-    return this.httpClient.post<IverifyOtpResponse>(this.utilServiceAPI.legalEntityRestApuURL + "/setNewPassword", verifyOtpReqObj);
+    const headers = this.authService.getBaseAuthHeaderDetails();
+    return this.httpClient.post<IverifyOtpResponse>(
+      this.utilServiceAPI.legalEntityAPIURLWoApi + "/setNewPassword", 
+      verifyOtpReqObj,
+      {headers}
+      );
   }
 
   resetPassword(userId:number,userPassword:string,passwordChange:boolean):Observable<any>
     {
-      return this.httpClient.patch(this.utilServiceAPI.legalEntityRestApuURL + "/resetPassword",{
+      return this.httpClient.patch(this.utilServiceAPI.legalEntityAPIURLWoApi + "/resetPassword",{
         userId:userId,
         userPassword:userPassword,
         passwordChange:passwordChange

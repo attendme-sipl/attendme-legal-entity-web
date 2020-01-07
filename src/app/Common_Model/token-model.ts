@@ -8,5 +8,11 @@ export class TokenModel {
     branchId: number;
     branchName: string;
     branchHeadOffice: boolean;
-    complaintStageCount: number; 
+    complaintStageCount: number;
+    passwordChange: boolean;
+    technicianId: number;
+    technicianName: string;
+    technicianCreationDateTime: string;
+    technicianActiveStatus: boolean;
+    sub: string;
 }

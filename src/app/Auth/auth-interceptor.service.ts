@@ -29,16 +29,38 @@ export class AuthInterceptorService implements HttpInterceptor {
 
     if (this.authService.isLoggedIn()){
 
-      const jwtToken = jwt_token(this.cookieService.get(this.utilServiceAPI.authCookieName));
+      const exceptionalURL: string = this.utilServiceAPI.legalEntityAPIURLWoApi + "/resetPassword";
+      
+      switch (request.url) {
+        case this.utilServiceAPI.legalEntityAPIURLWoApi + "/resetPassword":
+          
+          request=request.clone({
+            setHeaders: {
+              Authorization: `Basic ${btoa(this.utilServiceAPI.basicAuthUserName + ":" + this.utilServiceAPI.basicAuthPassword)}`
+            }});
 
-      let tokenModel: TokenModel=jwtToken;
+            break;
 
-  
-      request=request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${this.cookieService.get(this.utilServiceAPI.authCookieName)}`
-        }
-      })
+        case this.utilServiceAPI.legalEntityAPIURLWoApi + "/addHeadOfficeDetails":
+          request=request.clone({
+            setHeaders: {
+              Authorization: `Basic ${btoa(this.utilServiceAPI.basicAuthUserName + ":" + this.utilServiceAPI.basicAuthPassword)}`
+            }});
+
+            break;
+      
+        default:
+          const jwtToken = jwt_token(this.cookieService.get(this.utilServiceAPI.authCookieName));
+
+          let tokenModel: TokenModel=jwtToken;
+
+          request=request.clone({
+            setHeaders: {
+            Authorization: `Bearer ${this.cookieService.get(this.utilServiceAPI.authCookieName)}`
+          }
+        });
+      }
+      
     }
 
     return next.handle(request).do((Event: HttpEvent<any>) =>{

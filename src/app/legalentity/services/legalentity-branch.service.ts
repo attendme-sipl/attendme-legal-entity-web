@@ -64,7 +64,7 @@ export class LegalentityBranchService {
     
   //  console.log(branchModel);
 
-    return this.httpClient.post<LegalentityBranch>(this.util.legalEntityRestApuURL + "/addHeadOfficeDetails",branchModel)
+    return this.httpClient.post<LegalentityBranch>(this.util.legalEntityAPIURLWoApi + "/addHeadOfficeDetails",branchModel)
     
     //.pipe(map(branch => {
 

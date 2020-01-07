@@ -13,6 +13,11 @@ import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityUserService } from '../services/legalentity-user.service';
 import { LegalentityUtilService } from '../services/legalentity-util.service';
+import { CookieService } from 'ngx-cookie-service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ErrorHandlerService } from 'src/app/Auth/error-handler.service';
 
 @Component({
   selector: 'app-legalentity-reset-password',
@@ -44,7 +49,10 @@ export class LegalentityResetPasswordComponent implements OnInit {
     private iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
     private userServiceAPI: LegalentityUserService,
-    private utilServiceAPI: LegalentityUtilService
+    private utilServiceAPI: LegalentityUtilService,
+    private cookieService: CookieService,
+    private authService: AuthService,
+    private errorHandler: ErrorHandlerService
   ) {
 
       iconRegistry.addSvgIcon(
@@ -89,29 +97,39 @@ export class LegalentityResetPasswordComponent implements OnInit {
 
         this.newMd5Password = md5(this.newPassword);
 
-         this.userServiceAPI.resetPassword(this.userId,this.newMd5Password,true)
-         .pipe(first())
-         .subscribe((data => {
-           
-           if (data.passwordReset == true)
-           {
-            this.btnDisable=false;
-            this.progressBarBit=false;
-            this.logout();
-           }
-           else
-           {
+        try {
+          this.userServiceAPI.resetPassword(this.userId,this.newMd5Password,true)
+          .pipe(first())
+          .subscribe((data => {
+            
+            if (data.passwordReset == true)
+            {
              this.btnDisable=false;
              this.progressBarBit=false;
-             
-             this.toastService.error("There was an error while resetting password");
-           }
-         }),
-         error => {
-           this.btnDisable=false;
-           this.progressBarBit=false;
+             this.logout();
+            }
+            else
+            {
+              this.btnDisable=false;
+              this.progressBarBit=false;
+              
+              this.toastService.error("There was an error while resetting password");
+            }
+          }),
+          error => {
+             this.btnDisable=false;
+             this.progressBarBit=false;
+             if (error instanceof HttpErrorResponse){
+               this.toastService.error(this.errorHandler.getErrorStatusMessage(error.status));
+             }
+             else{this.toastService.error("There was an error while resetting password");}
+          });
+        } catch (error) {
+          this.btnDisable=false;
+          this.progressBarBit=false;
           this.toastService.error("There was an error while resetting password");
-         })
+        }
+
        }
      }
 
@@ -120,14 +138,31 @@ export class LegalentityResetPasswordComponent implements OnInit {
 
    logout()
   {
-    localStorage.removeItem('legalEntityUserDetails');
-    localStorage.removeItem('legalEntityMenuPref');
-    this.router.navigate(['/legalentity/login']);
+    //localStorage.removeItem('legalEntityUserDetails');
+    //localStorage.removeItem('legalEntityMenuPref');
+    //this.router.navigate(['/legalentity/login']);
+
+    this.cookieService.delete(this.utilServiceAPI.authCookieName);
+    this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName);
+
+    this.router.navigate(['legalentity','login']);
   }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.utilServiceAPI.setTitle("Forgot Password Reset | Attendme");
+
+    if (tokenModel.passwordChange){
+      this.router.navigate(['legalentity','login']);
+      return false;
+    }
+
+    this.userId = tokenModel.userId;
+    this.userName=tokenModel.userFullName;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
 
       this.legalEntityUserModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
@@ -142,7 +177,7 @@ export class LegalentityResetPasswordComponent implements OnInit {
     }
     else{
       this.router.navigate(['legalentity','login']);
-    }
+    }*/
 
   }
 

@@ -13,6 +13,10 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityBranch } from '../model/legalentity-branch';
 import { LegalentityBranchService } from '../services/legalentity-branch.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { ErrorHandlerService } from 'src/app/Auth/error-handler.service';
+import { CookieService } from 'ngx-cookie-service';
 //import { stringify } from '@angular/core/src/render3/util';
 //import { LegalentityBranchService } from '../services/legalentity-branch.service';
 //import { first } from './node_modules/rxjs/operators';
@@ -27,7 +31,7 @@ import { LegalentityBranchService } from '../services/legalentity-branch.service
 export class LegalentityHeadofficeComponent implements OnInit {
 
   legalEntityId:number;
-  userId:number
+  userId:number;
   userNm:string;
   userRole:string;
 
@@ -50,8 +54,10 @@ export class LegalentityHeadofficeComponent implements OnInit {
    private userModel: LegalentityUser,
    private iconRegistry: MatIconRegistry,
    sanitizer: DomSanitizer,
-   private utilServiceAPI:LegalentityUtilService
-    
+   private utilServiceAPI:LegalentityUtilService,
+   private authService: AuthService,
+   private errorHandlerService: ErrorHandlerService,
+   private cookieService: CookieService
   ) { 
     
     iconRegistry.addSvgIcon(
@@ -192,14 +198,33 @@ export class LegalentityHeadofficeComponent implements OnInit {
 
   logout()
   {
-    localStorage.removeItem('legalEntityUserDetails');
-    localStorage.removeItem('legalEntityMenuPref');
-    this.router.navigate(['/legalentity/login']);
+    //localStorage.removeItem('legalEntityUserDetails');
+   //localStorage.removeItem('legalEntityMenuPref');
+   // this.router.navigate(['/legalentity/login']);
+
+   this.cookieService.delete(this.utilServiceAPI.authCookieName);
+   this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName);
+
+   this.router.navigate(['legalentity','login']);
   }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    if (tokenModel.userRole != 'admin'){
+      this.router.navigate(['legalentity','login']);
+      return false;
+    }
+
+    if (tokenModel.branchId != 0){
+      if (tokenModel.branchHeadOffice){
+        this.router.navigate(['/legalentity/portal/dashboard']);
+      }
+    }
+
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
 
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
@@ -216,28 +241,30 @@ export class LegalentityHeadofficeComponent implements OnInit {
     }
     else{
       this.router.navigate(['legalentity','login']);
-    }
+    }*/
+
+    this.utilServiceAPI.setTitle("Legal Entity - Add Head Office | Attendme");
 
     this.errorBit = false;
     this.errorMsg = '';
 
-    this.userNm=this.userModel.legalEntityUserDetails.userFullName;
-    this.userId=this.userModel.legalEntityUserDetails.userId;
-    this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
+    this.userNm=tokenModel.userFullName;
+    this.userId=tokenModel.userId;
+    this.legalEntityId=tokenModel.legalEntityId;
 
     this.popCountryCallingCode();
 
-    this.branchOfficeModel.contactPersonName = this.userModel.legalEntityUserDetails.userFullName;
+    this.branchOfficeModel.contactPersonName = tokenModel.userFullName;
 
     let userMobileNumberArr:string[];
 
-     userMobileNumberArr = this.userModel.legalEntityUserDetails.userMobileNumer.split('-');
+     //userMobileNumberArr = this.userModel.legalEntityUserDetails.userMobileNumer.split('-');
 
-    this.countryCode = parseInt(userMobileNumberArr[0]);
+    this.countryCode = 91; //parseInt(userMobileNumberArr[0]);
     
-    this.branchOfficeModel.contactMobile = userMobileNumberArr[1];
+    this.branchOfficeModel.contactMobile = '9146046481' //userMobileNumberArr[1];
 
-    this.branchOfficeModel.contactEmail  =  this.userModel.legalEntityUserDetails.userEmailId;
+    this.branchOfficeModel.contactEmail  = tokenModel.sub; //this.userModel.legalEntityUserDetails.userEmailId;
 
   }
 

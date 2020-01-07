@@ -153,16 +153,17 @@ export class LegalentityForgotPasswordComponent implements OnInit {
       resetPasswordReqObj.newPwd=md5(resetPasswordReqObj.newPwd);
       resetPasswordReqObj.reenterNewPwd=md5(resetPasswordReqObj.reenterNewPwd);
 
-      this.userServiceAPI.verifyOTP(resetPasswordReqObj)
+      try {
+        this.userServiceAPI.verifyOTP(resetPasswordReqObj)
       .subscribe((data: IverifyOtpResponse) => {
     
-        if (data.errorOccured){
+        /*if (data.errorOccured){
           this.errorMsgEnableDisplay=true;
           this.errorMsgText='Something went wrong. Please try later.';
           this.resetPasswordFormProgressBar=false;
           this.disableVerifyOtpBtn=false;
           return false;
-        }
+        }*/
 
         if (data.invalidOtp){
           this.errorMsgEnableDisplay=true;
@@ -200,10 +201,24 @@ export class LegalentityForgotPasswordComponent implements OnInit {
 
       }, error => {
           this.errorMsgEnableDisplay=true;
-          this.errorMsgText='Something went wrong. Please try later.';
+
+          if (error instanceof HttpErrorResponse){
+            this.errorMsgText= this.errorHandler.getErrorStatusMessage(error.status);  
+          }
+          else{this.errorMsgText='Something went wrong. Please try later.';}
+
           this.resetPasswordFormProgressBar=false;
           this.disableVerifyOtpBtn=false;
       });
+
+      } catch (error) {
+        this.errorMsgEnableDisplay=true;
+        this.errorMsgText='Something went wrong. Please try later.';
+        this.resetPasswordFormProgressBar=false;
+        this.disableVerifyOtpBtn=false;
+      }
+
+      
 
      // this.resetPasswordPnl=false;
       //this.resetPasswordSuccessPnl=true;
@@ -213,23 +228,30 @@ export class LegalentityForgotPasswordComponent implements OnInit {
 
   ngOnInit() {
 
-    this.forgotPasswordForm=this.forgotPasswordFb.group({
-      emailId: ['', [Validators.required, Validators.email]]
-    });
-
-    this.forgotPasswordPnl=true;
-
-    this.resetPasswordForm=this.forgotPasswordFb.group({
-       userId: [''],
-       verfiedOTP: ['', Validators.required],
-       newPwd: ['', Validators.required],
-       reenterNewPwd: ['', Validators.required]
-    });
-
-    this.dispableSendOtpBtn= false;
-    this.disableVerifyOtpBtn= false;
-
-    this.utilServiceAPI.setTitle("Legalentity - Forgot Password | Attendme");
+    try {
+      this.forgotPasswordForm=this.forgotPasswordFb.group({
+        emailId: ['', [Validators.required, Validators.email]]
+      });
+  
+      this.forgotPasswordPnl=true;
+  
+      this.resetPasswordForm=this.forgotPasswordFb.group({
+         userId: [''],
+         verfiedOTP: ['', Validators.required],
+         newPwd: ['', Validators.required],
+         reenterNewPwd: ['', Validators.required]
+      });
+  
+      this.dispableSendOtpBtn= false;
+      this.disableVerifyOtpBtn= false;
+  
+      this.utilServiceAPI.setTitle("Legalentity - Forgot Password | Attendme");
+    } catch (error) {
+      this.errorMsgEnableDisplay=true;
+      this.errorMsgText='Something went wrong while loading this page.';
+      this.resetPasswordFormProgressBar=false;
+      this.disableVerifyOtpBtn=false;
+    }
 
   }
 

@@ -153,6 +153,22 @@ export class LegalentityMainComponent implements OnInit {
 
     }
 
+    //console.log(!tokenModel.passwordChange);
+
+    if (!tokenModel.passwordChange){
+      this.router.navigate(['legalentity','reset-password']);
+      return false;
+    }
+
+    if (tokenModel.userRole == 'admin'){
+
+      if (tokenModel.branchId == 0){
+        this.router.navigate(['legalentity','add-head-office']);
+        return false;
+      }
+
+    }
+
     /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));
