@@ -44,12 +44,21 @@ export const environment = {
         authCookieSecure: false,
         authCookieSameSite: "Strict",
 
+        sessionAuthCookieName: "session_auth",
+        sessionAuthCookieExpires: 2,
+        sessionAuthCookiePath: "/",
+        sessionAuthCookieDomain: "attendme.in",
+        sessionAuthCookieSecure: false,
+
         userDefMenuCookieName: "userdef_menu",
         userDefMenuCookieExpires: 2,
         userDefMenuCookiePath: "/",
         userDefMenuCookieDomain: "attendme.in",
         userDefMenuCookieSecure: false,
-        userDefMenuCookieSameSite: "Strict"
+        userDefMenuCookieSameSite: "Strict",
+
+        basicAuthUserName: "attendme",
+        basicAuthPassword: 'jo%&d!gv',
 
         // AWS New Production Instance (https)
 

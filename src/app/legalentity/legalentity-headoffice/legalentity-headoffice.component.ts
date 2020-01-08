@@ -13,7 +13,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityBranch } from '../model/legalentity-branch';
 import { LegalentityBranchService } from '../services/legalentity-branch.service';
-import { AuthService } from 'src/app/Auth/auth.service';
+import { AuthService, IrefreshTokenResponseStruct } from 'src/app/Auth/auth.service';
 import { TokenModel } from 'src/app/Common_Model/token-model';
 import { ErrorHandlerService } from 'src/app/Auth/error-handler.service';
 import { CookieService } from 'ngx-cookie-service';
@@ -95,7 +95,7 @@ export class LegalentityHeadofficeComponent implements OnInit {
 
      popCountryCallingCode()
      {
-      
+      try {
         this.utilServiceAPI.countryCallingCode()
         .subscribe((data:any) => {
         
@@ -104,83 +104,128 @@ export class LegalentityHeadofficeComponent implements OnInit {
          
         },
       error => {
-        console.log(error);
-      })  
+        //console.log(error);
+      });
+      } catch (error) {
+        this.errorBit = true;
+        this.errorMsg = 'There was an error while loading country calling codes !!!';
+      }
+        
      }
 
    addHeadOffice(branchOfficeModel:LegalentityBranch)
      {
 
-     
-      this.branchApi.addAndGetBranchHeadOffice(branchOfficeModel)
-      .subscribe((data => {
+      this.errorBit=false;
+      this.errorMsg = "";
 
-      // console.log(data);
-        branchOfficeModel.branchId = data.branchId;
-
-        
-        if (branchOfficeModel.branchId == 0)
-        {
-          //console.log("Error");
-    
+      try {
+        this.branchApi.addAndGetBranchHeadOffice(branchOfficeModel)
+        .subscribe((data => {
+  
+        // console.log(data);
+          branchOfficeModel.branchId = data.branchId;
+  
+          
+          if (branchOfficeModel.branchId == 0)
+          {
+            //console.log("Error");
+      
+            this.errorBit = true;
+            this.errorMsg = 'There was an error, Please contact administrator !!!';
+  
+          }
+          else
+          {
+            //console.log(data);
+  
+            this.userModel.legalEntityBranchDetails ={
+              branchHeadOffice: true,
+              branchId: branchOfficeModel.branchId,
+              branchName: branchOfficeModel.branchName,
+              complaintStageCount: branchOfficeModel.complaintStageCount
+            } 
+            
+            const sessionToken: string = this.authService.getSessionToken();//this.cookieService.get(this.utilServiceAPI.sessionAuthCookieName);
+  
+            try {
+              this.authService.refreshToken(sessionToken)
+            .subscribe((data: IrefreshTokenResponseStruct) => {
+  
+              this.cookieService.delete(this.utilServiceAPI.authCookieDomain);
+  
+              this.cookieService.set(
+                this.utilServiceAPI.authCookieName,
+                data.token,
+                this.utilServiceAPI.authCookieExpires,
+                this.utilServiceAPI.authCookiePath,
+                this.utilServiceAPI.authCookieDomain,
+                this.utilServiceAPI.authCookieSecure,
+                "Strict"
+              );
+  
+              this.router.navigate(['legalentity/portal/dashboard']);
+  
+            }, error => {
+              this.errorBit = true;
+              this.errorMsg = this.errorHandlerService.getErrorStatusMessage(error.error.status);
+            });
+            } catch (error) {
+              this.errorBit = true;
+              this.errorMsg = 'There was an error, Please contact administrator !!!';
+            }
+           
+            //localStorage.removeItem('legalEntityUserDetails');
+            //localStorage.setItem('legalEntityUserDetails', JSON.stringify(this.userModel));
+            
+            //this.router.navigate(['legalentity/portal/dashboard']);
+          }
+  
+        }),
+      error => {
+       // console.log(error);
+            this.errorBit = true;
+            //this.errorMsg = 'There was an error, Please contact administrator !!!';
+      });  
+      } catch (error) {
           this.errorBit = true;
           this.errorMsg = 'There was an error, Please contact administrator !!!';
-
-        }
-        else
-        {
-          //console.log(data);
-
-          this.userModel.legalEntityBranchDetails ={
-            branchHeadOffice: true,
-            branchId: branchOfficeModel.branchId,
-            branchName: branchOfficeModel.branchName,
-            complaintStageCount: branchOfficeModel.complaintStageCount
-          }   
-         
-          localStorage.removeItem('legalEntityUserDetails');
-          localStorage.setItem('legalEntityUserDetails', JSON.stringify(this.userModel));
-          
-          this.router.navigate(['legalentity/portal/dashboard']);
-        }
-
-      }),
-    error => {
-     // console.log(error);
-     this.errorBit = true;
-          this.errorMsg = 'There was an error, Please contact administrator !!!';
-    })
+      }
+     
+      
      } 
 
      addBranch(legalEntityHeadOffice:NgForm)
      {
 
+
+      try {
+        if (legalEntityHeadOffice.valid)
+        {
+ 
+        this.errorBit = false;
+        this.errorMsg = '';
+ 
+        this.branchOfficeModel.legalEntityId = this.legalEntityId;
+        this.branchOfficeModel.branchHeadOffice = true;
+        this.branchOfficeModel.adminApprove =true;
+        this.branchOfficeModel.branchActiveStatus =true;
+        this.branchOfficeModel.addedByUserId = this.userId;
+        
+        if (this.branchOfficeModel.contactMobile != undefined || this.branchOfficeModel.contactMobile != null)
+        {
+         this.branchOfficeModel.contactMobile = this.countryCode + "-" + this.branchOfficeModel.contactMobile;
+        } 
+       
+        
+        this.addHeadOffice(this.branchOfficeModel);
+ 
+        }
+      } catch (error) {
+        this.errorBit = true;
+        this.errorMsg = 'There was an error, Please contact administrator !!!';
+      }
       
-    
-       if (legalEntityHeadOffice.valid)
-       {
-
-       this.errorBit = false;
-       this.errorMsg = '';
-
-       this.branchOfficeModel.legalEntityId = this.legalEntityId;
-       this.branchOfficeModel.branchHeadOffice = true;
-       this.branchOfficeModel.adminApprove =true;
-       this.branchOfficeModel.branchActiveStatus =true;
-       this.branchOfficeModel.addedByUserId = this.userId;
-       
-       if (this.branchOfficeModel.contactMobile != undefined || this.branchOfficeModel.contactMobile != null)
-       {
-        this.branchOfficeModel.contactMobile = this.countryCode + "-" + this.branchOfficeModel.contactMobile;
-       } 
-      
-       
-       this.addHeadOffice(this.branchOfficeModel);
-
-       }
-
-       
-
        //this.reset(legalEntityHeadOffice);
        
      }
@@ -204,13 +249,20 @@ export class LegalentityHeadofficeComponent implements OnInit {
 
    this.cookieService.delete(this.utilServiceAPI.authCookieName);
    this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName);
-
+   this.cookieService.delete(this.utilServiceAPI.sessionAuthCookieName);
    this.router.navigate(['legalentity','login']);
   }
 
   ngOnInit() {
 
-    const tokenModel: TokenModel = this.authService.getTokenDetails();
+    try {
+
+      if (!this.authService.isLoggedIn()){
+        this.router.navigate(['legalentity','login']);
+        return false;
+      }
+
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
 
     if (tokenModel.userRole != 'admin'){
       this.router.navigate(['legalentity','login']);
@@ -258,14 +310,20 @@ export class LegalentityHeadofficeComponent implements OnInit {
 
     let userMobileNumberArr:string[];
 
-     //userMobileNumberArr = this.userModel.legalEntityUserDetails.userMobileNumer.split('-');
+     userMobileNumberArr = tokenModel.userMobileNumber.split('-');
 
-    this.countryCode = 91; //parseInt(userMobileNumberArr[0]);
+    this.countryCode = parseInt(userMobileNumberArr[0]);
     
-    this.branchOfficeModel.contactMobile = '9146046481' //userMobileNumberArr[1];
+    this.branchOfficeModel.contactMobile = userMobileNumberArr[1];
 
     this.branchOfficeModel.contactEmail  = tokenModel.sub; //this.userModel.legalEntityUserDetails.userEmailId;
 
+    } catch (error) {
+        this.errorBit = true;
+        this.errorMsg = 'There was an error, Please contact administrator !!!';
+    }
+
+    
   }
 
 }

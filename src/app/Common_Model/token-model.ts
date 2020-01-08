@@ -15,4 +15,5 @@ export class TokenModel {
     technicianCreationDateTime: string;
     technicianActiveStatus: boolean;
     sub: string;
+    userMobileNumber: string;
 }

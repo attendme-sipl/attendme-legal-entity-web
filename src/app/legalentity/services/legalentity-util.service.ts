@@ -34,6 +34,11 @@ export class LegalentityUtilService {
   authCookieDomain = environment.authCookieDomain;
   authCookieSecure = environment.authCookieSecure;
 
+  sessionAuthCookieName = environment.sessionAuthCookieName;
+  sessionAuthCookieExpires = environment.sessionAuthCookieExpires;
+  sessionAuthCookiePath = environment.sessionAuthCookiePath;
+  sessionAuthCookieDomain = environment.sessionAuthCookieDomain;
+  sessionAuthCookieSecure = environment.sessionAuthCookieSecure;
 
   userDefMenuCookieName = environment.userDefMenuCookieName;
   userDefMenuCookieExpires = environment.userDefMenuCookieExpires;

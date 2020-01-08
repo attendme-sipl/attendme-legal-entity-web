@@ -135,6 +135,7 @@ export class LegalentityMainComponent implements OnInit {
         this.updatedLegalEntityMenuPrefObj = menuModel;
       }
       else{
+        
         this.updatedLegalEntityMenuPrefObj=menuModel.map((value,index) => value? {
           enableToBranch: value['enableToBranch'],
           legalEntityId: value['legalEntityId'],
@@ -242,9 +243,9 @@ export class LegalentityMainComponent implements OnInit {
    /// localStorage.removeItem('legalEntityUserDetails');
     //localStorage.removeItem('legalEntityMenuPref');
 
-    this.cookieService.delete(this.utilAPI.authCookieName);
-    this.cookieService.delete(this.utilAPI.userDefMenuCookieName);
-
+    this.cookieService.delete(this.utilAPI.authCookieName, this.utilAPI.authCookiePath, this.utilAPI.authCookieDomain);
+    this.cookieService.delete(this.utilAPI.userDefMenuCookieName, this.utilAPI.userDefMenuCookiePath, this.utilAPI.userDefMenuCookieDomain);
+    this.cookieService.delete(this.utilAPI.sessionAuthCookieName, this.utilAPI.sessionAuthCookiePath, this.utilAPI.sessionAuthCookieDomain);
     this.router.navigate(['legalentity','login']);
   }
 

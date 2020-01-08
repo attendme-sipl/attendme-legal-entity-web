@@ -67,8 +67,9 @@ export class LegalentityLoginComponent implements OnInit {
         this.enableProgressBar=true;
         this.errorOccured=false;
 
-        this.cookieService.delete('auth');
-        this.cookieService.delete('userdef_menu');
+        this.cookieService.delete(this.utilServiceAPI.authCookieName);
+        this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName);
+        this.cookieService.delete(this.utilServiceAPI.sessionAuthCookieName);
 
         const userReqObj: IauthUserLoginReqStruct = {
           deviceIpAddress: '192.168.0.1',
@@ -96,6 +97,16 @@ export class LegalentityLoginComponent implements OnInit {
              this.utilServiceAPI.authCookiePath,
              this.utilServiceAPI.authCookieDomain,
              this.utilServiceAPI.authCookieSecure,
+             "Strict"
+           );
+
+           this.cookieService.set(
+             this.utilServiceAPI.sessionAuthCookieName,
+             data.sessionToken,
+             this.utilServiceAPI.sessionAuthCookieExpires,
+             this.utilServiceAPI.sessionAuthCookiePath,
+             this.utilServiceAPI.sessionAuthCookieDomain,
+             this.utilServiceAPI.sessionAuthCookieSecure,
              "Strict"
            );
 

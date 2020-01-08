@@ -48,6 +48,14 @@ export class AuthInterceptorService implements HttpInterceptor {
             }});
 
             break;
+         
+        case this.utilServiceAPI.legalEntityAPIURLWoApi + "/refreshToken":
+          request=request.clone({
+            setHeaders: {
+              Authorization: `Basic ${btoa(this.utilServiceAPI.basicAuthUserName + ":" + this.utilServiceAPI.basicAuthPassword)}`
+            }});
+
+            break;
       
         default:
           const jwtToken = jwt_token(this.cookieService.get(this.utilServiceAPI.authCookieName));

@@ -142,13 +142,19 @@ export class LegalentityResetPasswordComponent implements OnInit {
     //localStorage.removeItem('legalEntityMenuPref');
     //this.router.navigate(['/legalentity/login']);
 
-    this.cookieService.delete(this.utilServiceAPI.authCookieName);
-    this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName);
-
+    this.cookieService.delete(this.utilServiceAPI.authCookieName, this.utilServiceAPI.authCookiePath);
+    this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName, this.utilServiceAPI.userDefMenuCookiePath);
+    this.cookieService.delete(this.utilServiceAPI.sessionAuthCookieName, this.utilServiceAPI.sessionAuthCookiePath);
     this.router.navigate(['legalentity','login']);
   }
 
   ngOnInit() {
+
+    
+    if (!this.authService.isLoggedIn()){
+      this.router.navigate(['legalentity','login']);
+      return false;
+    }
 
     const tokenModel: TokenModel = this.authService.getTokenDetails();
 

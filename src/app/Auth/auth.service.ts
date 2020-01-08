@@ -15,6 +15,12 @@ export interface IauthUserLoginReqStruct{
   loginActivity: string
 };
 
+export interface IrefreshTokenResponseStruct{
+  userNotFound: boolean,
+  token: string,
+  isSessionTokenExpired: boolean
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -47,6 +53,16 @@ export class AuthService {
   getBaseAuthHeaderDetails(): HttpHeaders{
     const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(this.utilServiceAPI.basicAuthUserName + ":" + this.utilServiceAPI.basicAuthPassword)});
     return headers;
+  }
+
+  getSessionToken(): string{
+    return this.cookieService.get(this.utilServiceAPI.sessionAuthCookieName);
+  }
+
+  refreshToken(sessionToken: string): Observable<IrefreshTokenResponseStruct>{
+    return this.httpClient.post<IrefreshTokenResponseStruct>(this.utilServiceAPI.legalEntityAPIURLWoApi + "/refreshToken", {
+      sessionToken: sessionToken
+    });
   }
 
 }
