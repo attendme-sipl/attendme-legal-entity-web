@@ -152,7 +152,7 @@ export class LegalentityHeadofficeComponent implements OnInit {
               this.authService.refreshToken(sessionToken)
             .subscribe((data: IrefreshTokenResponseStruct) => {
   
-              this.cookieService.delete(this.utilServiceAPI.authCookieDomain);
+              //this.cookieService.delete(this.utilServiceAPI.authCookieDomain);
   
               this.cookieService.set(
                 this.utilServiceAPI.authCookieName,
@@ -247,9 +247,9 @@ export class LegalentityHeadofficeComponent implements OnInit {
    //localStorage.removeItem('legalEntityMenuPref');
    // this.router.navigate(['/legalentity/login']);
 
-   this.cookieService.delete(this.utilServiceAPI.authCookieName);
-   this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName);
-   this.cookieService.delete(this.utilServiceAPI.sessionAuthCookieName);
+   this.cookieService.delete(this.utilServiceAPI.authCookieName, this.utilServiceAPI.authCookiePath, this.utilServiceAPI.authCookieDomain);
+   this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName, this.utilServiceAPI.userDefMenuCookiePath, this.utilServiceAPI.userDefMenuCookieDomain);
+   this.cookieService.delete(this.utilServiceAPI.sessionAuthCookieName, this.utilServiceAPI.sessionAuthCookiePath, this.utilServiceAPI.sessionAuthCookieDomain);
    this.router.navigate(['legalentity','login']);
   }
 

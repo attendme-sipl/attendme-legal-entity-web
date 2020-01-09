@@ -7,6 +7,11 @@ import { ItechnicianLoginDetailsStruct, TehnicianUtilService, ItechnicianBranchR
 //import { UtilServicesService, IlegalEntityMenuPref } from 'src/app/util-services.service';
 import { ToastrService } from 'ngx-toastr';
 import { LegalentityMenuPref } from 'src/app/legalentity/model/legalentity-menu-pref';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { LegalentityMenuPrefNames } from 'src/app/legalentity/model/legalentity-menu-pref-names';
+import { LegalentityUtilService } from 'src/app/legalentity/services/legalentity-util.service';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-technician-main',
@@ -18,7 +23,11 @@ export class TechnicianMainComponent implements OnInit {
   userFullName: string;
   userId: number;
   legalEntityId: number;
+  branchId: number;
+  userRole: string;
 
+  equptMenuName: string;
+  branchMenuName: string;
   technicianMenuName: string;
   complaintsMenuName: string;
   serviceMenuName: string;
@@ -29,9 +38,13 @@ export class TechnicianMainComponent implements OnInit {
     private router: Router,
     private iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
-    private utilServiceAPI: TehnicianUtilService,
+    //private utilServiceAPI: TehnicianUtilService,
+    private utilServiceAPI: LegalentityUtilService,
     private toastService: ToastrService,
-    private technicianBranchUtilAPI: TehnicianUtilService
+    private technicianBranchUtilAPI: TehnicianUtilService,
+    private authService: AuthService,
+    private menuModel: LegalentityMenuPrefNames,
+    private cookieService: CookieService
   ) {
     iconRegistry.addSvgIcon(
       "attendme-logo",
@@ -44,7 +57,7 @@ export class TechnicianMainComponent implements OnInit {
     );
    }
 
-   setBranchDetails():void{
+   /*setBranchDetails():void{
 
     let branchRequestObj: ItechnicianBranchRequestStruct ={
       adminApprove: true,
@@ -59,9 +72,9 @@ export class TechnicianMainComponent implements OnInit {
       localStorage.setItem('technicinaBranchDetails',JSON.stringify(data));
 
      });
-   }
+   }*/
 
-   setLegalEntityMenuPreference(): void
+   /*setLegalEntityMenuPreference(): void
    { 
 
     if (localStorage.getItem('legalEntityMenuPref') == null)
@@ -106,7 +119,7 @@ export class TechnicianMainComponent implements OnInit {
     });
     }
 
-   }
+   }*/
 
    setTechnicianDetails():void {
 
@@ -127,13 +140,39 @@ export class TechnicianMainComponent implements OnInit {
 
   ngOnInit() {
 
-    if (localStorage.getItem('technicianUserDetails') != null)
+    if (this.cookieService.get(this.utilServiceAPI.authCookieName) == ''){
+      this.router.navigate(['legalentity','login']);
+      return false;
+    }
+
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.userFullName=tokenModel.technicianName;
+
+    this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
+
+    this.equptMenuName=this.menuModel.equipmentMenuName;
+    this.complaintsMenuName = this.menuModel.complaintMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
+    this.branchMenuName=this.menuModel.branchMenuName;
+
+    if (!tokenModel.passwordChange){
+      this.router.navigate(['technician','reset-password']);
+      return false;
+    }
+
+    /*if (localStorage.getItem('technicianUserDetails') != null)
     {
 
       let technicianUserDetails: ItechnicianLoginDetailsStruct = JSON.parse(localStorage.getItem('technicianUserDetails'));
 
       this.legalEntityId = technicianUserDetails.legalEntityId;
-      this.userFullName = technicianUserDetails.userFullName;
+      this.userFullName = technEicianUserDetails.userFullName;
       this.userId = technicianUserDetails.userId;
 
       if (technicianUserDetails.passwordChange == false){
@@ -148,10 +187,10 @@ export class TechnicianMainComponent implements OnInit {
      //this.router.navigate(['technician/login']);
      this.router.navigate(['legalentity','login']);
      return false;
-    }
+    }*/
 
   
-    if (localStorage.getItem('legalEntityMenuPref') != null)
+    /*if (localStorage.getItem('legalEntityMenuPref') != null)
     {
 
       let legalEntityMenuPrefObj:LegalentityMenuPref[] = JSON.parse(localStorage.getItem('legalEntityMenuPref'));
@@ -182,7 +221,7 @@ export class TechnicianMainComponent implements OnInit {
         this.serviceMenuName = servicesMenuNameObj[0]['userDefMenuName']; 
       }
 
-    }
+    }*/
     
    
 
@@ -190,11 +229,15 @@ export class TechnicianMainComponent implements OnInit {
 
 
   logOut():void{
-   localStorage.removeItem('technicianUserDetails');
-   localStorage.removeItem('legalEntityMenuPref');
-   localStorage.removeItem('technicianDetails');
+
+   //localStorage.removeItem('technicianUserDetails');
+   //localStorage.removeItem('legalEntityMenuPref');
+   //localStorage.removeItem('technicianDetails');
    
    //this.router.navigate(['technician/login']);
+
+   this.authService.deleteCookies();
+
    this.router.navigate(['legalentity','login']);  
    //this.router.navigate(['legalentity/login'])
   }

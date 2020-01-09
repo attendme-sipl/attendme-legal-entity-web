@@ -12,7 +12,7 @@ export class TokenModel {
     passwordChange: boolean;
     technicianId: number;
     technicianName: string;
-    technicianCreationDateTime: string;
+    ///technicianCreationDateTime: string;
     technicianActiveStatus: boolean;
     sub: string;
     userMobileNumber: string;

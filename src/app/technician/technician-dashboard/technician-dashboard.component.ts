@@ -8,12 +8,20 @@ import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { TechnicianComplaintService, ItechnicianConciseComplaintResponse, ItechnicianUnResolvedComptConciseResponse } from '../services/technician-complaint.service';
 import { LegalentityMenuPref } from 'src/app/legalentity/model/legalentity-menu-pref';
+import { LegalentityUtilService } from 'src/app/legalentity/services/legalentity-util.service';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { LegalentityMenuPrefNames } from 'src/app/legalentity/model/legalentity-menu-pref-names';
 
 export interface ItechConciseComplaintReqStruct{
    technicianId: number
    leadTimeDaysLimit: number,
    currentLoginDateTime: string,
-   lastLoginDateTime: string
+   lastLoginDateTime: string,
+   legalEntityId: number,
+   branchId: number,
+   userId: number,
+   userRole: string
 };
 
 @Component({
@@ -25,6 +33,9 @@ export class TechnicianDashboardComponent implements OnInit {
 
   technicianId: number;
   legalEntityId: number;
+  branchId: number;
+  userId: number;
+  userRole: string;
   complaintsProgressBar: boolean;
 
   complaintMenuName: string;
@@ -53,7 +64,10 @@ export class TechnicianDashboardComponent implements OnInit {
     private toastService: ToastrService,
     private iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
-    private technicianComplaintServiceApi: TechnicianComplaintService
+    private technicianComplaintServiceApi: TechnicianComplaintService,
+    private legalEntityUtilServiceAPI: LegalentityUtilService,
+    private authService: AuthService,
+    private menuModel: LegalentityMenuPrefNames
   ) { 
 
     iconRegistry.addSvgIcon(
@@ -71,19 +85,24 @@ export class TechnicianDashboardComponent implements OnInit {
       currentLoginDateTime: this.userCurrentLoginDateTime,
       lastLoginDateTime: this.userLastLoginDateTime,
       leadTimeDaysLimit: this.leadDaysLimit,
-      technicianId: this.technicianId
+      technicianId: this.technicianId,
+      legalEntityId: this.legalEntityId,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
-    this.technicianComplaintServiceApi.getTechnicianComplaintConciseRpt(conciseComplaintReqObj)
+    try {
+      this.technicianComplaintServiceApi.getTechnicianComplaintConciseRpt(conciseComplaintReqObj)
     .subscribe((data: ItechnicianConciseComplaintResponse) => {
 
-      if (data.errorOccurred)
+      /*if (data.errorOccurred)
       {
         
         this.toastService.error("Something when worg while loading " + this.complaintMenuName + " details");
         this.complaintsProgressBar = false;
         return false;
-      }
+      }*/
 
        this.freshComplaintCount = data.freshComplaintCount != null? data.freshComplaintCount: 0;
        this.assignedComplaintCount = data.assignedComplaintCount != null? data.assignedComplaintCount: 0;
@@ -95,10 +114,13 @@ export class TechnicianDashboardComponent implements OnInit {
 
     }, error => {
       
-      this.toastService.error("Something when worg while loading " + this.complaintMenuName + " details");
+        this.toastService.error("Something when worg while loading " + this.complaintMenuName + " details");
         this.complaintsProgressBar = false;
         return false;
     });
+    } catch (error) {
+      this.complaintsProgressBar = false;
+    }
 
   }
 
@@ -142,8 +164,14 @@ export class TechnicianDashboardComponent implements OnInit {
 
   ngOnInit() {
 
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
 
-    if (localStorage.getItem('technicianUserDetails') != null)
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    /*if (localStorage.getItem('technicianUserDetails') != null)
     {
       let technicianUserObj:ItechnicianLoginDetailsStruct = JSON.parse(localStorage.getItem('technicianUserDetails'));
 
@@ -155,9 +183,14 @@ export class TechnicianDashboardComponent implements OnInit {
      //this.router.navigate(['technician/login']);
      this.router.navigate(['legalentity','login']);
      return false;
-    }
+    }*/
 
-    const legalEntityMenuPrefObj: LegalentityMenuPref[] = JSON.parse(localStorage.getItem('legalEntityMenuPref'));
+    this.menuModel = this.legalEntityUtilServiceAPI.getLegalEntityMenuPrefNames();
+
+    this.complaintMenuName=this.menuModel.complaintMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
+
+   /* const legalEntityMenuPrefObj: LegalentityMenuPref[] = JSON.parse(localStorage.getItem('legalEntityMenuPref'));
 
 
     let complaintMenuNameObj = legalEntityMenuPrefObj.map((value,index) => value? {
@@ -174,20 +207,20 @@ export class TechnicianDashboardComponent implements OnInit {
     }:null)
     .filter(value => value.ngModelPropMenuName == 'technician');
 
-    this.technicianMenuName = technicianMenuNameObj[0]['userDefMenuName'];
+    this.technicianMenuName = technicianMenuNameObj[0]['userDefMenuName'];*/
     
     this.util.setTitle(this.technicianMenuName + " - Dashboard | Attendme");
 
-    let technicianDetailsObj: ItechnicianDetailsReponse = JSON.parse(localStorage.getItem('technicianDetails'));
+   // let technicianDetailsObj: ItechnicianDetailsReponse = JSON.parse(localStorage.getItem('technicianDetails'));
 
-    this.technicianId = technicianDetailsObj.technicianId;
+    this.technicianId = tokenModel.technicianId; //technicianDetailsObj.technicianId;
 
-    let technicianUserDetailsObj: ItechnicianLoginDetailsStruct = JSON.parse(localStorage.getItem('technicianUserDetails'));
+    //let technicianUserDetailsObj: ItechnicianLoginDetailsStruct = JSON.parse(localStorage.getItem('technicianUserDetails'));
 
-     this.userCurrentLoginDateTime = technicianUserDetailsObj.currentLoginDateTime;
-     this.userLastLoginDateTime = technicianUserDetailsObj.lastUpdateDateTime;
+     //this.userCurrentLoginDateTime = technicianUserDetailsObj.currentLoginDateTime;
+     //this.userLastLoginDateTime = technicianUserDetailsObj.lastUpdateDateTime;
 
-     this.leadDaysLimit = 8;
+     //this.leadDaysLimit = 8;
 
      this.popConciseComplaintRpt();
 

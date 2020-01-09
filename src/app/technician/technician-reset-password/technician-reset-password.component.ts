@@ -9,6 +9,10 @@ import { NgForm } from '@angular/forms';
 import * as md5 from 'md5';
 import { LegalentityUserService } from '../../legalentity/services/legalentity-user.service';
 import { LegalentityMenuPref } from 'src/app/legalentity/model/legalentity-menu-pref';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { CookieService } from 'ngx-cookie-service';
+import { LegalentityUtilService } from 'src/app/legalentity/services/legalentity-util.service';
 
 @Component({
   selector: 'app-technician-reset-password',
@@ -17,7 +21,10 @@ import { LegalentityMenuPref } from 'src/app/legalentity/model/legalentity-menu-
 })
 export class TechnicianResetPasswordComponent implements OnInit {
 
+  legalEntityId: number;
+  branchId: number;
   userId: number;
+  userRole: string;
   technicianMenuName: string;
   userName: string;
 
@@ -28,10 +35,17 @@ export class TechnicianResetPasswordComponent implements OnInit {
 
   newMd5Password:string;
 
+  equptMenuName: string;
+  branchMenuName: string;
+  complaintMenuName: string;
+
   constructor(
     private router: Router,
     private toastService:ToastrService,
-    private legalEntityMainServiceAPI: LegalentityUserService
+    private legalEntityMainServiceAPI: LegalentityUserService,
+    private authService: AuthService,
+    private cookieService: CookieService,
+    private utilServiceAPI: LegalentityUtilService
   ) { }
 
   resetPassword(resetPasswordForm:NgForm)
@@ -54,29 +68,36 @@ export class TechnicianResetPasswordComponent implements OnInit {
 
         this.newMd5Password = md5(this.newPassword);
 
-         this.legalEntityMainServiceAPI.resetPassword(this.userId,this.newMd5Password,true)
-         //.pipe(first())
-         .subscribe((data => {
-           
-           if (data.passwordReset == true)
-           {
-            this.btnDisable=false;
-            this.progressBarBit=false;
-            this.logout();
-           }
-           else
-           {
+        try {
+          this.legalEntityMainServiceAPI.resetPassword(this.userId,this.newMd5Password,true)
+          //.pipe(first())
+          .subscribe((data => {
+            
+            if (data.passwordReset == true)
+            {
              this.btnDisable=false;
              this.progressBarBit=false;
-             
-             this.toastService.error("There was an error while resetting password");
-           }
-         }),
-         error => {
-           this.btnDisable=false;
-           this.progressBarBit=false;
-          this.toastService.error("There was an error while resetting password");
-         })
+             this.logout();
+            }
+            else
+            {
+              this.btnDisable=false;
+              this.progressBarBit=false;
+              
+              this.toastService.error("There was an error while resetting password");
+            }
+          }),
+          error => {
+            this.btnDisable=false;
+            this.progressBarBit=false;
+            //this.toastService.error("There was an error while resetting password");
+          });
+        } catch (error) {
+            this.btnDisable=false;
+            this.progressBarBit=false;
+            this.toastService.error("There was an error while resetting password");
+        }
+
        }
      }
 
@@ -85,7 +106,36 @@ export class TechnicianResetPasswordComponent implements OnInit {
 
   ngOnInit() {
 
-    if (localStorage.getItem('technicianUserDetails') != null){
+    try {
+      this.btnDisable=false;
+      this.progressBarBit=false;
+
+      if (this.cookieService.get(this.utilServiceAPI.authCookieName) == ''){
+        this.router.navigate(['legalentity','login']);
+        return false;
+      }
+  
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
+  
+      this.legalEntityId=tokenModel.legalEntityId;
+      this.branchId=tokenModel.branchId;
+      this.userId=tokenModel.userId;
+      this.userRole=tokenModel.userRole;
+  
+      if (tokenModel.passwordChange){
+        this.router.navigate(['technician','portal','dashboard']);
+        return false; 
+      }
+
+    } catch (error) {
+      this.btnDisable=false;
+      this.progressBarBit=false;
+      this.toastService.error("There was an error while resetting password"); 
+    }
+
+    
+
+    /*if (localStorage.getItem('technicianUserDetails') != null){
 
       let technicianUserDetails: ItechnicianLoginDetailsStruct = JSON.parse(localStorage.getItem('technicianUserDetails'));
 
@@ -112,13 +162,18 @@ export class TechnicianResetPasswordComponent implements OnInit {
       //this.router.navigate(['technician','login']);
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
+
+
   }
 
   logout(){
-    localStorage.removeItem('technicianUserDetails');
-    localStorage.removeItem('legalEntityMenuPref');
-    localStorage.removeItem('technicianDetails');
+   // localStorage.removeItem('technicianUserDetails');
+    //localStorage.removeItem('legalEntityMenuPref');
+    //localStorage.removeItem('technicianDetails');
+
+    this.authService.deleteCookies();
+
     this.router.navigate(['technician','login']);
   }
 

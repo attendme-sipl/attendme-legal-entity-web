@@ -18,6 +18,8 @@ import { ErrorHandlerService } from 'src/app/Auth/error-handler.service';
 import { ToastrService } from 'ngx-toastr';
 import { CookieService } from 'ngx-cookie-service';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import *as jwt_token from 'jwt-decode';
 
 @Component({
   selector: 'app-legalentity-login',
@@ -67,9 +69,9 @@ export class LegalentityLoginComponent implements OnInit {
         this.enableProgressBar=true;
         this.errorOccured=false;
 
-        this.cookieService.delete(this.utilServiceAPI.authCookieName);
-        this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName);
-        this.cookieService.delete(this.utilServiceAPI.sessionAuthCookieName);
+        this.cookieService.delete(this.utilServiceAPI.authCookieName, this.utilServiceAPI.authCookiePath, this.utilServiceAPI.authCookieDomain);
+        this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName, this.utilServiceAPI.userDefMenuCookiePath, this.utilServiceAPI.userDefMenuCookieDomain);
+        this.cookieService.delete(this.utilServiceAPI.sessionAuthCookieName, this.utilServiceAPI.sessionAuthCookiePath, this.utilServiceAPI.sessionAuthCookieDomain);
 
         const userReqObj: IauthUserLoginReqStruct = {
           deviceIpAddress: '192.168.0.1',
@@ -124,8 +126,19 @@ export class LegalentityLoginComponent implements OnInit {
 
            this.enableProgressBar=false;
 
-           this.router.navigate(['legalentity','portal','dashboard']);
+           const tokenModel: TokenModel = jwt_token(data.token);
 
+           if (tokenModel.userRole == 'admin' || tokenModel.userRole == 'branch'){
+            this.router.navigate(['legalentity','portal','dashboard']);
+            return false;
+           }
+
+           if (tokenModel.userRole == 'technician'){
+            this.router.navigate(['technician/portal/dashboard']);
+            return false;
+           }
+
+          
          }, error => {
 
             this.enableProgressBar = false;
