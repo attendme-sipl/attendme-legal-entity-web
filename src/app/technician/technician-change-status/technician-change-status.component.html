@@ -6,7 +6,7 @@
 
     <div class="modal-header">
       <h5 class="modal-title">
-        Change {{complaintMenuName}}
+        Change {{complaintMenuName}} Status
       </h5>
 
       <button type="button" class="close" data-dismiss="modal" aria-label="Close"
@@ -44,6 +44,35 @@
                       </mat-error>
 
                   </mat-form-field>
+
+                  <mat-label>Upload Documents</mat-label>
+                  <input type="file" accept="image/*,application/pdf" class="form-control" />
+
+                  <mat-card>
+                    <mat-card-content>
+
+                      
+                          <div class="alert alert-dark alert-dismissible fade show" role="alert">
+                            File1.pdf
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div> 
+                        
+                          <div class="alert alert-dark alert-dismissible fade show" role="alert">
+                            File2.jpg
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div> 
+                      
+                    </mat-card-content>
+                  </mat-card>
+
+                  <!--<mat-form-field>
+                    <mat-label>Upload Documents</mat-label>
+                    <input type="file" accept="image/*,application/pdf" class="form-control" />
+                  </mat-form-field>-->
       
                   <mat-form-field class="formFieldStyle">
                     <textarea matInput placeholder="Failure Reason"

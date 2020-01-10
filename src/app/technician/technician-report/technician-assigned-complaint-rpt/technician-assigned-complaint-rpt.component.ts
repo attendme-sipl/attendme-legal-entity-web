@@ -18,6 +18,10 @@ import { TechnicianIndivComplaintDetailsComponent } from '../technician-indiv-co
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
 import { LegalentityMenuPref } from 'src/app/legalentity/model/legalentity-menu-pref';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { LegalentityMenuPrefNames } from 'src/app/legalentity/model/legalentity-menu-pref-names';
+import { LegalentityUtilService } from 'src/app/legalentity/services/legalentity-util.service';
 
 export interface IchangeComplaintStatusReqStruct{
   complaintId: number,
@@ -26,12 +30,14 @@ export interface IchangeComplaintStatusReqStruct{
   complaintMenuName: string,
   technicianMenuName: string,
   equipmentMenuName: string,
-  legalEntityUserId: number,
-  androidPortalKey: boolean,
-  complaintStageCount: number,
   failureReason: string,
   actionTaken: string,
-  complaintNumber: string;
+  complaintStatusDocument: File[],
+  userId: number,
+  branchId: number,
+  userRole: string,
+  legalEntityId: number,
+  complaintNumber: string
 }
 
 @Component({
@@ -45,8 +51,10 @@ export class TechnicianAssignedComplaintRptComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   legalEntityId: number;
+  branchId: number;
   technicianId: number;
   userId: number;
+  userRole: string;
 
   technicianMenuName: string;
   equipmentMenuName: string;
@@ -85,7 +93,10 @@ export class TechnicianAssignedComplaintRptComponent implements OnInit {
     sanitizer: DomSanitizer,
     private complaintServiceAPI: TechnicianComplaintService,
     private toastService: ToastrService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private authService: AuthService,
+    private menuModel: LegalentityMenuPrefNames,
+    private legalEntityUtilAPI: LegalentityUtilService
   ) {
     iconRegistry.addSvgIcon(
       'refresh-panel',
@@ -93,7 +104,7 @@ export class TechnicianAssignedComplaintRptComponent implements OnInit {
     );
    }
 
-  setLegalEntityMenuPref():void{
+  /*setLegalEntityMenuPref():void{
     let menuPrefObj: LegalentityMenuPref[] = JSON.parse(localStorage.getItem('legalEntityMenuPref'));
 
     const complaintMenuNameObj = menuPrefObj.map((value,index) => value? {
@@ -129,7 +140,7 @@ export class TechnicianAssignedComplaintRptComponent implements OnInit {
     if (branchMenuNameObj.length >0){
       this.branchMenuName=branchMenuNameObj[0]['userDefMenuName'];
     }
-  }
+  }*/
 
   popAssingedComplaintRptGrid(exportToExcel: boolean):void{
 
@@ -148,47 +159,62 @@ export class TechnicianAssignedComplaintRptComponent implements OnInit {
       exportToExcel: exportToExcel,
       legalEntityId: this.legalEntityId,
       technicianMenuName: this.technicianMenuName,
-      complaintTrash: false
+      complaintTrash: false,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     //console.log(assingedComplaintRepObj);
 
     if (exportToExcel){
-      let fileName: string = "Assigned-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+      try {
+        let fileName: string = "Assigned-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
       this.complaintServiceAPI.getTechnicianAssingnedComptExportToExcel(assingedComplaintRepObj)
       .subscribe(data => {
         saveAs(data, fileName + ".xls");
         this.enableProgressBar=false;
       }, error => {
-        this.toastService.error("Something went wrong while downloading excel");
+        //this.toastService.error("Something went wrong while downloading excel");
         this.enableProgressBar=false;
       });
+      } catch (error) {
+        this.toastService.error("Something went wrong while downloading excel");
+        this.enableProgressBar=false;
+      }
+      
     }
     else{
-      this.complaintServiceAPI.getTechnicianAssingnedComptRpt(assingedComplaintRepObj)
-    .subscribe((data:ItechnicianAssingedComptRptResponse) => {
-      if (data.errorOccured)
-      {
+      try {
+        this.complaintServiceAPI.getTechnicianAssingnedComptRpt(assingedComplaintRepObj)
+        .subscribe((data:ItechnicianAssingedComptRptResponse) => {
+          /*if (data.errorOccured)
+          {
+            this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " report");
+            this.enableProgressBar = false;
+            return false;
+          }*/
+    
+          this.totalRecordCount=data.complaintList.length;
+          
+          this.complaintRecords = data.complaintList;
+          this.complaintRecordCount = data.complaintList.length;
+          this.dataSource = new MatTableDataSource(data.complaintList);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+    
+          this.enableProgressBar = false;
+          
+          
+        }, error => {
+          //this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " report");
+          this.enableProgressBar = false;
+        });  
+      } catch (error) {
         this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " report");
         this.enableProgressBar = false;
-        return false;
       }
-
-      this.totalRecordCount=data.complaintList.length;
       
-      this.complaintRecords = data.complaintList;
-      this.complaintRecordCount = data.complaintList.length;
-      this.dataSource = new MatTableDataSource(data.complaintList);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-
-      this.enableProgressBar = false;
-      
-      
-    }, error => {
-      this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " report");
-      this.enableProgressBar = false;
-    });
     }
 
     
@@ -197,89 +223,113 @@ export class TechnicianAssignedComplaintRptComponent implements OnInit {
 
   openComplaintDetailsDialog(complaintId: number):void{
 
-    const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
-      complaintId: complaintId
-    };
-    
-    const indivComplaintDialog = this.dialog.open(TechnicianIndivComplaintDetailsComponent,{
-      data: IndivComplaintReqObj
-    });
+    try {
+      const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+        complaintId: complaintId,
+        branchId: this.branchId,
+        legalEntityId: this.legalEntityId,
+        userId:  this.userId,
+        userRole: this.userRole
+      };
+      
+      const indivComplaintDialog = this.dialog.open(TechnicianIndivComplaintDetailsComponent,{
+        data: IndivComplaintReqObj
+      }); 
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details dialog.","");
+    }
 
   }
 
   openChangeStatusDialog(complaintId: number):void{
 
-    const complaintNumberObj = this.complaintRecords.map((value,index) => value?{
-      complaintId: value['complaintId'],
-      complaintNumber: value['complaintNumber']
-    }:null)
-    .filter(value => value.complaintId == complaintId);
-
-    let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
-
-    let changeComplaintReqObj: IchangeComplaintStatusReqStruct = {
-      actionTaken: null,
-      androidPortalKey: false,
-      complaintId: complaintId,
-      complaintMenuName: this.complaintMenuName,
-      complaintStageCount: 4,
-      complaintStatus: null,
-      equipmentMenuName: this.equipmentMenuName,
-      failureReason: null,
-      legalEntityUserId: this.legalEntityId,
-      technicianId: this.technicianId,
-      technicianMenuName: this.technicianMenuName,
-      complaintNumber: complaintNumber
-    };
-
-    const changeStatusDialogRef = this.dialog.open(TechnicianChangeStatusComponent,{
-      panelClass: 'custom-dialog-container',
-      data: changeComplaintReqObj
-    });
-
-    changeStatusDialogRef.afterClosed().subscribe(result => {
-      
-      if (changeComplaintReqObj.complaintStatus != null || changeComplaintReqObj.complaintStatus != undefined)
-      {
-        let confirmAlertDialogReqObj: IConfirmAlertStruct = {
-          alertMessage: 'Are you sure you want to change ' + this.complaintMenuName + " status",
-          confirmBit: false
-        }
-
-        const confirmAlertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent, {
-          data: confirmAlertDialogReqObj,
-          panelClass: 'custom-dialog-container'
-        });
-
-        confirmAlertDialogRef.afterClosed().subscribe(result => {
-          if (confirmAlertDialogReqObj.confirmBit == true)
-          {
-            this.enableProgressBar = true;
-
-            this.complaintServiceAPI.setComplaintStatusChange(changeComplaintReqObj)
-            .subscribe((data: ItechnicianChangeStatusReponse) => {
-              if (data.errorOccured == true || data.complaintStatusExisits == true)
-              {
+    try {
+      const complaintNumberObj = this.complaintRecords.map((value,index) => value?{
+        complaintId: value['complaintId'],
+        complaintNumber: value['complaintNumber']
+      }:null)
+      .filter(value => value.complaintId == complaintId);
+  
+      let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
+  
+      let changeComplaintReqObj: IchangeComplaintStatusReqStruct = {
+        actionTaken: null,
+        //androidPortalKey: false,
+        complaintId: complaintId,
+        complaintMenuName: this.complaintMenuName,
+        //complaintStageCount: 4,
+        complaintStatus: null,
+        equipmentMenuName: this.equipmentMenuName,
+        failureReason: null,
+        //legalEntityUserId: this.legalEntityId,
+        technicianId: this.technicianId,
+        technicianMenuName: this.technicianMenuName,
+        //complaintNumber: complaintNumber,
+        branchId: this.branchId,
+        userId: this.userId,
+        userRole: this.userRole,
+        complaintStatusDocument: null,
+        legalEntityId: this.legalEntityId,
+        complaintNumber: complaintNumber
+      };
+  
+      const changeStatusDialogRef = this.dialog.open(TechnicianChangeStatusComponent,{
+        panelClass: 'custom-dialog-container',
+        data: changeComplaintReqObj
+      });
+  
+      changeStatusDialogRef.afterClosed().subscribe(result => {
+        
+        if (changeComplaintReqObj.complaintStatus != null || changeComplaintReqObj.complaintStatus != undefined)
+        {
+          let confirmAlertDialogReqObj: IConfirmAlertStruct = {
+            alertMessage: 'Are you sure you want to change ' + this.complaintMenuName + " status",
+            confirmBit: false
+          }
+  
+          const confirmAlertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent, {
+            data: confirmAlertDialogReqObj,
+            panelClass: 'custom-dialog-container'
+          });
+  
+          confirmAlertDialogRef.afterClosed().subscribe(result => {
+            if (confirmAlertDialogReqObj.confirmBit == true)
+            {
+              this.enableProgressBar = true;
+  
+              try {
+                this.complaintServiceAPI.setComplaintStatusChange(changeComplaintReqObj)
+                .subscribe((data: ItechnicianChangeStatusReponse) => {
+                  /*if (data.errorOccured == true || data.complaintStatusExisits == true)
+                  {
+                    this.enableProgressBar = false;
+                    this.toastService.error("Something went wrong while changing " + this.complaintMenuName + " status");
+                    this.popAssingedComplaintRptGrid(false);
+                    return false;
+                  }*/
+    
+                  this.enableProgressBar = false;
+                  this.toastService.success(this.complaintMenuName + " status changes successfully");
+                  this.popAssingedComplaintRptGrid(false);
+    
+                }, error => {
+                  this.enableProgressBar = false;
+                  //this.toastService.error("Something went wrong while changing " + this.complaintMenuName + " status");
+                }); 
+              } catch (error) {
+                console.log(error);
                 this.enableProgressBar = false;
                 this.toastService.error("Something went wrong while changing " + this.complaintMenuName + " status");
-                this.popAssingedComplaintRptGrid(false);
-                return false;
               }
-
-              this.enableProgressBar = false;
-              this.toastService.success(this.complaintMenuName + " status changes successfully");
-              this.popAssingedComplaintRptGrid(false);
-
-            }, error => {
-              this.enableProgressBar = false;
-                this.toastService.error("Something went wrong while changing " + this.complaintMenuName + " status");
-            })
-            
-          }
-        })
-      }
-
-    })
+              
+            }
+          });
+        }
+  
+      });      
+    } catch (error) {
+      this.toastService.error("Something went wrong while processions " + this.complaintMenuName + " status change functionlaity","");
+    }
 
   }
 
@@ -290,34 +340,54 @@ export class TechnicianAssignedComplaintRptComponent implements OnInit {
 
   ngOnInit() {
 
-    if (localStorage.getItem('technicianUserDetails') != null){
+    try {
+      const tokenModle: TokenModel = this.authService.getTokenDetails();
 
-      let technicianUserObj: IUserLoginResponseStruct = JSON.parse(localStorage.getItem('technicianUserDetails'));
-      
-      this.userId = technicianUserObj.userId;
-      this.legalEntityId = technicianUserObj.legalEntityId;
-
-      if (localStorage.getItem('technicianDetails') != null){
-        let technicianDetailsObj: ItechnicianDetailsReponse = JSON.parse(localStorage.getItem('technicianDetails'));
-        this.technicianId = technicianDetailsObj.technicianId;
+      this.legalEntityId=tokenModle.legalEntityId;
+      this.branchId=tokenModle.branchId;
+      this.userId=tokenModle.userId;
+      this.userRole=tokenModle.userRole;
+  
+      this.technicianId=tokenModle.technicianId;
+  
+      /*if (localStorage.getItem('technicianUserDetails') != null){
+  
+        let technicianUserObj: IUserLoginResponseStruct = JSON.parse(localStorage.getItem('technicianUserDetails'));
+        
+        this.userId = technicianUserObj.userId;
+        this.legalEntityId = technicianUserObj.legalEntityId;
+  
+        if (localStorage.getItem('technicianDetails') != null){
+          let technicianDetailsObj: ItechnicianDetailsReponse = JSON.parse(localStorage.getItem('technicianDetails'));
+          this.technicianId = technicianDetailsObj.technicianId;
+        }
+        else{
+          //this.router.navigateByUrl('[technician/login]');
+          this.router.navigate(['legalentity','login']);  
+          return false;
+        }
       }
       else{
         //this.router.navigateByUrl('[technician/login]');
-        this.router.navigate(['legalentity','login']);  
+        this.router.navigate(['legalentity','login']);
         return false;
-      }
+      }*/
+  
+      //this.setLegalEntityMenuPref();
+  
+      this.menuModel=this.legalEntityUtilAPI.getLegalEntityMenuPrefNames();
+  
+      this.equipmentMenuName=this.menuModel.equipmentMenuName;
+      this.branchMenuName=this.menuModel.branchMenuName;
+      this.complaintMenuName=this.menuModel.complaintMenuName;
+      this.technicianMenuName=this.menuModel.technicianMenuName;
+      
+      this.util.setTitle("Technician - Assigned " + this.complaintMenuName + " Report | Attendme");
+  
+      this.popAssingedComplaintRptGrid(false);      
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading page","");
     }
-    else{
-      //this.router.navigateByUrl('[technician/login]');
-      this.router.navigate(['legalentity','login']);
-      return false;
-    }
-
-    this.setLegalEntityMenuPref();
-    
-    this.util.setTitle("Technician - Assigned " + this.complaintMenuName + " Report | Attendme");
-
-    this.popAssingedComplaintRptGrid(false);
 
   }
 

@@ -44,7 +44,10 @@ export interface ItechnicianAssingedComptRptReqStruct{
    technicianMenuName: string,
    equptMenuName: string,
    branchMenuName: string,
-   complaintTrash: boolean
+   complaintTrash: boolean,
+   branchId: number,
+   userId: number,
+   userRole: string
 };
 
 export interface ItechnicianAssingedComptRptResponse{
@@ -76,7 +79,11 @@ export interface ItechnicianUnResolvedComptConciseResponse{
 };
 
 export interface IcomplaintIndivReqStruct{
-  complaintId: number
+  complaintId: number,
+  legalEntityId: number,
+  branchId: number,
+  userId: number,
+  userRole: string
 };
 
 export interface IcomplaintIndivResponseStruct{
@@ -198,25 +205,73 @@ export class TechnicianComplaintService {
   }
 
   setComplaintStatusChange(complaintStatusChangeReqObj: IchangeComplaintStatusReqStruct):Observable<ItechnicianChangeStatusReponse>{
-    return this.httpClient.post<ItechnicianChangeStatusReponse>(this.util.legalEntityAPI_URL + "/techChangeCompStatus", complaintStatusChangeReqObj);
+
+    const formData: FormData = new FormData();
+  
+    formData.append("complaintId", complaintStatusChangeReqObj.complaintId.toString());
+    formData.append("technicianId", complaintStatusChangeReqObj.technicianId.toString());
+    formData.append("complaintStatus", complaintStatusChangeReqObj.complaintStatus.toString());
+    formData.append("complaintMenuName", complaintStatusChangeReqObj.complaintMenuName.toString());
+    formData.append("technicianMenuName", complaintStatusChangeReqObj.technicianMenuName.toString());
+    formData.append("equipmentMenuName", complaintStatusChangeReqObj.equipmentMenuName.toString());
+    formData.append("failureReason", complaintStatusChangeReqObj.failureReason.toString());
+    formData.append("actionTaken", complaintStatusChangeReqObj.actionTaken.toString());
+    formData.append("complaintStatusDocument", null);
+    formData.append("userId", complaintStatusChangeReqObj.userId.toString());
+    formData.append("branchId", complaintStatusChangeReqObj.branchId.toString());
+    formData.append("userRole", complaintStatusChangeReqObj.userRole.toString());
+    formData.append("legalEntityId", complaintStatusChangeReqObj.legalEntityId.toString());
+
+    return this.httpClient.post<ItechnicianChangeStatusReponse>(this.util.legalEntityAPI_URL + "/techChangeCompStatus", formData);
   }
 
-  getUnresolvedDaysRuleBook(legalEntityId: number):Observable<any>{
+  getUnresolvedDaysRuleBook(
+    legalEntityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<any>{
     return this.httpClient.post(this.util.legalEntityAPI_URL + "/unresolvedRuleBookDetails",{
-      legalEntityId: legalEntityId
+      legalEntityId: legalEntityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 
-  getTechnicianUnResolvedConciseRpt(technicianId: number, unresolvedComptDayCount: number, complaintTrash: boolean):Observable<ItechnicianUnResolvedComptConciseResponse>{
+  getTechnicianUnResolvedConciseRpt(
+    technicianId: number, 
+    unresolvedComptDayCount: number, 
+    complaintTrash: boolean,
+    legalentityId: number,
+    branchId: number,
+    userId: number,
+    userRole: string
+    ):Observable<ItechnicianUnResolvedComptConciseResponse>{
     return this.httpClient.post<ItechnicianUnResolvedComptConciseResponse>(this.util.legalEntityAPI_URL + "/unresolveTechnicianComplaintReport", {
       technicianId: technicianId,
-      unresolvedComptDayCount: unresolvedComptDayCount
+      unresolvedComptDayCount: unresolvedComptDayCount,
+      complaintTrash: complaintTrash,
+      legalEntityId: legalentityId,
+      branchId: branchId,
+      userId: userId,
+      userRole: userRole
     });
   }
 
   getIndivComplaintDetails(indivComplaintReqObj: IcomplaintIndivReqStruct):Observable<IcomplaintIndivResponseStruct>{
    
-    return this.httpClient.post<IcomplaintIndivResponseStruct>(this.util.legalEntityAPI_URL + "/getComplaintDetail", indivComplaintReqObj);
+    //return this.httpClient.post<IcomplaintIndivResponseStruct>(this.util.legalEntityAPI_URL + "/getComplaintDetail", indivComplaintReqObj);
+    let params = new URLSearchParams();
+
+    for (let key in indivComplaintReqObj){
+      if (key != 'complaintId'){
+        params.set(key, indivComplaintReqObj[key]);
+      }
+    }
+
+    return this.httpClient.get<IcomplaintIndivResponseStruct>(this.util.legalEntityAPI_URL + "/getComplaintDetail/" + indivComplaintReqObj.complaintId + "?" + params);
+
   }
 
   getInprogressComplaintsListRtp(inprogressReqObj: IcomplaintRptReqStruct):Observable<IinprogressComplaintListRptResponse>{

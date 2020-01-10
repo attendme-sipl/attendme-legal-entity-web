@@ -127,44 +127,69 @@ export class TechnicianDashboardComponent implements OnInit {
   popTechnicianUnResolvedComptRpt(): void{
     this.unresolvedComplaintProgressBar=true;
 
-    this.technicianComplaintServiceApi.getUnresolvedDaysRuleBook(this.legalEntityId)
-    .subscribe(unresolvedComptDayCountData => {
-      if (unresolvedComptDayCountData['errorOccured']){
-        this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName + " details");
+    try {
+      this.technicianComplaintServiceApi.getUnresolvedDaysRuleBook(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole
+        )
+      .subscribe(unresolvedComptDayCountData => {
+        /*if (unresolvedComptDayCountData['errorOccured']){
+          this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName + " details");
+          this.unresolvedComplaintProgressBar=false;
+        }*/
+  
+        this.unresolvedComptDayCount=unresolvedComptDayCountData['unresolvedDaysCount'];
+  
+        try {
+          this.technicianComplaintServiceApi.getTechnicianUnResolvedConciseRpt(
+            this.technicianId,
+            this.unresolvedComptDayCount, 
+            false,
+            this.legalEntityId,
+            this.branchId,
+            this.userId,
+            this.userRole)
+        .subscribe((data:ItechnicianUnResolvedComptConciseResponse) => {
+    
+         /*if (data.errorOccurred){
+           this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName + " details");
+           this.unresolvedComplaintProgressBar=false;
+           return false;
+         }*/
+    
+         this.unreslovedComptUptoDaysCount=data.unresolvedUptoCount != null ? data.unresolvedUptoCount : 0 ;
+         this.unreslovedComptMoreThanDaysCount=data.unresolvedMoreCount != null ? data.unresolvedMoreCount : 0;
+    
+         this.unresolvedComplaintProgressBar=false
+    
+        }, error => {
+          //this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName + " details");
+          this.unresolvedComplaintProgressBar=false;
+        });
+        } catch (error) {
+          this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName + " details");
+          this.unresolvedComplaintProgressBar=false;
+        }
+  
+  
+      },error =>{
+        //this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName + " details");
         this.unresolvedComplaintProgressBar=false;
-      }
-
-      this.unresolvedComptDayCount=unresolvedComptDayCountData['unresolvedDaysCount'];
-
-      this.technicianComplaintServiceApi.getTechnicianUnResolvedConciseRpt(this.technicianId,this.unresolvedComptDayCount, false)
-    .subscribe((data:ItechnicianUnResolvedComptConciseResponse) => {
-
-     if (data.errorOccurred){
-       this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName + " details");
-       this.unresolvedComplaintProgressBar=false;
-       return false;
-     }
-
-     this.unreslovedComptUptoDaysCount=data.unresolvedUptoCount != null ? data.unresolvedUptoCount : 0 ;
-     this.unreslovedComptMoreThanDaysCount=data.unresolvedMoreCount != null ? data.unresolvedMoreCount : 0;
-
-     this.unresolvedComplaintProgressBar=false
-
-    }, error => {
+      }); 
+    } catch (error) {
       this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName + " details");
       this.unresolvedComplaintProgressBar=false;
-    });
-    },error =>{
-      this.toastService.error("Something went wrong while loading unresolved " + this.complaintMenuName + " details");
-      this.unresolvedComplaintProgressBar=false;
-    });
+    }
   
     
   }
 
   ngOnInit() {
 
-    const tokenModel: TokenModel = this.authService.getTokenDetails();
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
 
     this.legalEntityId=tokenModel.legalEntityId;
     this.branchId=tokenModel.branchId;
@@ -227,6 +252,9 @@ export class TechnicianDashboardComponent implements OnInit {
      this.unresolvedComptDayCount=0;
      this.popTechnicianUnResolvedComptRpt();
    
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading this page","");
+    }
 
   }
 
