@@ -35,6 +35,10 @@ export class TechnicianChangeStatusComponent implements OnInit {
   userId: number;
   userRole: string;
 
+  fileObject: File[] =[];
+
+  updatedFileObject: File[] = [];
+
   constructor(
     public changeComplaintDialogRef: MatDialogRef<TechnicianChangeStatusComponent>,
     @Inject(MAT_DIALOG_DATA) public data: IchangeComplaintStatusReqStruct,
@@ -48,6 +52,58 @@ export class TechnicianChangeStatusComponent implements OnInit {
     changeComplaintDialogRef.disableClose;
   }
 
+  onFileChange(event){
+    this.fileObject=event.target.files;
+
+    let updatedFileLength: number = this.updatedFileObject.length + this.fileObject.length;
+
+    if (updatedFileLength > 3){
+      this.toastService.error("Cannot add file more than 3.");
+      
+      this.fileObject = [];
+
+      return false;
+    }
+    
+
+    for (let i: number=0; i <= this.fileObject.length-1; i++ ){
+
+     if ((this.fileObject[0].type == 'application/pdf' || 
+      this.fileObject[0].type == 'image/gif' ||
+      this.fileObject[0].type == 'image/jpeg' ||
+      this.fileObject[0].type == 'image/png')){
+
+        let PreviousAddedFileSize: number = 0;
+
+        for(let j: number=0; j<= this.updatedFileObject.length-1; j++){
+          PreviousAddedFileSize = PreviousAddedFileSize + this.updatedFileObject[j].size;
+        }
+
+        let totFileSize: number = this.fileObject[0].size + PreviousAddedFileSize;
+
+        if (totFileSize < 10485760){
+          this.updatedFileObject.push(this.fileObject[i]);
+        }
+        else{
+          this.toastService.error("Total added file size exceed. File added after file size exceed cannot be added to list");
+        }
+
+      }
+      else{
+        this.toastService.error("Files with invalid file types cannot be attached");
+        //return false;
+      }
+     
+    }
+
+    
+
+  }
+
+  removeFileFromList(fileIndex: number){
+    this.updatedFileObject.splice(fileIndex,1);
+  }
+
   onSubmitClick(changeStatusFrom: NgForm):void{
 
     try {
@@ -55,6 +111,7 @@ export class TechnicianChangeStatusComponent implements OnInit {
     {
 
       let changeStatusFormData:IchangeStatusFormStruct = changeStatusFrom.value;
+      this.data.complaintStatusDocument = this.updatedFileObject;
       this.data.actionTaken = changeStatusFormData.actionTakenName;
       this.data.failureReason = changeStatusFormData.failureReasonName;
       this.data.complaintStatus = changeStatusFormData.complaintStatusName;

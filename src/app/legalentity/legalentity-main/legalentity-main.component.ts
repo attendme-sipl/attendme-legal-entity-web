@@ -170,6 +170,11 @@ export class LegalentityMainComponent implements OnInit {
 
     }
 
+    if (tokenModel.userRole == 'technician'){
+      this.router.navigate(['technician/portal/dashboard']);
+      return false;
+    }
+
     /*if (localStorage.getItem('legalEntityUserDetails') != null)
     {
       this.legalEntityUserModel = JSON.parse(localStorage.getItem('legalEntityUserDetails'));

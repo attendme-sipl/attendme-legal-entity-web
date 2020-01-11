@@ -18,6 +18,10 @@ import { TechnicianMenuDataStruct } from '../../model/technician-menu-data-struc
 import { TechnicianMenuModel } from '../../model/technician-menu-model';
 import {TehnicianUtilService} from '../../services/tehnician-util.service';
 import { LegalentityMenuPref } from 'src/app/legalentity/model/legalentity-menu-pref';
+import { LegalentityMenuPrefNames } from 'src/app/legalentity/model/legalentity-menu-pref-names';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { LegalentityUtilService } from 'src/app/legalentity/services/legalentity-util.service';
 
 @Component({
   selector: 'app-technician-inprogress-rpt',
@@ -30,8 +34,10 @@ export class TechnicianInprogressRptComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
 
   legalEntityId: number;
+  branchId: number;
   technicianId: number;
   userId: number;
+  userRole: string;
 
   technicianMenuName: string;
   equipmentMenuName: string;
@@ -69,8 +75,10 @@ export class TechnicianInprogressRptComponent implements OnInit {
     private complaintServiceAPI: TechnicianComplaintService,
     private toastService: ToastrService,
     private dialog: MatDialog,
-    private menuModel: TechnicianMenuModel,
-    private techUtil: TehnicianUtilService
+    private menuModel: LegalentityMenuPrefNames,
+    private techUtil: TehnicianUtilService,
+    private authService: AuthService,
+    private legalEntityUtilAPI: LegalentityUtilService
   ) {
     iconRegistry.addSvgIcon(
       'refresh-panel',
@@ -131,14 +139,14 @@ export class TechnicianInprogressRptComponent implements OnInit {
 
     let changeComplaintReqObj: IchangeComplaintStatusReqStruct = {
       actionTaken: null,
-      androidPortalKey: false,
+      //androidPortalKey: false,
       complaintId: complaintId,
       complaintMenuName: this.complaintMenuName,
-      complaintStageCount: 4,
+      //complaintStageCount: 4,
       complaintStatus: null,
       equipmentMenuName: this.equipmentMenuName,
       failureReason: null,
-      legalEntityUserId: this.legalEntityId,
+      //legalEntityUserId: this.legalEntityId,
       technicianId: this.technicianId,
       technicianMenuName: this.technicianMenuName,
       complaintNumber: complaintNumber
@@ -255,7 +263,20 @@ export class TechnicianInprogressRptComponent implements OnInit {
 
   ngOnInit() {
 
-    if (localStorage.getItem('technicianUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.menuModel = this.legalEntityUtilAPI.getLegalEntityMenuPrefNames();
+
+    this.equipmentMenuName = this.menuModel.equipmentMenuName;
+    this.complaintMenuName = this.menuModel.complaintMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
+
+    /*if (localStorage.getItem('technicianUserDetails') != null){
 
       let technicianUserObj: IUserLoginResponseStruct = JSON.parse(localStorage.getItem('technicianUserDetails'));
       
@@ -288,7 +309,7 @@ export class TechnicianInprogressRptComponent implements OnInit {
       //this.router.navigateByUrl('[technician/login]');
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     this.popInprogressComplaintList(false);
   }

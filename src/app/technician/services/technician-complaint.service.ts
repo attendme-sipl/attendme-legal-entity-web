@@ -216,7 +216,10 @@ export class TechnicianComplaintService {
     formData.append("equipmentMenuName", complaintStatusChangeReqObj.equipmentMenuName.toString());
     formData.append("failureReason", complaintStatusChangeReqObj.failureReason.toString());
     formData.append("actionTaken", complaintStatusChangeReqObj.actionTaken.toString());
-    formData.append("complaintStatusDocument", null);
+
+    for (let i: number=0; i <= complaintStatusChangeReqObj.complaintStatusDocument.length-1; i++){
+      formData.append("complaintStatusDocument", complaintStatusChangeReqObj.complaintStatusDocument[i]);
+    }
     formData.append("userId", complaintStatusChangeReqObj.userId.toString());
     formData.append("branchId", complaintStatusChangeReqObj.branchId.toString());
     formData.append("userRole", complaintStatusChangeReqObj.userRole.toString());
