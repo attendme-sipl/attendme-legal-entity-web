@@ -87,7 +87,7 @@ export class TechnicianInprogressRptComponent implements OnInit {
    }
 
 
-   setLegalEntityMenuPref():void{
+   /*setLegalEntityMenuPref():void{
     let menuPrefObj: LegalentityMenuPref[] = JSON.parse(localStorage.getItem('legalEntityMenuPref'));
 
     const complaintMenuNameObj = menuPrefObj.map((value,index) => value? {
@@ -113,12 +113,16 @@ export class TechnicianInprogressRptComponent implements OnInit {
     .filter(value => value.ngModelPropMenuName == 'equipment');
 
     this.equipmentMenuName = equipmentMenuNameObj[0]['userDefMenuName'];
-  }
+  }*/
 
   openComplaintDetailsDialog(complaintId: number):void{
 
     const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
-      complaintId: complaintId
+      complaintId: complaintId,
+      branchId: this.branchId,
+      legalEntityId: this.legalEntityId,
+      userId: this.userId,
+      userRole: this.userRole
     };
     
     const indivComplaintDialog = this.dialog.open(TechnicianIndivComplaintDetailsComponent,{
@@ -149,7 +153,12 @@ export class TechnicianInprogressRptComponent implements OnInit {
       //legalEntityUserId: this.legalEntityId,
       technicianId: this.technicianId,
       technicianMenuName: this.technicianMenuName,
-      complaintNumber: complaintNumber
+      complaintNumber: complaintNumber,
+      branchId: this.branchId,
+      complaintStatusDocument: null,
+      legalEntityId: this.legalEntityId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     const changeStatusDialogRef = this.dialog.open(TechnicianChangeStatusComponent,{
@@ -178,7 +187,7 @@ export class TechnicianInprogressRptComponent implements OnInit {
 
             this.complaintServiceAPI.setComplaintStatusChange(changeComplaintReqObj)
             .subscribe((data: ItechnicianChangeStatusReponse) => {
-              if (data.errorOccured == true || data.complaintStatusExisits == true)
+              if (data.complaintStatusExisits == true)
               {
                 this.enableProgressBar = false;
                 this.toastService.error("Something went wrong while changing " + this.complaintMenuName + " status");
@@ -192,8 +201,8 @@ export class TechnicianInprogressRptComponent implements OnInit {
 
             }, error => {
               this.enableProgressBar = false;
-                this.toastService.error("Something went wrong while changing " + this.complaintMenuName + " status");
-            })
+              //this.toastService.error("Something went wrong while changing " + this.complaintMenuName + " status");
+            });
             
           }
         })
@@ -218,44 +227,60 @@ export class TechnicianInprogressRptComponent implements OnInit {
       exportToExcel: exportToExcel,
       legalEntityId: this.legalEntityId,
       technicianMenuName: this.technicianMenuName,
-      complaintTrash: false
+      complaintTrash: false,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     if (exportToExcel){
-      let fileName: string = "In-Progress-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
-      this.complaintServiceAPI.getInprogressComplaintsListExportToExcel(complaintRptReqObj)
-      .subscribe(data => {
-        saveAs(data, fileName + ".xls");
-        this.enableProgressBar=false;
-      }, error => {
+
+      try {
+        let fileName: string = "In-Progress-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+        this.complaintServiceAPI.getInprogressComplaintsListExportToExcel(complaintRptReqObj)
+        .subscribe(data => {
+          saveAs(data, fileName + ".xls");
+          this.enableProgressBar=false;
+        }, error => {
+          //this.toastService.error("Something went wrong while downloading excel");
+          this.enableProgressBar=false;
+        }); 
+      } catch (error) {
         this.toastService.error("Something went wrong while downloading excel");
         this.enableProgressBar=false;
-      });
+      }
     }
     else{
+     
+    try {
       this.complaintServiceAPI.getInprogressComplaintsListRtp(complaintRptReqObj)
-    .subscribe((data:IinprogressComplaintListRptResponse) => {
-      
-      if (data.errorOccured){
+      .subscribe((data:IinprogressComplaintListRptResponse) => {
+        
+        /*if (data.errorOccured){
+          this.enableProgressBar=false;
+          this.toastService.error("Something went wrong while loading in progress " + this.complaintMenuName + " list");
+          return false;
+        }*/
+  
+        this.totalRecordCount=data.complaintList.length;
+  
+        this.complaintRecords = data.complaintList;
+        this.complaintRecordCount = data.complaintList.length;
+        this.dataSource = new MatTableDataSource(data.complaintList);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+  
         this.enableProgressBar=false;
-        this.toastService.error("Something went wrong while loading in progress " + this.complaintMenuName + " list");
-        return false;
-      }
-
-      this.totalRecordCount=data.complaintList.length;
-
-      this.complaintRecords = data.complaintList;
-      this.complaintRecordCount = data.complaintList.length;
-      this.dataSource = new MatTableDataSource(data.complaintList);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-
-      this.enableProgressBar=false;
-
-    }, error => {
+  
+      }, error => {
+        this.enableProgressBar=false;
+        //this.toastService.error("Something went wrong while loading in progress " + this.complaintMenuName + " list");
+      });  
+    } catch (error) {
       this.enableProgressBar=false;
       this.toastService.error("Something went wrong while loading in progress " + this.complaintMenuName + " list");
-    });
+    }  
+
     }
 
     
@@ -263,18 +288,23 @@ export class TechnicianInprogressRptComponent implements OnInit {
 
   ngOnInit() {
 
-    const tokenModel: TokenModel = this.authService.getTokenDetails();
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
 
     this.legalEntityId=tokenModel.legalEntityId;
     this.branchId=tokenModel.branchId;
     this.userId=tokenModel.userId;
     this.userRole=tokenModel.userRole;
 
+    this.technicianId=tokenModel.technicianId;
+
     this.menuModel = this.legalEntityUtilAPI.getLegalEntityMenuPrefNames();
 
     this.equipmentMenuName = this.menuModel.equipmentMenuName;
     this.complaintMenuName = this.menuModel.complaintMenuName;
     this.technicianMenuName=this.menuModel.technicianMenuName;
+
+    this.util.setTitle(this.technicianMenuName + " - In progress " + this.complaintMenuName + " Report | Attendme");
 
     /*if (localStorage.getItem('technicianUserDetails') != null){
 
@@ -312,6 +342,11 @@ export class TechnicianInprogressRptComponent implements OnInit {
     }*/
 
     this.popInprogressComplaintList(false);
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading this page");
+    }
+
+    
   }
 
   applyFilter(filterValue: string)

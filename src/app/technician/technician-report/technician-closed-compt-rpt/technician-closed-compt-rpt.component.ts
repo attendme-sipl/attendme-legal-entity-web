@@ -14,6 +14,10 @@ import *as moment from 'moment';
 import { TechnicianMenuModel } from '../../model/technician-menu-model';
 import { HttpClient } from '@angular/common/http';
 import { LegalentityMenuPref } from 'src/app/legalentity/model/legalentity-menu-pref';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { LegalentityUtilService } from 'src/app/legalentity/services/legalentity-util.service';
+import { LegalentityMenuPrefNames } from 'src/app/legalentity/model/legalentity-menu-pref-names';
 
 @Component({
   selector: 'app-technician-closed-compt-rpt',
@@ -27,7 +31,9 @@ export class TechnicianClosedComptRptComponent implements OnInit {
 
   legalEntityId: number;
   technicianId: number;
+  branchId: number;
   userId: number;
+  userRole: string;
 
   technicianMenuName: string;
   equipmentMenuName: string;
@@ -64,9 +70,11 @@ export class TechnicianClosedComptRptComponent implements OnInit {
     private complaintServiceAPI: TechnicianComplaintService,
     private toastService: ToastrService,
     private dialog: MatDialog,
-    private menuModel: TechnicianMenuModel,
+    private menuModel: LegalentityMenuPrefNames,
     private technicianUtilAPI: TehnicianUtilService,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private authService: AuthService,
+    private legalEntityUtilAPI: LegalentityUtilService
   ) { 
     iconRegistry.addSvgIcon(
       'refresh-panel',
@@ -74,7 +82,7 @@ export class TechnicianClosedComptRptComponent implements OnInit {
     );
   }
 
-  setLegalEntityMenuPref():void{
+  /*setLegalEntityMenuPref():void{
     let menuPrefObj: LegalentityMenuPref[] = JSON.parse(localStorage.getItem('legalEntityMenuPref'));
 
     const complaintMenuNameObj = menuPrefObj.map((value,index) => value? {
@@ -100,17 +108,25 @@ export class TechnicianClosedComptRptComponent implements OnInit {
     .filter(value => value.ngModelPropMenuName == 'equipment');
 
     this.equipmentMenuName = equipmentMenuNameObj[0]['userDefMenuName'];
-  }
+  }*/
 
   openComplaintDetailsDialog(complaintId: number):void{
 
-    const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
-      complaintId: complaintId
-    };
-    
-    const indivComplaintDialog = this.dialog.open(TechnicianIndivComplaintDetailsComponent,{
-      data: IndivComplaintReqObj
-    });
+    try {
+      const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+        complaintId: complaintId,
+        branchId: this.branchId,
+        legalEntityId: this.legalEntityId,
+        userId: this.userId,
+        userRole: this.userRole
+      };
+      
+      const indivComplaintDialog = this.dialog.open(TechnicianIndivComplaintDetailsComponent,{
+        data: IndivComplaintReqObj
+      });
+    } catch (error) {
+      this.toastService.error("Something went wrong while displaying " + this.complaintMenuName + " dialog.");
+    }
 
   }
 
@@ -135,53 +151,88 @@ export class TechnicianClosedComptRptComponent implements OnInit {
       exportToExcel: exportToExcel,
       legalEntityId: this.legalEntityId,
       technicianMenuName: this.technicianMenuName,
-      complaintTrash: false
+      complaintTrash: false,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole
     };
 
     if (exportToExcel){
-      let fileName: string = "Assigned-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
+      try {
+        let fileName: string = "Assigned-" + this.complaintMenuName + "-Report-" + moment().format("YYYY-MM-DD-HH-mm-SSS");
 
-      this.complaintServiceAPI.getClosedComplaintListExportToExcel(complaintRptReqObj)
-      .subscribe(data => {
-        saveAs(data, fileName + ".xls");
-        this.enableProgressBar=false;
-      }, error => {
+        this.complaintServiceAPI.getClosedComplaintListExportToExcel(complaintRptReqObj)
+        .subscribe(data => {
+          saveAs(data, fileName + ".xls");
+          this.enableProgressBar=false;
+        }, error => {
+          //this.toastService.error("Something went wrong while downloading excel");
+          this.enableProgressBar=false;
+        });        
+      } catch (error) {
         this.toastService.error("Something went wrong while downloading excel");
         this.enableProgressBar=false;
-      });
-    }
-    else{
-      this.complaintServiceAPI.getClosedComplaintListRpt(complaintRptReqObj)
-    .subscribe((data:IclosedComplaintListRptResponse) => {
-
-      if (data.errorOccured){
-        this.enableProgressBar=false;
-        this.toastService.error("Something went wrong while loading in closed " + this.complaintMenuName + " list");
-        return false;
       }
 
-      this.totalRecordCount=data.complaintList.length;
+    }
+    else{
 
-      this.complaintRecords = data.complaintList;
-      this.complaintRecordCount = data.complaintList.length;
-      this.dataSource = new MatTableDataSource(data.complaintList);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
+      try {
+        this.complaintServiceAPI.getClosedComplaintListRpt(complaintRptReqObj)
+        .subscribe((data:IclosedComplaintListRptResponse) => {
+    
+          /*if (data.errorOccured){
+            this.enableProgressBar=false;
+            this.toastService.error("Something went wrong while loading in closed " + this.complaintMenuName + " list");
+            return false;
+          }*/
+    
+          this.totalRecordCount=data.complaintList.length;
+    
+          this.complaintRecords = data.complaintList;
+          this.complaintRecordCount = data.complaintList.length;
+          this.dataSource = new MatTableDataSource(data.complaintList);
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+    
+          this.enableProgressBar=false;
+    
+        }, error => {
+          this.enableProgressBar=false;
+          //this.toastService.error("Something went wrong while loading in closed " + this.complaintMenuName + " list");
+    
+        });        
+      } catch (error) {
+        this.enableProgressBar=false;
+        this.toastService.error("Something went wrong while loading in closed " + this.complaintMenuName + " list");
+      }
 
-      this.enableProgressBar=false;
-
-    }, error => {
-      this.enableProgressBar=false;
-      this.toastService.error("Something went wrong while loading in closed " + this.complaintMenuName + " list");
-
-    });
     } 
     
   }
 
   ngOnInit() {
 
-    if (localStorage.getItem('technicianUserDetails') != null){
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    this.technicianId = tokenModel.technicianId;
+
+    this.menuModel=this.legalEntityUtilAPI.getLegalEntityMenuPrefNames();
+
+    this.branchMenuName=this.menuModel.branchMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
+    this.complaintMenuName=this.menuModel.complaintMenuName;
+    this.equipmentMenuName=this.menuModel.equipmentMenuName;
+    
+    this.util.setTitle(this.technicianMenuName + " - Closed " + this.complaintMenuName + " Report | Attendme");
+
+    /*if (localStorage.getItem('technicianUserDetails') != null){
 
       let technicianUserObj: IUserLoginResponseStruct = JSON.parse(localStorage.getItem('technicianUserDetails'));
       
@@ -213,9 +264,14 @@ export class TechnicianClosedComptRptComponent implements OnInit {
       //this.router.navigateByUrl('[technician/login]');
       this.router.navigate(['legalentity','login']);
       return false;
-    }
+    }*/
 
     this.popClosedComplaintRpt(false);
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading this page","");
+    }
+
+    
   }
 
   applyFilter(filterValue: string)

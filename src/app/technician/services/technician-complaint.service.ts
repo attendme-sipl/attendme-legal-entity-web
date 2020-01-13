@@ -155,7 +155,10 @@ export interface IcomplaintRptReqStruct{
    equptMenuName: string,
    branchMenuName: string
    legalEntityId: number,
-   complaintTrash: boolean
+   complaintTrash: boolean,
+   branchId: number,
+   userId: number,
+   userRole: string
 };
 
 export interface IclosedComplaintListRptResponse{

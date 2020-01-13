@@ -39,6 +39,8 @@ export class TechnicianChangeStatusComponent implements OnInit {
 
   updatedFileObject: File[] = [];
 
+  complaintDocUploadControl: string;
+
   constructor(
     public changeComplaintDialogRef: MatDialogRef<TechnicianChangeStatusComponent>,
     @Inject(MAT_DIALOG_DATA) public data: IchangeComplaintStatusReqStruct,

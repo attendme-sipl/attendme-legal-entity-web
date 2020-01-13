@@ -1,6 +1,6 @@
 <mat-sidenav-container class="mainContainer">
 
-     <mat-sidenav  mode="side" opened style="background-color: #343a40; width:250px;">
+     <!--<mat-sidenav  mode="side" opened style="background-color: #343a40; width:250px;">
 
 
       
@@ -26,28 +26,21 @@
                    
         <mat-divider style="border-top-color: #ffffff1f;"></mat-divider>
      
-      <!--<ul class="nav flex-column">
+      
 
-          <mat-list>
-              <mat-list-item >
-                  <a class="nav-link" routerLink="." style="width: 100%;">{{ complaintsMenuName }}</a>
-              </mat-list-item>
-
-              <mat-list-item >
-                  <a class="nav-link" routerLink="." style="width: 100%;">{{ serviceMenuName }}</a>
-              </mat-list-item>
-          </mat-list>
-
-        
-      </ul>-->
-
-    </mat-sidenav>
+    </mat-sidenav>-->
 
     <mat-sidenav-content>
 
      
      <mat-toolbar color="default" >
             <mat-toolbar-row>
+
+              <a [routerLink]="['dashboard']" style="text-decoration: none;"> 
+                <mat-icon svgIcon="attendme-logo"
+                style="font-size:30px; height:30px; width:30px;"></mat-icon>
+                 
+                  </a>
                 
                     <span>{{technicianMenuName | titlecase}} Portal</span>
                     <span class="example-spacer"></span>
