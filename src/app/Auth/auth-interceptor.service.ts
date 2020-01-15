@@ -29,17 +29,17 @@ export class AuthInterceptorService implements HttpInterceptor {
 
     if (this.authService.isLoggedIn()){
 
-      const exceptionalURL: string = this.utilServiceAPI.legalEntityAPIURLWoApi + "/resetPassword";
+      //const exceptionalURL: string = this.utilServiceAPI.legalEntityAPIURLWoApi + "/resetPassword";
       
       switch (request.url) {
-        case this.utilServiceAPI.legalEntityAPIURLWoApi + "/resetPassword":
+       /* case this.utilServiceAPI.legalEntityAPIURLWoApi + "/resetPassword":
           
           request=request.clone({
             setHeaders: {
               Authorization: `Basic ${btoa(this.utilServiceAPI.basicAuthUserName + ":" + this.utilServiceAPI.basicAuthPassword)}`
             }});
 
-            break;
+            break;*/
 
         case this.utilServiceAPI.legalEntityAPIURLWoApi + "/addHeadOfficeDetails":
           request=request.clone({
@@ -83,6 +83,7 @@ export class AuthInterceptorService implements HttpInterceptor {
           this.router.navigate(['legalentity', 'login']);
         }
         else{
+          //console.log(error);
           this.toastService.error(this.errorHandlerService.getErrorStatusMessage(error.status),"");
         }
       }

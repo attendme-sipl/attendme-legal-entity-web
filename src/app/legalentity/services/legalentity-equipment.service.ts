@@ -163,7 +163,7 @@ export class LegalentityEquipmentService {
 
   updateQrIdDetailsNew(qrIdRequestObj: LegalentityEquipment):Observable<any>{
     
-    return this.httpclient.patch(this.util.legalEntityRestApuURL + "/updateEquptDetails", qrIdRequestObj);
+    return this.httpclient.post(this.util.legalEntityRestApuURL + "/updateEquptDetails", qrIdRequestObj);
   }
   
 }

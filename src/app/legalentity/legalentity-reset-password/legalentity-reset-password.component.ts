@@ -88,6 +88,7 @@ export class LegalentityResetPasswordComponent implements OnInit {
        if (this.newPassword != this.reenterNewPassword)
        {
          this.toastService.error("Password does not match the confirm password","");
+         return false;
        }
        else
        {
@@ -100,7 +101,7 @@ export class LegalentityResetPasswordComponent implements OnInit {
         try {
           this.userServiceAPI.resetPassword(this.userId,this.newMd5Password,true)
           .pipe(first())
-          .subscribe((data => {
+          .subscribe(data => {
             
             if (data.passwordReset == true)
             {
@@ -115,7 +116,7 @@ export class LegalentityResetPasswordComponent implements OnInit {
               
               this.toastService.error("There was an error while resetting password");
             }
-          }),
+          },
           error => {
              this.btnDisable=false;
              this.progressBarBit=false;

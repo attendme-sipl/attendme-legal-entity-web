@@ -98,7 +98,7 @@ export class LegalentityDocumentServiceService {
     formData.append("docActiveStatus", String(uploadedFileObject.docActiveStatus));
     formData.append("specificToQr", String(uploadedFileObject.specificToQr));
     
-    formData.append("complaintStatusDocument", uploadedFileObject.docData, uploadedFileObject.docData.name);
+    //formData.append("complaintStatusDocument", uploadedFileObject.docData, uploadedFileObject.docData.name);
     
     /*const formDataNew: FormData = new FormData();
     
@@ -166,7 +166,7 @@ export class LegalentityDocumentServiceService {
     userId: number,
     userRole: string
     ):Observable<any>{
-    return this.httpClient.patch(this.utilServiceAPI.legalEntityRestApuURL + "/deleteDocument", {
+    return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/deleteDocument", {
       documentId: documentId,
       legalEntityId: legalEntityId,
       branchId: branchId,

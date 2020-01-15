@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { LegalentityUtilService } from './legalentity-util.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { LegalentityUser } from '../model/legalentity-user';
 import { AuthService } from 'src/app/Auth/auth.service';
@@ -109,11 +109,11 @@ export class LegalentityUserService {
 
   resetPassword(userId:number,userPassword:string,passwordChange:boolean):Observable<any>
     {
-      return this.httpClient.patch(this.utilServiceAPI.legalEntityAPIURLWoApi + "/resetPassword",{
+      return this.httpClient.post(this.utilServiceAPI.legalEntityRestApuURL + "/resetPassword",{
         userId:userId,
         userPassword:userPassword,
-        passwordChange:passwordChange
-      })
+        passwordChange:passwordChange,
+      });
     }
 
 }

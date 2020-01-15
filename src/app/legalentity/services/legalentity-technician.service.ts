@@ -66,7 +66,7 @@ export class LegalentityTechnicianService {
   }
 
   updateTechnicianDetails(updateTechnicianReqObj:ItechnicianUpdateReqStruct):Observable<any>{
-    return this.httpClient.patch(this.util.legalEntityRestApuURL+"/updateTechnicianDetails", updateTechnicianReqObj);
+    return this.httpClient.post(this.util.legalEntityRestApuURL+"/updateTechnicianDetails", updateTechnicianReqObj);
   }
 
   deleteTechnicianUser(
@@ -76,7 +76,7 @@ export class LegalentityTechnicianService {
     userId: number,
     userRole: string
     ):Observable<any>{
-    return this.httpClient.patch(this.util.legalEntityRestApuURL + "/deleteTechnician",{
+    return this.httpClient.post(this.util.legalEntityRestApuURL + "/deleteTechnician",{
       technician: technicianId,
       legalEntityId: legalEntityId,
       branchId: branchId,

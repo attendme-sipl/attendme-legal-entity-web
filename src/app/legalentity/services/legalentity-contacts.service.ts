@@ -61,7 +61,7 @@ export class LegalentityContactsService {
   }
 
   deactiveContact(deactiveContactReqObj: IdeactivateContactReqStruct):Observable<any>{
-    return this.httpClient.patch(this.utilServicesAPI.legalEntityRestApuURL + "/activeDeActivateNotificationContact", deactiveContactReqObj);
+    return this.httpClient.post(this.utilServicesAPI.legalEntityRestApuURL + "/activeDeActivateNotificationContact", deactiveContactReqObj);
   }
 
   getLegalEntityContactListExportToExcel(contactRptReqObj: IcontactRptReqStruct):Observable<any>{
