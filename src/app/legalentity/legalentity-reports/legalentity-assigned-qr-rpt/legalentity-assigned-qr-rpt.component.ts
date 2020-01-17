@@ -7,6 +7,8 @@ import { MatIconRegistry, MatPaginator, MatSort, MatTableDataSource } from '@ang
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityQrService, IassignedQrIdRptReq, IassignedQrIdRptResponse } from '../../services/legalentity-qr.service';
 import { ToastrService } from 'ngx-toastr';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
 
 export interface IassingedQrIdDetailsResponseStruct{
    qrCodeId: number,
@@ -29,6 +31,7 @@ export class LegalentityAssignedQrRptComponent implements OnInit {
   legalEntityId: number;
   branchId: number;
   userId: number;
+  userRole: string;
   headOffice: boolean;
   enableProgressBar: boolean;
 
@@ -58,7 +61,8 @@ export class LegalentityAssignedQrRptComponent implements OnInit {
     private iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer ,
     private qrServiceAPI: LegalentityQrService,
-    private toastService: ToastrService
+    private toastService: ToastrService,
+    private authService: AuthService
   ) {
 
     iconRegistry.addSvgIcon(
@@ -83,18 +87,21 @@ export class LegalentityAssignedQrRptComponent implements OnInit {
      const assignQrIdRptReqObj: IassignedQrIdRptReq = {
        branchId:this.branchId,
        headOffice: this.headOffice,
-       legalEntityId: this.legalEntityId
+       legalEntityId: this.legalEntityId,
+       userId: this.userId,
+       userRole: this.userRole
      }
 
-     this.qrServiceAPI.getAssignedQrIdListRpt(assignQrIdRptReqObj)
+     try {
+      this.qrServiceAPI.getAssignedQrIdListRpt(assignQrIdRptReqObj)
      .subscribe((data:IassignedQrIdRptResponse) => {
       // console.log(data);
 
-       if (data.errorOccurred){
+       /*if (data.errorOccurred){
          this.toastService.error("Something went wrong while loading assinged QR Id List");
          this.enableProgressBar=false;
          return false;
-       }
+       }*/
 
        this.assignedQrIdDetailsArray=data.qrIdList;
 
@@ -106,42 +113,64 @@ export class LegalentityAssignedQrRptComponent implements OnInit {
        this.enableProgressBar=false;
 
      }, error => {
-      this.toastService.error("Something went wrong while loading assinged QR Id List");
+      //this.toastService.error("Something went wrong while loading assinged QR Id List");
       this.enableProgressBar=false;
       return false;
-     });
+     });  
+     } catch (error) {
+      this.toastService.error("Something went wrong while loading assinged QR Id List");
+      this.enableProgressBar=false;
+     }
+
    }
 
    onEditClick(qrCodeId: number){
-     this.router.navigate(['legalentity','portal','edit','qr-details',qrCodeId]);
+     try {
+      this.router.navigate(['legalentity','portal','edit','qr-details',qrCodeId]);  
+     } catch (error) {
+       this.toastService.error("Something went wrong while redirecting to edit QR Id details page","");
+     }
    }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
-     
-      this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
+    try {
+      const tokenModel: TokenModel = this.authService.getTokenDetails();
 
-      this.legalEntityId = this.userModel.legalEntityUserDetails.legalEntityId;
-      this.userId=this.userModel.legalEntityUserDetails.userId;
-      
-      this.menuPrefNameModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
-
-      this.branchId=this.userModel.legalEntityBranchDetails.branchId;
-      this.headOffice= false;//this.userModel.legalEntityBranchDetails.branchHeadOffice;
-
+      this.legalEntityId=tokenModel.legalEntityId;
+      this.branchId=tokenModel.branchId;
+      this.userId=tokenModel.userId;
+      this.userRole=tokenModel.userRole;
+  
+      this.headOffice=tokenModel.branchHeadOffice;
+  
+      /*if (localStorage.getItem('legalEntityUserDetails') != null){
+       
+        this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
+  
+        this.legalEntityId = this.userModel.legalEntityUserDetails.legalEntityId;
+        this.userId=this.userModel.legalEntityUserDetails.userId;
+        
+        this.menuPrefNameModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
+  
+        this.branchId=this.userModel.legalEntityBranchDetails.branchId;
+        this.headOffice= false;//this.userModel.legalEntityBranchDetails.branchHeadOffice;
+  
+      }
+      else{
+        this.router.navigate(['legalentity','login']);
+      }*/
+  
+      this.utilServiceAPI.setTitle("Legalentity - Assigned QR ID List | Attendme");
+  
+      this.menuPrefNameModel = this.utilServiceAPI.getLegalEntityMenuPrefNames();
+  
+      this.branchMenuName=this.menuPrefNameModel.branchMenuName;
+  
+      this.popAssignedQrIdListRpt(); 
+    } catch (error) {
+      this.toastService.error("Something went wrong while loading this page","");
     }
-    else{
-      this.router.navigate(['legalentity','login']);
-    }
-
-    this.utilServiceAPI.setTitle("Legalentity - Assigned QR ID List | Attendme");
-
-    this.menuPrefNameModel = this.utilServiceAPI.getLegalEntityMenuPrefNames();
-
-    this.branchMenuName=this.menuPrefNameModel.branchMenuName;
-
-    this.popAssignedQrIdListRpt();
 
   }
 

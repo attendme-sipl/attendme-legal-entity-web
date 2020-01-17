@@ -121,6 +121,8 @@ export class TechnicianResetPasswordComponent implements OnInit {
       this.branchId=tokenModel.branchId;
       this.userId=tokenModel.userId;
       this.userRole=tokenModel.userRole;
+
+      this.userName=tokenModel.userFullName;
   
       if (tokenModel.passwordChange){
         this.router.navigate(['technician','portal','dashboard']);
@@ -173,8 +175,9 @@ export class TechnicianResetPasswordComponent implements OnInit {
     //localStorage.removeItem('technicianDetails');
 
     this.authService.deleteCookies();
-
-    this.router.navigate(['technician','login']);
+ 
+    this.router.navigate(['legalentity','login']);
+    //this.router.navigate(['technician','login']);
   }
 
 }

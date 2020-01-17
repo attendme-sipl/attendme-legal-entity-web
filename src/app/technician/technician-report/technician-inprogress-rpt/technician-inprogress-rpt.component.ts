@@ -158,7 +158,8 @@ export class TechnicianInprogressRptComponent implements OnInit {
       complaintStatusDocument: null,
       legalEntityId: this.legalEntityId,
       userId: this.userId,
-      userRole: this.userRole
+      userRole: this.userRole,
+      statusRemark: null
     };
 
     const changeStatusDialogRef = this.dialog.open(TechnicianChangeStatusComponent,{

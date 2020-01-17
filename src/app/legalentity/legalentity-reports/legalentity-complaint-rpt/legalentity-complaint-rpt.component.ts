@@ -129,7 +129,7 @@ export class LegalentityComplaintRptComponent implements OnInit {
       try {
         this.complaintRtpServiceAPI.getQrIdAllComplaintsRpt(qrIdComplaintArrRptReqObj)
     .subscribe((data: IqrIdAllcomplaintRptResponse) => {
-    
+
         /*if (data.errorOccurred){
           this.toastService.error("Something went wrong while loading " + this.complaintMenuName + " details report");
           this.enableProgressBar=false;

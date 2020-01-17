@@ -37,7 +37,8 @@ export interface IchangeComplaintStatusReqStruct{
   branchId: number,
   userRole: string,
   legalEntityId: number,
-  complaintNumber: string
+  complaintNumber: string,
+  statusRemark: string
 }
 
 @Component({
@@ -270,7 +271,8 @@ export class TechnicianAssignedComplaintRptComponent implements OnInit {
         userRole: this.userRole,
         complaintStatusDocument: null,
         legalEntityId: this.legalEntityId,
-        complaintNumber: complaintNumber
+        complaintNumber: complaintNumber,
+        statusRemark: null
       };
   
       const changeStatusDialogRef = this.dialog.open(TechnicianChangeStatusComponent,{

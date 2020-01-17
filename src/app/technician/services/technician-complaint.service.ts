@@ -220,13 +220,31 @@ export class TechnicianComplaintService {
     formData.append("failureReason", complaintStatusChangeReqObj.failureReason.toString());
     formData.append("actionTaken", complaintStatusChangeReqObj.actionTaken.toString());
 
-    for (let i: number=0; i <= complaintStatusChangeReqObj.complaintStatusDocument.length-1; i++){
-      formData.append("complaintStatusDocument", complaintStatusChangeReqObj.complaintStatusDocument[i]);
+    if (complaintStatusChangeReqObj.complaintStatusDocument.length != 0){
+      for (let i: number=0; i <= complaintStatusChangeReqObj.complaintStatusDocument.length-1; i++){
+        formData.append("complaintStatusDocument", complaintStatusChangeReqObj.complaintStatusDocument[i],complaintStatusChangeReqObj.complaintStatusDocument[i].name );
+
+        //console.log(complaintStatusChangeReqObj.complaintStatusDocument[i].name);
+      }
+
+      
     }
+    else{
+      let dummyFileDate: File;
+      formData.append("complaintStatusDocument", dummyFileDate);
+    }
+    
     formData.append("userId", complaintStatusChangeReqObj.userId.toString());
     formData.append("branchId", complaintStatusChangeReqObj.branchId.toString());
     formData.append("userRole", complaintStatusChangeReqObj.userRole.toString());
     formData.append("legalEntityId", complaintStatusChangeReqObj.legalEntityId.toString());
+
+    if (complaintStatusChangeReqObj.statusRemark ! = null){
+      formData.append("statusRemark", complaintStatusChangeReqObj.statusRemark.toString()); 
+    }
+    else{
+      formData.append("statusRemark", '');
+    }
 
     return this.httpClient.post<ItechnicianChangeStatusReponse>(this.util.legalEntityAPI_URL + "/techChangeCompStatus", formData);
   }

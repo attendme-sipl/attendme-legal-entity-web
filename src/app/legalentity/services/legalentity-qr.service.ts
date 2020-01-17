@@ -6,6 +6,8 @@ import { Observable } from 'rxjs';
 export interface IassignedQrIdRptReq{
    legalEntityId: number,
    branchId: number,
+   userId: number,
+   userRole: string,
    headOffice: boolean
 };
 
