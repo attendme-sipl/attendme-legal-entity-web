@@ -7,7 +7,13 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/Auth/auth.service';
-import { TokenModel } from 'src/app/Common_Model/token-model';
+import { TokenModel } from 'src/app/Common_Model/token-model'
+import { LegalentityComplaintRptService } from '../../services/legalentity-complaint-rpt.service';
+
+export interface IqrIdListResponseStruct{
+  qrCodeId: number,
+  qrId: string
+};
 
 @Component({
   selector: 'app-legalentity-qr-wise-complaint-rpt',
@@ -31,6 +37,10 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
   enableProgressBar: boolean;
   totalRecordCount: number=0;
 
+  qrIdListDetailsObj: IqrIdListResponseStruct[];
+  complaintStatus: string;
+  complaintFilterType: string;
+
   qrId: string;
 
   constructor(
@@ -42,13 +52,52 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
     private menuModel: LegalentityMenuPrefNames,
     private activatedRoute: ActivatedRoute,
     private toastService: ToastrService,
-    private authService: AuthService
+    private authService: AuthService,
+    private complaintService: LegalentityComplaintRptService
   ) {
     iconRegistry.addSvgIcon(
       'refresh-icon',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
-    )
+    );
+
+    iconRegistry.addSvgIcon(
+      'back-icon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/keyboard_backspace-24px.svg')
+    );
    }
+
+
+   getQrId(){
+     try {
+      
+      this.utilService.getLegalEntityAlottedQRIdList(
+        this.legalEntityId,
+        this.branchId,
+        this.userId,
+        this.userRole,
+        true,
+        true,
+        false
+      )
+      .subscribe((data: IqrIdListResponseStruct[]) => {
+
+        this.qrIdListDetailsObj=data.map((value, index) => value ? {
+          qrCodeId: value['qrCodeId'],
+          qrId: value['qrId']
+        } : null)
+        .filter(value => value.qrCodeId == this.qrCodeId);
+
+        if (this.qrIdListDetailsObj.length > 0){
+          this.qrId = this.qrIdListDetailsObj[0]['qrId'];
+        }
+      });
+
+     
+     } catch (error) {
+       this.toastService.error("Something went wrong while getting QR Id details");
+     }
+   }
+
 
   ngOnInit() {
 
@@ -82,6 +131,12 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
     this.utilService.setTitle('Legalentity - QR Id Wise Complaint Report | Attendme');
 
     let paramSetQrId: string = this.activatedRoute.snapshot.paramMap.get('qrId');
+    this.qrCodeId=parseInt(paramSetQrId);
+
+    this.getQrId();
+
+    this.complaintStatus="All"
+    this.complaintFilterType="0";
 
     //to be added after jwt implementation
 

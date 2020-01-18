@@ -10,7 +10,10 @@
             <div class="row">
 
               <div class="col">
-                <h3 style="font-size: 1.75rem;">QR ID Wise {{complaintMenuName}} Report</h3>
+                <button type="button" class="btn btn-default" >
+                  <mat-icon svgIcon="back-icon" (click)="backToDocumentRpt()"></mat-icon>
+                </button>
+                <label style="font-size: 25px;">QR ID Wise {{complaintMenuName}} Report</label>
               </div>
 
               <!--<div class="col-sm-auto">
@@ -35,7 +38,31 @@
                     </div>
 
                     <div class="col-3">
-                      <label><b>QR ID:</b>{{qrId}}</label>
+                      <label><b>QR ID:</b> {{qrId}}</label>
+                    </div>
+
+                    <div class="col-3">
+                      <mat-form-field>
+                        <mat-label>Filter {{complaintMenuName}} Status</mat-label>
+                        <mat-select [(value)]="complaintStatus" >
+                          <mat-option value="Open">Open</mat-option>
+                          <mat-option value="Assigned">Assigned</mat-option>
+                          <mat-option value="Open">In Progress</mat-option>
+                          <mat-option value="Closed">Closed</mat-option>
+                          <mat-option value="All">All</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-3">
+                      <mat-form-field>
+                        <mat-label>Filter {{complaintMenuName}}</mat-label>
+                          <mat-select [(value)]="complaintFilterType" (selectionChange)="onFilterItemChange()">
+                            <mat-option value="0">Active {{complaintMenuName}}</mat-option>
+                            <mat-option value="1">Trash {{complaintMenuName}}</mat-option>
+                            <mat-option value="2">All {{complaintMenuName}}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
                     </div>
                   </div>
                 </mat-card>
