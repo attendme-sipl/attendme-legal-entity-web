@@ -73,8 +73,9 @@ export class LegalentityLoginComponent implements OnInit {
         this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName, this.utilServiceAPI.userDefMenuCookiePath, this.utilServiceAPI.userDefMenuCookieDomain);
         this.cookieService.delete(this.utilServiceAPI.sessionAuthCookieName, this.utilServiceAPI.sessionAuthCookiePath, this.utilServiceAPI.sessionAuthCookieDomain);
 
+
         const userReqObj: IauthUserLoginReqStruct = {
-          deviceIpAddress: '192.168.0.1',
+          deviceIpAddress: '', //'192.168.0.1',
           loginActivity: 'login',
           password: md5(loginFormModel.value['txtUserPassword']),
           username: loginFormModel.value['txtEmailId']
@@ -147,6 +148,10 @@ export class LegalentityLoginComponent implements OnInit {
             return false;
    
          });
+
+        
+
+              
         
       } catch (error) {
         this.enableProgressBar = false;

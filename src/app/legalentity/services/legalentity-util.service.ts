@@ -7,6 +7,7 @@ import {LegalentityMenuPref} from '../model/legalentity-menu-pref';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { CookieService } from 'ngx-cookie-service';
 import { CoreEnvironment } from '@angular/core/src/render3/jit/compiler_facade_interface';
+import { AuthService } from 'src/app/Auth/auth.service';
 
 export interface IcountryCallingCodeResponse{
   countryShortName: String,
@@ -61,8 +62,13 @@ export class LegalentityUtilService {
     this.titleService.setTitle(titleString);
   }
 
-  getDeviceIPAddress():Observable<string>{
-    return this.httpClient.get<string>("https://jsonip.com/");
+  getDeviceIPAddress():Observable<any>{
+    //return this.httpClient.get<string>("https://jsonip.com/");
+
+    const headers = new HttpHeaders({Authorization: 'Basic ' + btoa(this.basicAuthUserName + ":" + this.basicAuthPassword)});
+
+    return this.httpClient.get(this.legalEntityAPIURLWoApi + "/getClientIp", {headers});
+
   }
 
   getLegalEntityMenuPreference(legalEntityId: number):Observable<LegalentityMenuPref>{

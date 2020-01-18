@@ -56,7 +56,7 @@ export class AuthInterceptorService implements HttpInterceptor {
             }});
 
             break;
-      
+            
         default:
           const jwtToken = jwt_token(this.cookieService.get(this.utilServiceAPI.authCookieName));
 

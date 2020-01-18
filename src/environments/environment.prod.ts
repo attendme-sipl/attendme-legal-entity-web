@@ -29,13 +29,13 @@ export const environment = {
 
       // AWS New Demo Instance (https)
 
-        //superAdminAPIURL: "http://demo-sa.attendme.in/api",
-        //legalEntityAPIURL: "http://demo-le.attendme.in/api",
-        //mobileServiceAPIURL: "http://demo-android.attendme.in/api",
+        superAdminAPIURL: "http://demo-sa.attendme.in/api",
+        legalEntityAPIURL: "http://demo-le.attendme.in/api",
+        mobileServiceAPIURL: "http://demo-android.attendme.in/api",
 
-        //superAdminAPIURLWoApi: "http://demo-sa.attendme.in",
-        //legalEntityAPIURLWoApi: "http://demo-le.attendme.in",
-        //mobileServiceAPIURLWoApi: "http://demo-android.attendme.in",
+        superAdminAPIURLWoApi: "http://demo-sa.attendme.in",
+        legalEntityAPIURLWoApi: "http://demo-le.attendme.in",
+        mobileServiceAPIURLWoApi: "http://demo-android.attendme.in",
 
         authCookieName: "auth",
         authCookieExpires: 2,
@@ -66,11 +66,11 @@ export const environment = {
         //legalEntityAPIURL: "https://attendme-le.attendme.in/api",
         //mobileServiceAPIURL: "https://attendme-android.attendme.in/api"
 
-        superAdminAPIURL: "https://attendme-le.attendme.in/api",
-        legalEntityAPIURL: "https://attendme-le.attendme.in/api",
-        mobileServiceAPIURL: "https://attendme-android.attendme.in/api",
+        //superAdminAPIURL: "https://attendme-le.attendme.in/api",
+        //legalEntityAPIURL: "https://attendme-le.attendme.in/api",
+        //mobileServiceAPIURL: "https://attendme-android.attendme.in/api",
 
-        superAdminAPIURLWoApi: "https://attendme-le.attendme.in",
-        legalEntityAPIURLWoApi: "https://attendme-le.attendme.in",
-        mobileServiceAPIURLWoApi: "https://attendme-android.attendme.in",
+        //superAdminAPIURLWoApi: "https://attendme-le.attendme.in",
+        //legalEntityAPIURLWoApi: "https://attendme-le.attendme.in",
+        //mobileServiceAPIURLWoApi: "https://attendme-android.attendme.in",
 };
