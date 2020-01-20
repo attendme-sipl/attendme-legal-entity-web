@@ -9,11 +9,21 @@
           
             <div class="row">
 
-              <div class="col">
+              <div class="col-auto mr-auto">
                 <button type="button" class="btn btn-default" >
-                  <mat-icon svgIcon="back-icon" (click)="backToDocumentRpt()"></mat-icon>
+                  <mat-icon svgIcon="back-icon" (click)="onBackButtonClick()"></mat-icon>
                 </button>
                 <label style="font-size: 25px;">QR ID Wise {{complaintMenuName}} Report</label>
+              </div>
+
+              <div class="col-auto">
+                <button type="button" mat-raised-button color="primary" (click)="popQrComplaintsList(true)">Download Excel</button>
+              </div>
+
+              <div class="col-auto">
+                <button type="button" class="btn btn-default float-right">
+                  <mat-icon svgIcon="refresh-icon" (click)="popQrComplaintsList(false)"></mat-icon>
+              </button>
               </div>
 
               <!--<div class="col-sm-auto">
@@ -45,11 +55,11 @@
                       <mat-form-field>
                         <mat-label>Filter {{complaintMenuName}} Status</mat-label>
                         <mat-select [(value)]="complaintStatus" >
+                          <mat-option value="All">All</mat-option>
                           <mat-option value="Open">Open</mat-option>
                           <mat-option value="Assigned">Assigned</mat-option>
                           <mat-option value="Open">In Progress</mat-option>
                           <mat-option value="Closed">Closed</mat-option>
-                          <mat-option value="All">All</mat-option>
                         </mat-select>
                       </mat-form-field>
                     </div>
@@ -65,7 +75,24 @@
                         </mat-form-field>
                     </div>
                   </div>
+
+                  <mat-form-field>
+                    <input matInput (keyup) = "applyFilter($event.target.value)" 
+                    placeholder="Search" autocomplete="OFF" [(ngModel)] = "searchKey"
+                 />
+                </mat-form-field>
+
                 </mat-card>
+
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-sm-12">
+
+                <div class="mat-elevation-z8">
+
+                </div>
 
               </div>
             </div>

@@ -8,7 +8,8 @@ import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-name
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/Auth/auth.service';
 import { TokenModel } from 'src/app/Common_Model/token-model'
-import { LegalentityComplaintRptService } from '../../services/legalentity-complaint-rpt.service';
+import { LegalentityComplaintRptService, IComplaintBodyStruct, IqrIdAllcomplaintRptResponse, IqrIdAllcomplaintDetailsResponse } from '../../services/legalentity-complaint-rpt.service';
+import { IcomplaintRptReqStruct } from 'src/app/technician/services/technician-complaint.service';
 
 export interface IqrIdListResponseStruct{
   qrCodeId: number,
@@ -42,6 +43,31 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
   complaintFilterType: string;
 
   qrId: string;
+  Search: string;
+
+  dataSource;
+  qrIdAllComptListCount: number;
+  pageSize: number = 10;
+  pageSizeOption: number[] = [5,10,25,50,100];
+
+  displayedColumns: string[]=[
+    "srNo",
+    "complaintNumber",
+    "qrId",
+    "regsiteredByName",
+    "openDateTime",
+    "assignedDateTime",
+    "inProgressDateTime",
+    "closedDateTime",
+    "assignedTechnicianName",
+    "actionTaken",
+    "failureReason",
+    "currentComplaintStatus",
+    "statusChangedBy",
+    "statusRemark"
+  ];
+
+  qrIdComplaintRecords: IqrIdAllcomplaintDetailsResponse[];
 
   constructor(
     private userModel: LegalentityUser,
@@ -98,6 +124,38 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
      }
    }
 
+   popQrComplaintsList(exportToExcel: boolean): void{
+     const qrIdComplaintReqObj: IComplaintBodyStruct ={
+       allBranch: false,
+       branchId: this.branchId,
+       branchMenuName: this.branchMenuName,
+       complaintMenuName: this.complaintMenuName,
+       complaintStatus: '',
+       complaintTrash: false,
+       equptMenuName: this.equptMenuName,
+       exportToExcel: exportToExcel,
+       fromDate: null,
+       legalEntityId: this.legalEntityId,
+       technicianMenuName: this.technicianMenuName,
+       toDate: null,
+       userId: this.userId,
+       userRole: this.userRole
+     }
+
+     this.complaintService.getQrIdAllComplaintsRpt(qrIdComplaintReqObj)
+     .subscribe((data: IqrIdAllcomplaintRptResponse) => {
+       this.qrIdComplaintRecords = data.complaintList;
+
+       console.log(this.complaintStatus);
+       console.log(this.complaintFilterType);
+
+     });
+   }
+
+   getFilteredComplaintsRecords(){
+     //const filteredComplaintsRecordsObj = this.qrIdComplaintRecords.map
+   }
+
 
   ngOnInit() {
 
@@ -137,6 +195,8 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
 
     this.complaintStatus="All"
     this.complaintFilterType="0";
+
+    this.popQrComplaintsList(false);
 
     //to be added after jwt implementation
 
@@ -179,6 +239,12 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
 
     
 
+  }
+
+  
+
+  onBackButtonClick(){
+    this.router.navigate(['legalentity','portal','equipment']);
   }
 
 }

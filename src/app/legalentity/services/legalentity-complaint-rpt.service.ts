@@ -216,7 +216,10 @@ export interface IqrIdAllcomplaintRptResponse{
      actionTaken: string,
      failureReason: string,
      currentComplaintStatus: string,
-     complaintTrash: boolean
+     complaintTrash: boolean,
+     compalintStatusChangeUserId: number,
+     compalintStatusChangeUserName: string,
+     complaintStatusRemark: string 
   }]
 };
 
@@ -236,7 +239,10 @@ export interface IqrIdAllcomplaintDetailsResponse{
   actionTaken: string,
   failureReason: string,
   currentComplaintStatus: string,
-  complaintTrash: boolean
+  complaintTrash: boolean,
+  compalintStatusChangeUserId: number,
+  compalintStatusChangeUserName: string,
+  complaintStatusRemark: string 
 };
 
 export interface IbranchComplaintConciseReqStruct{
