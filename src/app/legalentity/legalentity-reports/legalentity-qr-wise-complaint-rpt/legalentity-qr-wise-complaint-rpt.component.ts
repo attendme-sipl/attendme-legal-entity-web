@@ -145,15 +145,75 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
      this.complaintService.getQrIdAllComplaintsRpt(qrIdComplaintReqObj)
      .subscribe((data: IqrIdAllcomplaintRptResponse) => {
        this.qrIdComplaintRecords = data.complaintList;
+        this.qrIdComplaintRecords = this.getFilteredComplaintsRecords();
 
-       console.log(this.complaintStatus);
-       console.log(this.complaintFilterType);
+        this.totalRecordCount=this.qrIdComplaintRecords.length;
+
 
      });
    }
 
-   getFilteredComplaintsRecords(){
-     //const filteredComplaintsRecordsObj = this.qrIdComplaintRecords.map
+   getFilteredComplaintsRecords():IqrIdAllcomplaintDetailsResponse[]{
+
+    let complaintStatusFilterValue: string = this.complaintStatus.toLowerCase();
+
+    let complaintTrashFilterValue: boolean;
+
+    switch(this.complaintFilterType)
+    {
+
+      case '0':
+        complaintTrashFilterValue=false;
+        break;
+      
+      case '1':
+        complaintTrashFilterValue=true;
+        break;
+
+      default:
+        complaintTrashFilterValue=null;
+    }
+
+
+     const filteredComplaintsRecordsObj = this.qrIdComplaintRecords.map((value, index) => value ? {
+      complaintId: value['complaintId'],
+      complaintNumber: value['complaintNumber'],
+      qrCodeId: value['qrCodeId'],
+      qrId: value['qrId'],
+      regsiteredByName: value['regsiteredByName'],
+      registeredByMobileNumber: value['registeredByMobileNumber'],
+      assignedTechnicianName: value['assignedTechnicianName'],
+      asignedTechnicianMobile: value['asignedTechnicianMobile'], 
+      openDateTime: value['openDateTime'],
+      assignedDateTime: value['assignedDateTime'],
+      inProgressDateTime: value['inProgressDateTime'],
+      closedDateTime: value['closedDateTime'],
+      actionTaken: value['actionTaken'],
+      failureReason: value['failureReason'],
+      currentComplaintStatus: value['currentComplaintStatus'],
+      complaintTrash: value['complaintTrash'],
+      compalintStatusChangeUserId: value['compalintStatusChangeUserId'],
+      compalintStatusChangeUserName: value['compalintStatusChangeUserName'],
+      complaintStatusRemark: value['complaintStatusRemark'] 
+     } : null)
+     .filter(value => {
+       
+        if (complaintStatusFilterValue == 'all' && complaintTrashFilterValue == null){
+          return value;
+        }
+        else if (complaintStatusFilterValue != 'all' && complaintTrashFilterValue == null){
+          return value.currentComplaintStatus == complaintStatusFilterValue;
+        }
+        else if (complaintStatusFilterValue == 'all' && complaintTrashFilterValue != null){
+          return value.complaintTrash == complaintTrashFilterValue;
+        }
+        else if (complaintStatusFilterValue != 'all' && complaintTrashFilterValue != null){
+          return (value.currentComplaintStatus == complaintStatusFilterValue) && (value.complaintTrash == complaintTrashFilterValue); 
+        }
+        
+     });
+
+     return filteredComplaintsRecordsObj
    }
 
 
@@ -193,7 +253,7 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
 
     this.getQrId();
 
-    this.complaintStatus="All"
+    this.complaintStatus="Assigned"
     this.complaintFilterType="0";
 
     this.popQrComplaintsList(false);
