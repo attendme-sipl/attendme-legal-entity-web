@@ -219,8 +219,8 @@ getFilteredComplaintObj(allComplaintsObj: IqrIdAllcomplaintDetailsResponse[], co
       qrId: value['qrId'],
       regsiteredByName: value['regsiteredByName'],
       registeredByMobileNumber: value['registeredByMobileNumber'],
-      assignedTechnicianName: value['asignedTechnicianMobile'],
-      asignedTechnicianMobile: value['assignedTechnicianName'], 
+      assignedTechnicianName: value['assignedTechnicianName'],
+      asignedTechnicianMobile: value['asignedTechnicianMobile'], 
       openDateTime: value['openDateTime'],
       assignedDateTime: value['assignedDateTime'],
       inProgressDateTime: value['inProgressDateTime'],
@@ -228,7 +228,10 @@ getFilteredComplaintObj(allComplaintsObj: IqrIdAllcomplaintDetailsResponse[], co
       actionTaken: value['actionTaken'],
       failureReason: value['failureReason'],
       currentComplaintStatus: value['currentComplaintStatus'],
-      complaintTrash: value['complaintTrash']
+      complaintTrash: value['complaintTrash'],
+      compalintStatusChangeUserId: value['compalintStatusChangeUserId'],
+      compalintStatusChangeUserName: value['compalintStatusChangeUserName'],
+      complaintStatusRemark: value['complaintStatusRemark'] 
     } : null)
     .filter(value => value.complaintTrash == complaintTrash);
   

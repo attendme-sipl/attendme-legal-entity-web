@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { LegalentityUser } from '../../model/legalentity-user';
 import { LegalentityUtilService } from '../../services/legalentity-util.service';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry, MatTableDataSource, MatPaginator, MatSort, Sort, MatDialog } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { ToastrService } from 'ngx-toastr';
 import { AuthService } from 'src/app/Auth/auth.service';
 import { TokenModel } from 'src/app/Common_Model/token-model'
-import { LegalentityComplaintRptService, IComplaintBodyStruct, IqrIdAllcomplaintRptResponse, IqrIdAllcomplaintDetailsResponse } from '../../services/legalentity-complaint-rpt.service';
+import { LegalentityComplaintRptService, IComplaintBodyStruct, IqrIdAllcomplaintRptResponse, IqrIdAllcomplaintDetailsResponse, IcomplaintIndivReqStruct } from '../../services/legalentity-complaint-rpt.service';
 import { IcomplaintRptReqStruct } from 'src/app/technician/services/technician-complaint.service';
+import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 
 export interface IqrIdListResponseStruct{
   qrCodeId: number,
@@ -22,6 +23,9 @@ export interface IqrIdListResponseStruct{
   styleUrls: ['./legalentity-qr-wise-complaint-rpt.component.css']
 })
 export class LegalentityQrWiseComplaintRptComponent implements OnInit {
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
   legalEntityId: number;
   branchId: number;
@@ -49,11 +53,12 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
   qrIdAllComptListCount: number;
   pageSize: number = 10;
   pageSizeOption: number[] = [5,10,25,50,100];
+  searchKey: string;
 
   displayedColumns: string[]=[
     "srNo",
     "complaintNumber",
-    "qrId",
+    //"qrId",
     "regsiteredByName",
     "openDateTime",
     "assignedDateTime",
@@ -79,7 +84,8 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private toastService: ToastrService,
     private authService: AuthService,
-    private complaintService: LegalentityComplaintRptService
+    private complaintService: LegalentityComplaintRptService,
+    private dialog: MatDialog
   ) {
     iconRegistry.addSvgIcon(
       'refresh-icon',
@@ -125,6 +131,9 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
    }
 
    popQrComplaintsList(exportToExcel: boolean): void{
+
+    this.enableProgressBar=true;
+
      const qrIdComplaintReqObj: IComplaintBodyStruct ={
        allBranch: false,
        branchId: this.branchId,
@@ -142,20 +151,43 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
        userRole: this.userRole
      }
 
-     this.complaintService.getQrIdAllComplaintsRpt(qrIdComplaintReqObj)
+     try {
+      this.complaintService.getQrIdAllComplaintsRpt(qrIdComplaintReqObj)
      .subscribe((data: IqrIdAllcomplaintRptResponse) => {
-       this.qrIdComplaintRecords = data.complaintList;
+        this.qrIdComplaintRecords = data.complaintList;
         this.qrIdComplaintRecords = this.getFilteredComplaintsRecords();
 
         this.totalRecordCount=this.qrIdComplaintRecords.length;
 
+        this.dataSource=new MatTableDataSource(this.qrIdComplaintRecords);
+        this.dataSource.paginator=this.paginator;
+        this.dataSource.sort=this.sort;
 
-     });
+        //const sortState: Sort = {active: 'openDateTime', direction: 'desc'};
+        //this.sort.active = sortState.active;
+        //this.sort.direction = sortState.direction;
+        //this.sort.sortChange.emit(sortState);
+        
+        this.enableProgressBar=false;
+
+     }, error => {
+       this.enableProgressBar=false;
+     }); 
+     } catch (error) {
+       this.enableProgressBar=false;
+       this.toastService.error("Something went wrong while displaying QR Id wise " + this.complaintMenuName + " list report.");
+     }
    }
 
    getFilteredComplaintsRecords():IqrIdAllcomplaintDetailsResponse[]{
 
-    let complaintStatusFilterValue: string = this.complaintStatus.toLowerCase();
+    let complaintStatusFilterValue: string = this.complaintStatus.toLowerCase().replace(' ','');
+
+    let compalintTrashSelectStr: string = this.complaintFilterType.toString();
+
+    if (compalintTrashSelectStr == '2'){
+      compalintTrashSelectStr ='';
+    }
 
     let complaintTrashFilterValue: boolean;
 
@@ -172,9 +204,10 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
 
       default:
         complaintTrashFilterValue=null;
+        compalintTrashSelectStr='';
     }
 
-
+  
      const filteredComplaintsRecordsObj = this.qrIdComplaintRecords.map((value, index) => value ? {
       complaintId: value['complaintId'],
       complaintNumber: value['complaintNumber'],
@@ -197,23 +230,55 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
       complaintStatusRemark: value['complaintStatusRemark'] 
      } : null)
      .filter(value => {
-       
-        if (complaintStatusFilterValue == 'all' && complaintTrashFilterValue == null){
-          return value;
+     
+        if (complaintStatusFilterValue == 'all' && compalintTrashSelectStr == ''){
+        
+          return value.qrCodeId == this.qrCodeId;
         }
-        else if (complaintStatusFilterValue != 'all' && complaintTrashFilterValue == null){
-          return value.currentComplaintStatus == complaintStatusFilterValue;
+        else if (complaintStatusFilterValue != 'all' && compalintTrashSelectStr == ''){
+          
+          return (value.currentComplaintStatus == complaintStatusFilterValue) && (value.qrCodeId == this.qrCodeId);
         }
-        else if (complaintStatusFilterValue == 'all' && complaintTrashFilterValue != null){
-          return value.complaintTrash == complaintTrashFilterValue;
+        else if (complaintStatusFilterValue == 'all' && compalintTrashSelectStr != ''){
+         
+          return (value.complaintTrash == complaintTrashFilterValue) && (value.qrCodeId == this.qrCodeId);
         }
-        else if (complaintStatusFilterValue != 'all' && complaintTrashFilterValue != null){
-          return (value.currentComplaintStatus == complaintStatusFilterValue) && (value.complaintTrash == complaintTrashFilterValue); 
+        else if (complaintStatusFilterValue != 'all' && compalintTrashSelectStr != ''){
+          
+          return (value.currentComplaintStatus == complaintStatusFilterValue) && (value.complaintTrash == complaintTrashFilterValue) && (value.qrCodeId == this.qrCodeId); 
         }
         
      });
 
      return filteredComplaintsRecordsObj
+   }
+
+   openComplaintDetailsDialog(complaintId: number){
+
+    try {
+      const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+        complaintId: complaintId,
+        branchId: this.branchId,
+        legalEntityId: this.legalEntityId,
+        userId: this.userId,
+        userRole: this.userRole
+      };
+      
+      const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
+        data: IndivComplaintReqObj
+      });    
+    } catch (error) {
+      this.toastService.error("Something went wrong while opening " + this.complaintMenuName + " details dialog","");
+    }
+
+   }
+
+   filterComplaintsByStatus(){
+     this.popQrComplaintsList(false);
+   }
+
+   onFilterItemChange(){
+     this.popQrComplaintsList(false);
    }
 
 
@@ -253,7 +318,7 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
 
     this.getQrId();
 
-    this.complaintStatus="Assigned"
+    this.complaintStatus="All"
     this.complaintFilterType="0";
 
     this.popQrComplaintsList(false);
@@ -301,10 +366,12 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
 
   }
 
-  
-
   onBackButtonClick(){
     this.router.navigate(['legalentity','portal','equipment']);
+  }
+
+  applyFilter(filterValue: string){
+    this.dataSource.filter = filterValue.trim().toLocaleLowerCase();
   }
 
 }

@@ -176,7 +176,7 @@ export class LegalentityForgotPasswordComponent implements OnInit {
 
         if (data.otpValidityExpired){
           this.errorMsgEnableDisplay=true;
-          this.errorMsgText='One time password expired. Please try later.';
+          this.errorMsgText='One time password expired. Please try again.';
           this.resetPasswordFormProgressBar=false;
           this.disableVerifyOtpBtn=false;
           return false;
