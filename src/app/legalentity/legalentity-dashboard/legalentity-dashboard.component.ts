@@ -330,6 +330,7 @@ export class LegalentityDashboardComponent implements OnInit {
         this.enableUnresolvedRptProgressBar=false;
     });
     },error => {
+      console.log(error);
       //this.toastService.error("Something went wrong while loading unresloved " + this.legalEntityMenuPrefModel.complaintMenuName);
       this.enableUnresolvedRptProgressBar=false;
     });

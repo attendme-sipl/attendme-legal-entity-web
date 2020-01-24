@@ -376,13 +376,13 @@ export class LegalentityOpenComptRptComponent implements OnInit {
         userRole: this.userRole
       };
   
-     // const dialogRef = this.dialog.open(LegalentityComplaintActionComponent);
+      const dialogRef = this.dialog.open(LegalentityComplaintActionComponent);
   
-      const dialogRef = this.dialog.open(LegalentityAssignTechnicianComponent, {
+      /*const dialogRef = this.dialog.open(LegalentityAssignTechnicianComponent, {
         data: complaintDetailsData,
         width: '500px',
         panelClass: 'custom-dialog-container'
-      });
+      });*/
   
       dialogRef.afterClosed().subscribe(result => {
         if (complaintDetailsData.technicianId  != null)

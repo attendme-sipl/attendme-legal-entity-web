@@ -6,6 +6,9 @@ import { MatIconRegistry } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
+import { AuthService } from 'src/app/Auth/auth.service';
+import { TokenModel } from 'src/app/Common_Model/token-model';
+import { FormGroup, FormBuilder, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-legalentity-complaint-action',
@@ -17,8 +20,11 @@ export class LegalentityComplaintActionComponent implements OnInit {
   legalEntityId: number;
   userId: number;
   branchId: number;
+  userRole: string;
   technicianMenuName: string;
   complaintMenuName: string;
+
+  actionTakenForm: NgForm;
 
   constructor(
     private userModel: LegalentityUser,
@@ -26,12 +32,21 @@ export class LegalentityComplaintActionComponent implements OnInit {
     private menuModel: LegalentityMenuPrefNames,
     private iconRegistry: MatIconRegistry,
     sanitzer: DomSanitizer,
-    private utilServiceAPI: LegalentityUtilService
+    private utilServiceAPI: LegalentityUtilService,
+    private authService: AuthService,
+    
   ) { }
 
   ngOnInit() {
 
-    if (localStorage.getItem('legalEntityUserDetails') != null){
+    const tokenModel: TokenModel = this.authService.getTokenDetails();
+
+    this.legalEntityId=tokenModel.legalEntityId;
+    this.branchId=tokenModel.branchId;
+    this.userId=tokenModel.userId;
+    this.userRole=tokenModel.userRole;
+
+    /*if (localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));
 
       this.legalEntityId=this.userModel.legalEntityUserDetails.legalEntityId;
@@ -40,13 +55,14 @@ export class LegalentityComplaintActionComponent implements OnInit {
     else{
       this.router.navigate(['legalentity/login']);
       return false;
-    }
+    }*/
 
     this.menuModel=this.utilServiceAPI.getLegalEntityMenuPrefNames();
     
     this.complaintMenuName=this.menuModel.complaintMenuName;
     this.technicianMenuName=this.menuModel.technicianMenuName;
 
+    
 
   }
 

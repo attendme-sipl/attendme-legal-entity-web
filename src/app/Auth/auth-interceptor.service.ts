@@ -10,11 +10,14 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ErrorHandlerService } from './error-handler.service';
 import { LegalentityUtilService } from '../legalentity/services/legalentity-util.service';
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthInterceptorService implements HttpInterceptor {
+
+  private jwtHelper = new JwtHelperService();
 
   constructor(
     private authService: AuthService,
@@ -22,12 +25,17 @@ export class AuthInterceptorService implements HttpInterceptor {
     private router: Router,
     private toastService: ToastrService,
     private errorHandlerService: ErrorHandlerService,
-    private utilServiceAPI: LegalentityUtilService
+    private utilServiceAPI: LegalentityUtilService,
+   
   ) { }
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>>{
 
     if (this.authService.isLoggedIn()){
+
+      const jwtToken = this.cookieService.get(this.utilServiceAPI.authCookieName);
+
+     
 
       //const exceptionalURL: string = this.utilServiceAPI.legalEntityAPIURLWoApi + "/resetPassword";
       
@@ -79,6 +87,7 @@ export class AuthInterceptorService implements HttpInterceptor {
         
         if (error.status == 401){
           this.cookieService.delete(this.utilServiceAPI.authCookieName);
+          this.cookieService.delete(this.utilServiceAPI.sessionAuthCookieName);
           this.cookieService.delete(this.utilServiceAPI.userDefMenuCookieName);
           this.router.navigate(['legalentity', 'login']);
         }

@@ -182,7 +182,6 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
    getFilteredComplaintsRecords():IqrIdAllcomplaintDetailsResponse[]{
 
     let complaintStatusFilterValue: string = this.complaintStatus.toLowerCase().replace(' ','');
-
     let compalintTrashSelectStr: string = this.complaintFilterType.toString();
 
     if (compalintTrashSelectStr == '2'){
