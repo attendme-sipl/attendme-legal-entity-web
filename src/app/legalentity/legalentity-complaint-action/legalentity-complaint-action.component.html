@@ -3,12 +3,79 @@
   
     <div class="row">
         <div class="col-sm-12">
-           
+          
+          <form #actionTakenForm="ngForm">
+
+            <div class="form-group">
+              <select class="form-control"
+              [(ngModel)] = "complaintActionCnt" name="complaintActionModel">
+                <option value="0">Select Action</option>
+                <option *ngFor="let indivActionObj of actionTakenList" value="{{indivActionObj.actionTakenValue}}">
+                   {{indivActionObj.actionTakenTxt}}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <select class="form-control"
+              [(ngModel)] ="technicianIdCnt" name="technicianModel">
+                <option value="0">Select {{technicianMenuName}}</option>
+                <option *ngFor="let indiTechObj of technicianListArr" value="{{indiTechObj.technicianId}}">
+                  {{indiTechObj.technicianName}}
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <input type="file" class="form-control" accept="image/*,application/pdf" multiple
+              (change)="onFileChange($event)"
+              [(ngModel)] = "compDocumentCnt" name="comptDocumentModel"/>
+
+              <mat-card>
+                <mat-card-content *ngFor="let indivFileObj of updatedFileObject; let i=index">
+
+                  
+                      <div class="alert alert-dark alert-dismissible fade show" role="alert">
+                        {{indivFileObj['name']}}
+                        <button type="button" class="close" (click)="removeFileFromList(i)"  aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div> 
+                  
+                </mat-card-content>
+              </mat-card>
+
+            </div>
+
+            <div class="form-group">
+              <textarea class="form-control"
+              required
+              [(ngModel)]="failureReasonCnt" name="failureReason" placeholder="Failure Reason">
+              </textarea>
+            </div>
+
+            <div class="form-group">
+              <textarea class="form-control"
+              required
+              [(ngModel)]="actionTakeCnt" name="actionTake" placeholder="Action Taken">
+              </textarea>
+            </div>
+
+            <div class="form-group">
+              <textarea class="form-control"
+              required
+              [(ngModel)]="comptRemarkCnt" name="comptRemark" placeholder="Remark">
+              </textarea>
+            </div>
+            
+          </form>
+
+          
         </div>
     </div>
 
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Submit</button>
+  <button mat-flat-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>Submit</button>
 </mat-dialog-actions>

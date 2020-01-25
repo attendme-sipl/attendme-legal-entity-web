@@ -29,8 +29,6 @@ export class AuthGuardService {
     else{
       const jwtToken = this.cookieService.get(this.utilServiceAPI.authCookieName);
       //console.log(jwtToken);
-      
-      console.log(this.jwtHelper.getTokenExpirationDate(jwtToken));
 
       if (this.jwtHelper.isTokenExpired(jwtToken)){
         this.cookieService.delete(this.utilServiceAPI.authCookieName);

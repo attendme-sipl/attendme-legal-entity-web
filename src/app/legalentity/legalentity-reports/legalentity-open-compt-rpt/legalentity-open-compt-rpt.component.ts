@@ -68,6 +68,11 @@ export interface IopenComplaintListStruct{
    complaintTrash: boolean
 };
 
+export interface IactionTakenReqData{
+  complaintId: number,
+  complaintStatus: string
+}
+
 @Component({
   selector: 'app-legalentity-open-compt-rpt',
   templateUrl: './legalentity-open-compt-rpt.component.html',
@@ -166,7 +171,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 //console.log(this.branchId);
     this.searchKey='';
 
-    const openComplaintReqObj: IopenComplaintRtpReqStruct ={
+   const openComplaintReqObj: IopenComplaintRtpReqStruct ={
       allBranch: false, //true,
       branchId: this.branchId,
       userId: this.userId,
@@ -189,6 +194,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       saveAs(data,"abc");
   
     });*/
+
 
   
     if (exportToExcel){
@@ -329,13 +335,18 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
   openComplaintDetailsDialog(complaintId: number):void{
 
-    const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+    /*const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
       complaintId: complaintId,
       branchId: this.branchId,
       legalEntityId: this.legalEntityId,
       userId: this.userId,
       userRole: this.userRole
-    };
+    };*/
+
+    const IndivComplaintReqObj: IactionTakenReqData ={
+      complaintId: complaintId,
+      complaintStatus: 'open'
+    }
 
     try {
       const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
@@ -362,7 +373,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
   
       let complaintDetailsData: IAssingTechnicianDialogData = {
-        complaintStatus: 'assigned',
+        complaintStatus: 'open',
         complaintAssignStatus: true,
         complaintId: complaintId,
         complaintMenuName: this.complaintMenuName,
@@ -376,7 +387,10 @@ export class LegalentityOpenComptRptComponent implements OnInit {
         userRole: this.userRole
       };
   
-      const dialogRef = this.dialog.open(LegalentityComplaintActionComponent);
+      const dialogRef = this.dialog.open(LegalentityComplaintActionComponent,{
+        width: '500px',
+        data: complaintDetailsData
+      });
   
       /*const dialogRef = this.dialog.open(LegalentityAssignTechnicianComponent, {
         data: complaintDetailsData,
