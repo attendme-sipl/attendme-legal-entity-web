@@ -8,7 +8,7 @@
 
             <div class="form-group">
               <select class="form-control"
-              [(ngModel)] = "complaintActionCnt" name="complaintActionModel">
+              [(ngModel)] = "complaintActionCnt" name="complaintActionModel" >
                 <option value="0">Select Action</option>
                 <option *ngFor="let indivActionObj of actionTakenList" value="{{indivActionObj.actionTakenValue}}">
                    {{indivActionObj.actionTakenTxt}}
@@ -16,8 +16,8 @@
               </select>
             </div>
 
-            <div class="form-group">
-              <select class="form-control"
+            <div class="form-group" *ngIf="technicianListVisisble">
+              <select class="form-control" 
               [(ngModel)] ="technicianIdCnt" name="technicianModel">
                 <option value="0">Select {{technicianMenuName}}</option>
                 <option *ngFor="let indiTechObj of technicianListArr" value="{{indiTechObj.technicianId}}">
@@ -47,14 +47,14 @@
 
             </div>
 
-            <div class="form-group">
-              <textarea class="form-control"
+            <div class="form-group" *ngIf="failureReasonVisisble">
+              <textarea class="form-control" 
               required
               [(ngModel)]="failureReasonCnt" name="failureReason" placeholder="Failure Reason">
               </textarea>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" *ngIf="actionTakenVisisble">
               <textarea class="form-control"
               required
               [(ngModel)]="actionTakeCnt" name="actionTake" placeholder="Action Taken">
@@ -68,6 +68,8 @@
               </textarea>
             </div>
             
+            {{actionTakenForm.value | json}}
+
           </form>
 
           
@@ -77,5 +79,5 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-flat-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>Submit</button>
+  <button type="submit" mat-flat-button color="primary" [mat-dialog-close]="true" cdkFocusInitial>Submit</button>
 </mat-dialog-actions>

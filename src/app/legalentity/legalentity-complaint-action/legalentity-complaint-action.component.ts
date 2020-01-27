@@ -54,6 +54,12 @@ export class LegalentityComplaintActionComponent implements OnInit {
 
   technicianListArr: ItechnicianList[];
 
+  technicianListVisisble: boolean;
+  failureReasonVisisble: boolean;
+  actionTakenVisisble: boolean;
+
+  selectedAction: string;
+
   constructor(
     private userModel: LegalentityUser,
     private router: Router,
@@ -157,6 +163,29 @@ export class LegalentityComplaintActionComponent implements OnInit {
     
   }
 
+  setActionTaken(actionCalling: string){
+    switch(actionCalling){
+      case "open":
+        //this.complaintActionCnt="assigned";
+
+        this.actionTakenForm.controls['complaintActionCnt'].setValue('assigned');
+        break;
+      case "assigned":
+        this.complaintActionCnt="inprogress";
+        break;
+      case "inprogress":
+        this.complaintActionCnt="closed";
+        break;
+    }
+  }
+
+  customFormonAction(action: string){
+    switch(action){
+      case "assigned":
+        this.actionTakenForm
+    }
+  }
+
   popTechnicianList(){
     this.technicianServiceAPI.getTechnicianNameList(
       this.legalEntityId,
@@ -198,12 +227,15 @@ export class LegalentityComplaintActionComponent implements OnInit {
     this.technicianMenuName=this.menuModel.technicianMenuName;
 
     this.popActionTakenList('open');
+    //this.setActionTaken('open');
 
     this.complaintActionCnt="0"
 
     this.popTechnicianList();
 
     this.technicianIdCnt=0;
+
+    console.log(this.actionTakenForm);
 
   }
 
