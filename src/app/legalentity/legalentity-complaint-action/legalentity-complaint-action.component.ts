@@ -38,14 +38,7 @@ export class LegalentityComplaintActionComponent implements OnInit {
   technicianMenuName: string;
   complaintMenuName: string;
 
-  actionTakenForm: NgForm;
-
-  complaintActionCnt: string;
-  technicianIdCnt: number;
-  compDocumentCnt: string;
-  failureReasonCnt: string;
-  actionTakeCnt: string;
-  comptRemarkCnt: string;
+  actionTakenForm: FormGroup;
  
   fileObject: File[] =[];
   updatedFileObject: File[] = [];
@@ -54,11 +47,9 @@ export class LegalentityComplaintActionComponent implements OnInit {
 
   technicianListArr: ItechnicianList[];
 
-  technicianListVisisble: boolean;
+  technicianVisisble: boolean;
   failureReasonVisisble: boolean;
-  actionTakenVisisble: boolean;
-
-  selectedAction: string;
+  actionTakenVisible: boolean;
 
   constructor(
     private userModel: LegalentityUser,
@@ -70,7 +61,8 @@ export class LegalentityComplaintActionComponent implements OnInit {
     private authService: AuthService,
     private toastService: ToastrService,
     private technicianServiceAPI: LegalentityTechnicianService,
-    @Inject(MAT_DIALOG_DATA) public data: IactionTakenList
+    @Inject(MAT_DIALOG_DATA) public data: IactionTakenList,
+    private actionTakenFb: FormBuilder
   ) { }
 
 
@@ -166,23 +158,40 @@ export class LegalentityComplaintActionComponent implements OnInit {
   setActionTaken(actionCalling: string){
     switch(actionCalling){
       case "open":
-        //this.complaintActionCnt="assigned";
-
-        this.actionTakenForm.controls['complaintActionCnt'].setValue('assigned');
+        this.actionTakenForm.patchValue({
+          complaintActionCnt: "assigned"
+        });
         break;
       case "assigned":
-        this.complaintActionCnt="inprogress";
+        this.actionTakenForm.patchValue({
+          complaintActionCnt: "inprogress"
+        });
         break;
       case "inprogress":
-        this.complaintActionCnt="closed";
+        this.actionTakenForm.patchValue({
+          complaintActionCnt: "closed"
+        });
         break;
     }
   }
 
-  customFormonAction(action: string){
+  customFormAction(action: string){
     switch(action){
       case "assigned":
-        this.actionTakenForm
+        this.technicianVisisble=true;
+        this.failureReasonVisisble=false;
+        this.actionTakenVisible=false;
+        break;
+
+      case "inprogress":
+        this.technicianVisisble=false;
+        this.failureReasonVisisble=true;
+        this.actionTakenVisible=true;
+
+      case "closed":
+        this.technicianVisisble=false;
+        this.failureReasonVisisble=true;
+        this.actionTakenVisible=true; 
     }
   }
 
@@ -199,6 +208,12 @@ export class LegalentityComplaintActionComponent implements OnInit {
       this.technicianListArr=data['technicialList'];
  
     });
+  }
+
+  onSubmitClick(){
+   
+    console.log(this.actionTakenForm.valid);
+    
   }
 
   ngOnInit() {
@@ -226,17 +241,27 @@ export class LegalentityComplaintActionComponent implements OnInit {
     this.complaintMenuName=this.menuModel.complaintMenuName;
     this.technicianMenuName=this.menuModel.technicianMenuName;
 
-    this.popActionTakenList('open');
-    //this.setActionTaken('open');
+    this.actionTakenForm=this.actionTakenFb.group({
+      complaintActionCnt: [''],
+      technicianIdCnt: [0],
+      compDocumentCnt: [''],
+      failureReasonCnt: [''],
+      actionTakeCnt: [''],
+      comptRemarkCnt: ['']
+    });
 
-    this.complaintActionCnt="0"
+    this.popActionTakenList('open');
+    this.setActionTaken('open');
 
     this.popTechnicianList();
 
-    this.technicianIdCnt=0;
+    this.customFormAction(this.actionTakenForm.get('complaintActionCnt').value);
+    
 
-    console.log(this.actionTakenForm);
+  }
 
+  onActionTakenChange(){
+    this.customFormAction(this.actionTakenForm.get('complaintActionCnt').value);
   }
 
 }
