@@ -8,7 +8,7 @@ import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { AuthService } from 'src/app/Auth/auth.service';
 import { TokenModel } from 'src/app/Common_Model/token-model';
-import { FormGroup, FormBuilder, NgForm } from '@angular/forms';
+import { FormGroup, FormBuilder, NgForm, Validators, RequiredValidator } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import { ItechnicianListRptResponse } from '../services/legalentity-add-technician.service';
 import { LegalentityTechnicianService } from '../services/legalentity-technician.service';
@@ -50,6 +50,8 @@ export class LegalentityComplaintActionComponent implements OnInit {
   technicianVisisble: boolean;
   failureReasonVisisble: boolean;
   actionTakenVisible: boolean;
+
+  actionSubmit: boolean;
 
   constructor(
     private userModel: LegalentityUser,
@@ -181,17 +183,49 @@ export class LegalentityComplaintActionComponent implements OnInit {
         this.technicianVisisble=true;
         this.failureReasonVisisble=false;
         this.actionTakenVisible=false;
+        this.actionTakenForm.controls['failureReasonCnt'].clearValidators();
+        this.actionTakenForm.controls['failureReasonCnt'].updateValueAndValidity();
+        this.actionTakenForm.controls['actionTakeCnt'].clearValidators();
+        this.actionTakenForm.controls['actionTakeCnt'].updateValueAndValidity();
+
+        this.actionTakenForm.patchValue({
+          technicianIdCnt: 0
+        });
+
+        this.actionSubmit=false;
         break;
 
       case "inprogress":
         this.technicianVisisble=false;
         this.failureReasonVisisble=true;
         this.actionTakenVisible=true;
+        this.actionTakenForm.controls['failureReasonCnt'].setValidators([Validators.required]);
+        this.actionTakenForm.controls['failureReasonCnt'].updateValueAndValidity();
+        this.actionTakenForm.controls['actionTakeCnt'].setValidators([Validators.required]);
+        this.actionTakenForm.controls['actionTakeCnt'].updateValueAndValidity();
+        
+        this.actionTakenForm.patchValue({
+          technicianIdCnt: 0
+        });
+
+        this.actionSubmit=false;
+        break;
 
       case "closed":
         this.technicianVisisble=false;
         this.failureReasonVisisble=true;
-        this.actionTakenVisible=true; 
+        this.actionTakenVisible=true;
+        this.actionTakenForm.controls['failureReasonCnt'].setValidators([Validators.required]);
+        this.actionTakenForm.controls['failureReasonCnt'].updateValueAndValidity();
+        this.actionTakenForm.controls['actionTakeCnt'].setValidators([Validators.required]);
+        this.actionTakenForm.controls['actionTakeCnt'].updateValueAndValidity();
+        this.actionSubmit=false;
+
+        this.actionTakenForm.patchValue({
+          technicianIdCnt: 0
+        });
+
+        break;
     }
   }
 
@@ -212,8 +246,42 @@ export class LegalentityComplaintActionComponent implements OnInit {
 
   onSubmitClick(){
    
+   
+    this.actionSubmit=true;
+
     console.log(this.actionTakenForm.valid);
+  }
+
+  setCustomValidators(){
     
+    const actionControlChange = this.actionTakenForm.get('complaintActionCnt').valueChanges;
+
+    actionControlChange.subscribe(actionValue => {
+      console.log("in custom validator " + actionValue);
+      switch(actionValue){
+
+        case "inprogress":
+          this.actionTakenForm['controls']['failureReasonCnt'].setValidators([Validators.required]);
+          this.actionTakenForm['controls']['failureReasonCnt'].updateValueAndValidity({emitEvent: false});
+        
+        case "closed":
+          console.log("in closed custom validator");
+          this.actionTakenForm.controls['failureReasonCnt'].setValidators([Validators.required]);
+          this.actionTakenForm.controls['failureReasonCnt'].updateValueAndValidity();
+          console.log(this.actionTakenForm.controls['failureReasonCnt']);
+          //this.actionTakenForm.get('failureReasonCnt').setValidators([Validators.required]);
+          //this.actionTakenForm.get('failureReasonCnt').updateValueAndValidity({emitEvent: false});
+          
+        case "assigned":
+          this.actionTakenForm['controls']['failureReasonCnt'].clearValidators();
+          this.actionTakenForm['controls']['failureReasonCnt'].updateValueAndValidity({emitEvent: false});
+      }
+
+      
+
+
+      
+    });
   }
 
   ngOnInit() {
@@ -257,6 +325,7 @@ export class LegalentityComplaintActionComponent implements OnInit {
 
     this.customFormAction(this.actionTakenForm.get('complaintActionCnt').value);
     
+    //this.setCustomValidators();
 
   }
 

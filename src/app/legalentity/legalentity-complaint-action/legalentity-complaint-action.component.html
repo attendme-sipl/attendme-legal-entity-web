@@ -10,7 +10,6 @@
           
             <div class="form-group">
               <select class="form-control" formControlName="complaintActionCnt" 
-               required
               (change)="onActionTakenChange()">
                 <!--<option value="0">Select Action</option>-->
                 <option *ngFor="let indivActionObj of actionTakenList" value="{{indivActionObj.actionTakenValue}}">
@@ -21,12 +20,18 @@
             </div>
 
             <div class="form-group" *ngIf="technicianVisisble">
-              <select class="form-control" formControlName ="technicianIdCnt" >
+              <select class="form-control" formControlName ="technicianIdCnt" 
+              [ngClass]="{'is-invalid': actionSubmit && actionTakenForm.get('technicianIdCnt').value == 0 && actionTakenForm.get('complaintActionCnt').value == 'assigned'}">
                 <option value="0">Select {{technicianMenuName}}</option>
                 <option *ngFor="let indiTechObj of technicianListArr" value="{{indiTechObj.technicianId}}">
                   {{indiTechObj.technicianName}}
                 </option>
               </select>
+
+              <div *ngIf="actionSubmit && actionTakenForm.get('technicianIdCnt').value == 0 && actionTakenForm.get('complaintActionCnt').value == 'assigned'" 
+              class="invalid-feedback">
+                Please select {{technicianMenuName}}
+              </div>
             </div>
 
             <div class="form-group">
@@ -50,21 +55,31 @@
 
             <div class="form-group" *ngIf="failureReasonVisisble">
               <textarea class="form-control" 
-              required
-              formControlName="failureReasonCnt" placeholder="Failure Reason">
+              formControlName="failureReasonCnt" placeholder="Failure Reason"
+              [ngClass]="{'is-invalid': actionSubmit && actionTakenForm.get('failureReasonCnt').invalid}">
               </textarea>
+
+              <div class="invalid-feedback"
+              *ngIf="actionSubmit && actionTakenForm.get('failureReasonCnt').invalid">
+                Please enter failure reason.
+              </div>
             </div>
 
             <div class="form-group" *ngIf="actionTakenVisible">
               <textarea class="form-control"
-              required
-              formControlName="actionTakeCnt" placeholder="Action Taken">
+              formControlName="actionTakeCnt" placeholder="Action Taken"
+              [ngClass]="{'is-invalid': actionSubmit && actionTakenForm.get('actionTakeCnt').invalid}"
+              >
               </textarea>
+
+              <div class="invalid-feedback"
+              *ngIf="actionSubmit && actionTakenForm.get('actionTakeCnt').invalid">
+                Please enter action taken details.
+              </div>
             </div>
 
             <div class="form-group">
               <textarea class="form-control"
-              required
               formControlName="comptRemarkCnt" placeholder="Remark">
               </textarea>
             </div>
