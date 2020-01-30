@@ -6,7 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityUser } from '../../model/legalentity-user';
 import { Router, ActivatedRoute } from '@angular/router';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
-import { LegalentityComplaintRptService, IopenComplaintRptResponseStruct, IcomplaintIndivReqStruct, IcomplaintIndivResponseStruct } from '../../services/legalentity-complaint-rpt.service';
+import { LegalentityComplaintRptService, IopenComplaintRptResponseStruct, IcomplaintIndivReqStruct, IcomplaintIndivResponseStruct, IactionTakenReqData } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityCommons } from '../../model/legalentity-commons';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
@@ -68,10 +68,6 @@ export interface IopenComplaintListStruct{
    complaintTrash: boolean
 };
 
-export interface IactionTakenReqData{
-  complaintId: number,
-  complaintStatus: string
-}
 
 @Component({
   selector: 'app-legalentity-open-compt-rpt',
@@ -87,6 +83,9 @@ export class LegalentityOpenComptRptComponent implements OnInit {
   branchId: number;
   userId: number;
   userRole: string;
+
+  userFullName: string;
+  complaintStageCount: number;
 
   openComplaintProgressBar: boolean;
 
@@ -335,18 +334,14 @@ export class LegalentityOpenComptRptComponent implements OnInit {
 
   openComplaintDetailsDialog(complaintId: number):void{
 
-    /*const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
+    const IndivComplaintReqObj: IcomplaintIndivReqStruct = {
       complaintId: complaintId,
       branchId: this.branchId,
       legalEntityId: this.legalEntityId,
       userId: this.userId,
       userRole: this.userRole
-    };*/
+    };
 
-    const IndivComplaintReqObj: IactionTakenReqData ={
-      complaintId: complaintId,
-      complaintStatus: 'open'
-    }
 
     try {
       const indivComplaintDialog = this.dialog.open(LegalentityIndivComplaintRptComponent,{
@@ -372,7 +367,7 @@ export class LegalentityOpenComptRptComponent implements OnInit {
   
       let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
   
-      let complaintDetailsData: IAssingTechnicianDialogData = {
+      /*let complaintDetailsData: IAssingTechnicianDialogData = {
         complaintStatus: 'open',
         complaintAssignStatus: true,
         complaintId: complaintId,
@@ -385,7 +380,29 @@ export class LegalentityOpenComptRptComponent implements OnInit {
         legalEntityId: this.legalEntityId,
         userId: this.userId,
         userRole: this.userRole
-      };
+      };*/
+
+      let complaintDetailsData: IactionTakenReqData={
+        actionTaken: null,
+        branchId: this.branchId,
+        complaintClosedRemark: null,
+        complaintId: complaintId,
+        complaintMenuName: this.complaintMenuName,
+        complaintStageCount: this.complaintStageCount,
+        complaintStatus: null,
+        complaintStatusDocument: null,
+        equipmentMenuName: this.equptMenuName,
+        failureReason: null,
+        legalEntityId: this.legalEntityId,
+        legalEntityUserId: this.userId,
+        technicianMenuName: this.technicianMenuName,
+        userFullName: this.userFullName,
+        userId: this.userId,
+        userRole: this.userRole,
+        technicianId: null,
+        statusRemark: null,
+        reqComptStatus: "open"
+      }
   
       const dialogRef = this.dialog.open(LegalentityComplaintActionComponent,{
         width: '500px',
@@ -414,20 +431,16 @@ export class LegalentityOpenComptRptComponent implements OnInit {
   
           alertDialogRef.afterClosed().subscribe(result =>{
            
-            if (confirmAlertData.confirmBit)
+            /*if (confirmAlertData.confirmBit)
             {
               //console.log(complaintDetailsData);
+
+
               this.openComplaintProgressBar = true;
               this.complaintRptServiceAPI.assignTechnicianToComplaint(complaintDetailsData)
               .subscribe(data => {
 
-                console.log(data);
-                /*if (data['errorOccured'])
-                {
-                  this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName,"");
-                  this.openComplaintProgressBar = false;
-                  return false;
-                }*/
+               
   
                 this.popOpenComplaintGrid(false);
                 this.toastService.success(this.technicianMenuName + " assigned to a " + this.complaintMenuName + " successfully","");
@@ -435,8 +448,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
               }, error => {
                 //this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName,"");
                 this.openComplaintProgressBar = false;
-              });
-            }
+              }); 
+            }*/
   
           });
   
@@ -565,6 +578,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     this.userId = tokenModel.userId;
     this.userRole = tokenModel.userRole;
     
+    this.userFullName=tokenModel.userFullName;
+    this.complaintStageCount=tokenModel.complaintStageCount;
 
     if (this.branchData.branchDetails != null){
       this.branchId=this.branchData.branchDetails['branchId'];

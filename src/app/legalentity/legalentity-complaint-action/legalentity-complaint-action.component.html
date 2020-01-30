@@ -37,6 +37,13 @@
             <div class="form-group">
               <input type="file" class="form-control" accept="image/*,application/pdf" multiple
               (change)="onFileChange($event)" formControlName = "compDocumentCnt" />
+
+              <small>
+                <i>*Supported file format image and PDF</i>
+                <br>
+                <i>*Supported file size upto 15 MB</i>
+              </small>
+
               <mat-card>
                 <mat-card-content *ngFor="let indivFileObj of updatedFileObject; let i=index">
 

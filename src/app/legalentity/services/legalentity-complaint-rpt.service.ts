@@ -305,6 +305,28 @@ export interface IunresolvedComplaintResponseStruct{
   }]
 };
 
+export interface IactionTakenReqData{
+  complaintId: number,
+  complaintStatus: string,
+  complaintMenuName: string,
+  technicianMenuName: string,
+  equipmentMenuName: string,
+  legalEntityUserId: number
+  complaintStageCount: number,
+  failureReason: string,
+  actionTaken: string,
+  complaintStatusDocument: File[],
+  userId: number,
+  userFullName: string,
+  complaintClosedRemark: string,
+  legalEntityId: number,
+  branchId: number,
+  userRole: string,
+  technicianId: number,
+  statusRemark: string,
+  reqComptStatus: string;
+};
+
 @Injectable({
   providedIn: 'root'
 })

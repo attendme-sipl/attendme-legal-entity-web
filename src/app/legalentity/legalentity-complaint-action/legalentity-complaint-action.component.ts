@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import { ItechnicianListRptResponse } from '../services/legalentity-add-technician.service';
 import { LegalentityTechnicianService } from '../services/legalentity-technician.service';
 import { ItechnicianDetailsReponse } from '../services/legalentity-user.service';
+import { IactionTakenReqData } from '../services/legalentity-complaint-rpt.service';
 
 export interface IactionTakenList{
   actionTakenValue: string,
@@ -53,6 +54,8 @@ export class LegalentityComplaintActionComponent implements OnInit {
 
   actionSubmit: boolean;
 
+  requestedComptStatus: string;
+
   constructor(
     private userModel: LegalentityUser,
     private router: Router,
@@ -63,7 +66,7 @@ export class LegalentityComplaintActionComponent implements OnInit {
     private authService: AuthService,
     private toastService: ToastrService,
     private technicianServiceAPI: LegalentityTechnicianService,
-    @Inject(MAT_DIALOG_DATA) public data: IactionTakenList,
+    @Inject(MAT_DIALOG_DATA) public data: IactionTakenReqData,
     private actionTakenFb: FormBuilder
   ) { }
 
@@ -247,9 +250,20 @@ export class LegalentityComplaintActionComponent implements OnInit {
   onSubmitClick(){
    
    
-    this.actionSubmit=true;
+    let selStatus: string = this.actionTakenForm.get('complaintActionCnt').value;
 
-    console.log(this.actionTakenForm.valid);
+    if (selStatus == "assigned"){
+      
+      let technicianId: number = this.actionTakenForm.get('technicianIdCnt').value;
+
+      if (technicianId == 0){
+        this.toastService.error("Please select " + this.technicianMenuName + " from the list");
+        return false;
+      }
+
+    }
+    
+    
   }
 
   setCustomValidators(){
@@ -318,8 +332,10 @@ export class LegalentityComplaintActionComponent implements OnInit {
       comptRemarkCnt: ['']
     });
 
-    this.popActionTakenList('open');
-    this.setActionTaken('open');
+    this.requestedComptStatus=this.data.reqComptStatus;
+
+    this.popActionTakenList(this.requestedComptStatus);
+    this.setActionTaken(this.requestedComptStatus);
 
     this.popTechnicianList();
 
