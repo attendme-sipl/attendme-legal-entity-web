@@ -324,7 +324,8 @@ export interface IactionTakenReqData{
   userRole: string,
   technicianId: number,
   statusRemark: string,
-  reqComptStatus: string;
+  reqComptStatus: string,
+  complaintAssignStatus: boolean
 };
 
 @Injectable({
@@ -377,9 +378,42 @@ export class LegalentityComplaintRptService {
     return this.httpClient.get<IcomplaintIndivResponseStruct>(this.util.legalEntityRestApuURL + "/getComplaintDetail/" + indivComplaintReqObj.complaintId + "?" + params);
   }
 
-  assignTechnicianToComplaint(complaintDetails:IAssingTechnicianDialogData):Observable<any>{
+  assignTechnicianToComplaint(complaintDetails: IactionTakenReqData):Observable<any>{
     // console.log(complaintDetails);
-    return this.httpClient.post(this.util.legalEntityRestApuURL + "/assignTechToComplaint", complaintDetails);
+
+    const actionTakenFormData: FormData = new FormData();
+
+    actionTakenFormData.append("complaintId", complaintDetails.complaintId.toString());
+    actionTakenFormData.append("technicianId", complaintDetails.technicianId.toString());
+    actionTakenFormData.append("complaintStatus", complaintDetails.complaintStatus.toString());
+    actionTakenFormData.append("complaintAssignStatus", complaintDetails.complaintAssignStatus.toString());
+    actionTakenFormData.append("equipmentMenuName", complaintDetails.equipmentMenuName.toString());
+    actionTakenFormData.append("complaintMenuName", complaintDetails.complaintMenuName.toString());
+    actionTakenFormData.append("technicianMenuName", complaintDetails.technicianMenuName.toString());
+    actionTakenFormData.append("legalEntityId", complaintDetails.legalEntityId.toString());
+    actionTakenFormData.append("branchId", complaintDetails.branchId.toString());
+    actionTakenFormData.append("userId", complaintDetails.userId.toString());
+    actionTakenFormData.append("userRole", complaintDetails.userRole.toString());
+
+    if (complaintDetails.complaintStatusDocument.length > 0){
+      for (let i: number=0; i <= complaintDetails.complaintStatusDocument.length-1; i++){
+        actionTakenFormData.append("complaintStatusDocument", complaintDetails.complaintStatusDocument[i],complaintDetails.complaintStatusDocument[i].name );
+      }
+    }
+    else{
+      let dummyFileDate: File;
+      actionTakenFormData.append("complaintStatusDocument", dummyFileDate);
+    }
+
+    if (complaintDetails.statusRemark ! = null){
+      actionTakenFormData.append("statusRemark", complaintDetails.statusRemark.toString());
+    }
+    else{
+      actionTakenFormData.append("statusRemark", '');
+    }
+
+
+    return this.httpClient.post(this.util.legalEntityRestApuURL + "/assignTechToComplaint", actionTakenFormData);
      
     }
 

@@ -401,7 +401,8 @@ export class LegalentityOpenComptRptComponent implements OnInit {
         userRole: this.userRole,
         technicianId: null,
         statusRemark: null,
-        reqComptStatus: "open"
+        reqComptStatus: "open",
+        complaintAssignStatus: true
       }
   
       const dialogRef = this.dialog.open(LegalentityComplaintActionComponent,{
@@ -416,7 +417,51 @@ export class LegalentityOpenComptRptComponent implements OnInit {
       });*/
   
       dialogRef.afterClosed().subscribe(result => {
-        if (complaintDetailsData.technicianId  != null)
+
+        if (complaintDetailsData.complaintStatus == "assigned"){
+
+          if (complaintDetailsData.technicianId != null){
+            let confirmAlertData:IConfirmAlertStruct = {
+              alertMessage: "Are you sure you want to assign " + this.technicianMenuName + " to a " + this.complaintMenuName,
+              confirmBit:false
+             };
+     
+             const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
+               data:confirmAlertData,
+               panelClass: 'custom-dialog-container'
+             });
+     
+             alertDialogRef.afterClosed().subscribe(result =>{
+              //console.log(complaintDetailsData);
+              this.openComplaintProgressBar=true;
+  
+              try {
+                this.complaintRptServiceAPI.assignTechnicianToComplaint(complaintDetailsData)
+              .subscribe(data => {
+                this.openComplaintProgressBar=false;
+                this.toastService.success("" + this.complaintMenuName + " assigned to " + this.technicianMenuName + " successfully.");
+                this.popOpenComplaintGrid(false);
+              }, error => {
+                this.openComplaintProgressBar=false;
+              });
+  
+              } catch (error) {
+                this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName);
+                this.openComplaintProgressBar=false;
+              }
+  
+  
+             });
+          }
+
+        }
+
+        if (complaintDetailsData.complaintStatus == "closed"){
+          console.log(complaintDetailsData);     
+        }
+
+
+        /*if (complaintDetailsData.technicianId  != null)
         {
   
           let confirmAlertData:IConfirmAlertStruct = {
@@ -430,30 +475,11 @@ export class LegalentityOpenComptRptComponent implements OnInit {
           });
   
           alertDialogRef.afterClosed().subscribe(result =>{
-           
-            /*if (confirmAlertData.confirmBit)
-            {
-              //console.log(complaintDetailsData);
-
-
-              this.openComplaintProgressBar = true;
-              this.complaintRptServiceAPI.assignTechnicianToComplaint(complaintDetailsData)
-              .subscribe(data => {
-
-               
-  
-                this.popOpenComplaintGrid(false);
-                this.toastService.success(this.technicianMenuName + " assigned to a " + this.complaintMenuName + " successfully","");
-  
-              }, error => {
-                //this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName,"");
-                this.openComplaintProgressBar = false;
-              }); 
-            }*/
+          
   
           });
   
-        }
+        }*/
       }); 
       
     } catch (error) {

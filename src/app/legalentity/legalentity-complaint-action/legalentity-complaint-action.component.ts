@@ -2,7 +2,7 @@ import { Component, OnInit, Inject } from '@angular/core';
 import { LegalentityUser } from '../model/legalentity-user';
 import { Router } from '@angular/router';
 import { LegalentityMenuPref } from '../model/legalentity-menu-pref';
-import { MatIconRegistry, MAT_DIALOG_DATA } from '@angular/material';
+import { MatIconRegistry, MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import { LegalentityUtilService } from '../services/legalentity-util.service';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
@@ -67,7 +67,8 @@ export class LegalentityComplaintActionComponent implements OnInit {
     private toastService: ToastrService,
     private technicianServiceAPI: LegalentityTechnicianService,
     @Inject(MAT_DIALOG_DATA) public data: IactionTakenReqData,
-    private actionTakenFb: FormBuilder
+    private actionTakenFb: FormBuilder,
+    public actionDialogRef: MatDialogRef<LegalentityComplaintActionComponent>
   ) { }
 
 
@@ -261,8 +262,76 @@ export class LegalentityComplaintActionComponent implements OnInit {
         return false;
       }
 
+      //console.log(this.actionTakenForm.value);
+
+      //console.log(this.updatedFileObject);
+
+      //this.data.actionTaken="assigned";
+      //this.data.complaintClosedRemark=this.actionTakenForm.get('comptRemarkCnt').value;
+      this.data.complaintStatus="assigned";
+      this.data.complaintStatusDocument=this.updatedFileObject;
+      this.data.statusRemark=this.actionTakenForm.get('comptRemarkCnt').value;
+      this.data.technicianId=this.actionTakenForm.get('technicianIdCnt').value;
+
+      this.closeDialog();
+
+      /*let actionTakenReqData: IactionTakenReqData = {
+        actionTaken: "assigned",
+        branchId: this.branchId,
+        complaintClosedRemark: this.actionTakenForm.get('comptRemarkCnt').value,
+        complaintId: this.data.complaintId,
+        complaintMenuName: this.complaintMenuName,
+        complaintStageCount: this.data.complaintStageCount,
+        complaintStatus: "assigned",
+        complaintStatusDocument: this.updatedFileObject,
+        equipmentMenuName: this.data.equipmentMenuName,
+        failureReason: null,
+        legalEntityId: this.legalEntityId,
+        legalEntityUserId: this.userId,
+        reqComptStatus: "open",
+        statusRemark: this.actionTakenForm.get('comptRemarkCnt').value,
+        technicianId: this.actionTakenForm.get('technicianIdCnt').value,
+        technicianMenuName: this.technicianMenuName,
+        userFullName: this.data.userFullName,
+        userId: this.userId,
+        userRole: this.userRole
+      }*/
+
     }
     
+    if (selStatus == "closed"){
+      /*let actionTakenReqData: IactionTakenReqData = {
+        actionTaken: "assigned",
+        branchId: this.branchId,
+        complaintClosedRemark: this.actionTakenForm.get('comptRemarkCnt').value,
+        complaintId: this.data.complaintId,
+        complaintMenuName: this.complaintMenuName,
+        complaintStageCount: this.data.complaintStageCount,
+        complaintStatus: "assigned",
+        complaintStatusDocument: this.updatedFileObject,
+        equipmentMenuName: this.data.equipmentMenuName,
+        failureReason: null,
+        legalEntityId: this.legalEntityId,
+        legalEntityUserId: this.userId,
+        reqComptStatus: "open",
+        statusRemark: this.actionTakenForm.get('comptRemarkCnt').value,
+        technicianId: this.actionTakenForm.get('technicianIdCnt').value,
+        technicianMenuName: this.technicianMenuName,
+        userFullName: this.data.userFullName,
+        userId: this.userId,
+        userRole: this.userRole
+      }*/
+
+      this.data.actionTaken=this.actionTakenForm.get('actionTakeCnt').value;
+      this.data.complaintClosedRemark= this.actionTakenForm.get('comptRemarkCnt').value;
+      this.data.complaintStatus= "closed";
+      this.data.complaintStatusDocument= this.updatedFileObject;
+      this.data.failureReason= this.actionTakenForm.get('failureReasonCnt').value;
+      this.data.statusRemark= this.actionTakenForm.get('comptRemarkCnt').value;
+
+      this.closeDialog();
+
+    }
     
   }
 
@@ -347,6 +416,10 @@ export class LegalentityComplaintActionComponent implements OnInit {
 
   onActionTakenChange(){
     this.customFormAction(this.actionTakenForm.get('complaintActionCnt').value);
+  }
+
+  closeDialog(){
+    this.actionDialogRef.close();
   }
 
 }

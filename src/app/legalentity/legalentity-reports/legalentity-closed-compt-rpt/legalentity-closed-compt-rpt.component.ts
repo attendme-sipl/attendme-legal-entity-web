@@ -154,29 +154,34 @@ export class LegalentityClosedComptRptComponent implements OnInit {
   
         //console.log(data);
 
-        const filteredClosedComplaintObj = data.complaintList.map((value,index) => value ? {
-          complaintId: value['complaintId'],
-          complaintNumber: value['complaintNumber'],
-          qrCodeId: value['qrCodeId'],
-          qrId: value['qrId'],
-          regsiteredByName: value['regsiteredByName'],
-          registeredByMobileNumber: value['registeredByMobileNumber'],
-          closedDateTime: value['closedDateTime'],
-          actionTaken: value['actionTaken'],
-          failureReason: value['failureReason'],
-          complaintTrash: value['complaintTrash']
-        } : null)
-        .filter(value => value.complaintTrash == false);
+        if (data.complaintList != null){
 
-        this.totalRecordCount=filteredClosedComplaintObj.length;
+          const filteredClosedComplaintObj = data.complaintList.map((value,index) => value ? {
+            complaintId: value['complaintId'],
+            complaintNumber: value['complaintNumber'],
+            qrCodeId: value['qrCodeId'],
+            qrId: value['qrId'],
+            regsiteredByName: value['regsiteredByName'],
+            registeredByMobileNumber: value['registeredByMobileNumber'],
+            closedDateTime: value['closedDateTime'],
+            actionTaken: value['actionTaken'],
+            failureReason: value['failureReason'],
+            complaintTrash: value['complaintTrash']
+          } : null)
+          .filter(value => value.complaintTrash == false);
   
-        this.closedComplaintListDetailsObj=filteredClosedComplaintObj;
-  
-        this.closedComptListCount=filteredClosedComplaintObj.length;
-        this.dataSource=new MatTableDataSource(filteredClosedComplaintObj);
-        this.dataSource.paginator=this.paginator;
-        this.dataSource.sort=this.sort; 
-  
+          this.totalRecordCount=filteredClosedComplaintObj.length;
+    
+          this.closedComplaintListDetailsObj=filteredClosedComplaintObj;
+    
+          this.closedComptListCount=filteredClosedComplaintObj.length;
+          this.dataSource=new MatTableDataSource(filteredClosedComplaintObj);
+          this.dataSource.paginator=this.paginator;
+          this.dataSource.sort=this.sort;
+          
+        }
+
+      
         this.enableProgressBar=false;
       }, error => {
         //this.toastService.error("Something went wrong while loading closed " + this.complaintMenuName + " list report");
