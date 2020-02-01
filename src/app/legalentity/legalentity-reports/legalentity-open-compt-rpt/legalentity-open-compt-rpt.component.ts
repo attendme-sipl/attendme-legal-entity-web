@@ -457,7 +457,45 @@ export class LegalentityOpenComptRptComponent implements OnInit {
         }
 
         if (complaintDetailsData.complaintStatus == "closed"){
-          console.log(complaintDetailsData);     
+          
+
+          let confirmAlertData:IConfirmAlertStruct = {
+            alertMessage: "Are you sure you want to assign " + this.technicianMenuName + " to a " + this.complaintMenuName,
+            confirmBit:false
+           };
+   
+           const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
+             data:confirmAlertData,
+             panelClass: 'custom-dialog-container'
+           });
+   
+           alertDialogRef.afterClosed().subscribe(result =>{
+             this.openComplaintProgressBar = true;
+
+             try {
+              this.complaintRptServiceAPI.changeComptStatusLeUser(complaintDetailsData)
+              .subscribe(data => {
+               
+                if (data['complaintStatusExisits']){
+                  this.toastService.error("" + this.complaintMenuName + " already closed.");
+                  this.openComplaintProgressBar=false;
+                  return false;
+                }
+ 
+                this.toastService.success("" + this.complaintMenuName + " closed successfully");
+                this.openComplaintProgressBar=false;
+ 
+              }, error => {this.openComplaintProgressBar=false;});  
+             } catch (error) {
+               this.toastService.error("Something went wrong while closing "+ this.complaintMenuName);
+              this.openComplaintProgressBar=false;
+             }
+
+             
+           });
+
+          
+          
         }
 
 

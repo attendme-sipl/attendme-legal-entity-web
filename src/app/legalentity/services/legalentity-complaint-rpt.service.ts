@@ -537,5 +537,49 @@ export class LegalentityComplaintRptService {
         }
       );
     }
+
+    changeComptStatusLeUser(complaintDetails: IactionTakenReqData): Observable<any>{
+      const actionTakenFormData: FormData = new FormData();
+
+      actionTakenFormData.append("complaintId", complaintDetails.complaintId.toString());
+      actionTakenFormData.append("complaintStatus", complaintDetails.complaintStatus.toString());
+      actionTakenFormData.append("complaintMenuName", complaintDetails.complaintMenuName.toString());
+      actionTakenFormData.append("technicianMenuName", complaintDetails.technicianMenuName.toString());
+      actionTakenFormData.append("equipmentMenuName", complaintDetails.equipmentMenuName.toString());
+      actionTakenFormData.append("legalEntityUserId", complaintDetails.legalEntityId.toString());
+      actionTakenFormData.append("complaintStageCount", complaintDetails.complaintStageCount.toString());
+    
+      if (complaintDetails.failureReason != null || complaintDetails.failureReason != ''){
+        actionTakenFormData.append("failureReason", complaintDetails.failureReason.toString());
+      }
+
+      if (complaintDetails.actionTaken != null || complaintDetails.actionTaken != ''){
+        actionTakenFormData.append("actionTaken", complaintDetails.actionTaken.toString());
+      }
+
+      if (complaintDetails.complaintStatusDocument.length != 0){
+        for (let i: number=0; i <= complaintDetails.complaintStatusDocument.length-1; i++){
+          actionTakenFormData.append("complaintStatusDocument", complaintDetails.complaintStatusDocument[i],complaintDetails.complaintStatusDocument[i].name );
+        }
+      }
+      else{
+        let dummyFileDate: File;
+        actionTakenFormData.append("complaintStatusDocument", dummyFileDate);
+      }
+
+      actionTakenFormData.append("userId", complaintDetails.userId.toString());
+      actionTakenFormData.append("userFullName", complaintDetails.userFullName.toString());
+
+      if (complaintDetails.complaintClosedRemark != null || complaintDetails.complaintClosedRemark != ''){
+        actionTakenFormData.append("complaintClosedRemark", complaintDetails.complaintClosedRemark.toString());
+      }
+
+      actionTakenFormData.append("legalEntityId", complaintDetails.legalEntityId.toString());
+      actionTakenFormData.append("branchId", complaintDetails.branchId.toString());
+      actionTakenFormData.append("userRole", complaintDetails.userRole.toString());
+
+      return this.httpClient.post(this.util.legalEntityRestApuURL + "/legalEntityAdminChangeCompStatus", actionTakenFormData);
+       
+    }
     
 }
