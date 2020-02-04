@@ -69,7 +69,10 @@ export class LegalentityComplaintActionComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: IactionTakenReqData,
     private actionTakenFb: FormBuilder,
     public actionDialogRef: MatDialogRef<LegalentityComplaintActionComponent>
-  ) { }
+  ) {
+    actionDialogRef.disableClose = true;
+
+   }
 
 
   onFileChange(event){
@@ -200,9 +203,11 @@ export class LegalentityComplaintActionComponent implements OnInit {
         break;
 
       case "inprogress":
+        
         this.technicianVisisble=false;
         this.failureReasonVisisble=true;
         this.actionTakenVisible=true;
+        
         this.actionTakenForm.controls['failureReasonCnt'].setValidators([Validators.required]);
         this.actionTakenForm.controls['failureReasonCnt'].updateValueAndValidity();
         this.actionTakenForm.controls['actionTakeCnt'].setValidators([Validators.required]);
@@ -216,6 +221,7 @@ export class LegalentityComplaintActionComponent implements OnInit {
         break;
 
       case "closed":
+ 
         this.technicianVisisble=false;
         this.failureReasonVisisble=true;
         this.actionTakenVisible=true;
@@ -253,85 +259,103 @@ export class LegalentityComplaintActionComponent implements OnInit {
    
     let selStatus: string = this.actionTakenForm.get('complaintActionCnt').value;
 
-    if (selStatus == "assigned"){
-      
-      let technicianId: number = this.actionTakenForm.get('technicianIdCnt').value;
+    this.actionSubmit=true;
 
-      if (technicianId == 0){
-        this.toastService.error("Please select " + this.technicianMenuName + " from the list");
-        return false;
+    if (this.actionTakenForm.valid){
+      if (selStatus == "assigned"){
+      
+        let technicianId: number = this.actionTakenForm.get('technicianIdCnt').value;
+  
+        if (technicianId == 0){
+          this.toastService.error("Please select " + this.technicianMenuName + " from the list");
+          return false;
+        }
+  
+        //console.log(this.actionTakenForm.value);
+  
+        //console.log(this.updatedFileObject);
+  
+        //this.data.actionTaken="assigned";
+        //this.data.complaintClosedRemark=this.actionTakenForm.get('comptRemarkCnt').value;
+        this.data.complaintStatus="assigned";
+        this.data.complaintStatusDocument=this.updatedFileObject;
+        this.data.statusRemark=this.actionTakenForm.get('comptRemarkCnt').value;
+        this.data.technicianId=this.actionTakenForm.get('technicianIdCnt').value;
+  
+        this.closeDialog();
+  
+        /*let actionTakenReqData: IactionTakenReqData = {
+          actionTaken: "assigned",
+          branchId: this.branchId,
+          complaintClosedRemark: this.actionTakenForm.get('comptRemarkCnt').value,
+          complaintId: this.data.complaintId,
+          complaintMenuName: this.complaintMenuName,
+          complaintStageCount: this.data.complaintStageCount,
+          complaintStatus: "assigned",
+          complaintStatusDocument: this.updatedFileObject,
+          equipmentMenuName: this.data.equipmentMenuName,
+          failureReason: null,
+          legalEntityId: this.legalEntityId,
+          legalEntityUserId: this.userId,
+          reqComptStatus: "open",
+          statusRemark: this.actionTakenForm.get('comptRemarkCnt').value,
+          technicianId: this.actionTakenForm.get('technicianIdCnt').value,
+          technicianMenuName: this.technicianMenuName,
+          userFullName: this.data.userFullName,
+          userId: this.userId,
+          userRole: this.userRole
+        }*/
+  
+      }
+      
+      if (selStatus == "closed"){
+        /*let actionTakenReqData: IactionTakenReqData = {
+          actionTaken: "assigned",
+          branchId: this.branchId,
+          complaintClosedRemark: this.actionTakenForm.get('comptRemarkCnt').value,
+          complaintId: this.data.complaintId,
+          complaintMenuName: this.complaintMenuName,
+          complaintStageCount: this.data.complaintStageCount,
+          complaintStatus: "assigned",
+          complaintStatusDocument: this.updatedFileObject,
+          equipmentMenuName: this.data.equipmentMenuName,
+          failureReason: null,
+          legalEntityId: this.legalEntityId,
+          legalEntityUserId: this.userId,
+          reqComptStatus: "open",
+          statusRemark: this.actionTakenForm.get('comptRemarkCnt').value,
+          technicianId: this.actionTakenForm.get('technicianIdCnt').value,
+          technicianMenuName: this.technicianMenuName,
+          userFullName: this.data.userFullName,
+          userId: this.userId,
+          userRole: this.userRole
+        }*/
+  
+        this.data.actionTaken=this.actionTakenForm.get('actionTakeCnt').value;
+        this.data.complaintClosedRemark= this.actionTakenForm.get('comptRemarkCnt').value;
+        this.data.complaintStatus= "closed";
+        this.data.complaintStatusDocument= this.updatedFileObject;
+        this.data.failureReason= this.actionTakenForm.get('failureReasonCnt').value;
+        this.data.statusRemark= this.actionTakenForm.get('comptRemarkCnt').value;
+  
+        this.closeDialog();
+  
       }
 
-      //console.log(this.actionTakenForm.value);
+      if (selStatus == "inprogress"){
 
-      //console.log(this.updatedFileObject);
+        this.data.actionTaken=this.actionTakenForm.get('actionTakeCnt').value;
+        this.data.complaintClosedRemark= this.actionTakenForm.get('comptRemarkCnt').value;
+        this.data.complaintStatus= "inprogress";
+        this.data.complaintStatusDocument= this.updatedFileObject;
+        this.data.failureReason= this.actionTakenForm.get('failureReasonCnt').value;
+        this.data.statusRemark= this.actionTakenForm.get('comptRemarkCnt').value;
 
-      //this.data.actionTaken="assigned";
-      //this.data.complaintClosedRemark=this.actionTakenForm.get('comptRemarkCnt').value;
-      this.data.complaintStatus="assigned";
-      this.data.complaintStatusDocument=this.updatedFileObject;
-      this.data.statusRemark=this.actionTakenForm.get('comptRemarkCnt').value;
-      this.data.technicianId=this.actionTakenForm.get('technicianIdCnt').value;
-
-      this.closeDialog();
-
-      /*let actionTakenReqData: IactionTakenReqData = {
-        actionTaken: "assigned",
-        branchId: this.branchId,
-        complaintClosedRemark: this.actionTakenForm.get('comptRemarkCnt').value,
-        complaintId: this.data.complaintId,
-        complaintMenuName: this.complaintMenuName,
-        complaintStageCount: this.data.complaintStageCount,
-        complaintStatus: "assigned",
-        complaintStatusDocument: this.updatedFileObject,
-        equipmentMenuName: this.data.equipmentMenuName,
-        failureReason: null,
-        legalEntityId: this.legalEntityId,
-        legalEntityUserId: this.userId,
-        reqComptStatus: "open",
-        statusRemark: this.actionTakenForm.get('comptRemarkCnt').value,
-        technicianId: this.actionTakenForm.get('technicianIdCnt').value,
-        technicianMenuName: this.technicianMenuName,
-        userFullName: this.data.userFullName,
-        userId: this.userId,
-        userRole: this.userRole
-      }*/
-
+        this.closeDialog();
+      }
     }
-    
-    if (selStatus == "closed"){
-      /*let actionTakenReqData: IactionTakenReqData = {
-        actionTaken: "assigned",
-        branchId: this.branchId,
-        complaintClosedRemark: this.actionTakenForm.get('comptRemarkCnt').value,
-        complaintId: this.data.complaintId,
-        complaintMenuName: this.complaintMenuName,
-        complaintStageCount: this.data.complaintStageCount,
-        complaintStatus: "assigned",
-        complaintStatusDocument: this.updatedFileObject,
-        equipmentMenuName: this.data.equipmentMenuName,
-        failureReason: null,
-        legalEntityId: this.legalEntityId,
-        legalEntityUserId: this.userId,
-        reqComptStatus: "open",
-        statusRemark: this.actionTakenForm.get('comptRemarkCnt').value,
-        technicianId: this.actionTakenForm.get('technicianIdCnt').value,
-        technicianMenuName: this.technicianMenuName,
-        userFullName: this.data.userFullName,
-        userId: this.userId,
-        userRole: this.userRole
-      }*/
 
-      this.data.actionTaken=this.actionTakenForm.get('actionTakeCnt').value;
-      this.data.complaintClosedRemark= this.actionTakenForm.get('comptRemarkCnt').value;
-      this.data.complaintStatus= "closed";
-      this.data.complaintStatusDocument= this.updatedFileObject;
-      this.data.failureReason= this.actionTakenForm.get('failureReasonCnt').value;
-      this.data.statusRemark= this.actionTakenForm.get('comptRemarkCnt').value;
-
-      this.closeDialog();
-
-    }
+   
     
   }
 

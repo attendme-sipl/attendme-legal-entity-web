@@ -10,7 +10,7 @@ import { LegalentityBranch } from '../../model/legalentity-branch';
 //import { IComplaintIdStruct } from '../legalentity-open-complaint-rpt/legalentity-open-complaint-rpt.component';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 import { MatPaginator, MatSort, MatDialog, MatIconRegistry, MatTableDataSource, Sort } from '@angular/material';
-import { IassignComplaintStructure, LegalentityComplaintRptService, IComplaintBodyStruct, IAssingnComplaintResponse, IComplaintIdStruct } from '../../services/legalentity-complaint-rpt.service';
+import { IassignComplaintStructure, LegalentityComplaintRptService, IComplaintBodyStruct, IAssingnComplaintResponse, IComplaintIdStruct, IactionTakenReqData } from '../../services/legalentity-complaint-rpt.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
@@ -24,6 +24,8 @@ import { IbranchListDetailsResponse, IbranchRptReqStruct, IbranchListReportRespo
 import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 import { AuthService } from 'src/app/Auth/auth.service';
 import { TokenModel } from 'src/app/Common_Model/token-model';
+import { LegalentityComplaintActionComponent } from '../../legalentity-complaint-action/legalentity-complaint-action.component';
+import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../legalentity-confirm-alert/legalentity-confirm-alert.component';
 
 @Component({
   selector: 'app-legalentity-assinged-complaint-rpt',
@@ -39,6 +41,9 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
   branchId: number;
   userId: number;
   userRole: string;
+  userFullName: string;
+
+  complaintStageCount: number;  
 
   equipmentMenuName:string;
   technicianMenuName:string;
@@ -57,7 +62,9 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     "qrId",
     "complaintOpenDateTime",
     "complaintAssignedDateTime",
-    "assingedToTechncianName"
+    "assingedToTechncianName",
+    "actionTaken",
+    "trashComplaint"
   ];
   
   complaintRecordCount: number;
@@ -71,6 +78,8 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
   branchListArr: IbranchListDetailsResponse[];
   userBranchId: number;
+
+  
 
   constructor(
     //private legalEntityModel: LegalentityLogin,
@@ -86,12 +95,18 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     private menuModel: LegalentityMenuPrefNames,
     private branchServiceAPI: LegalentityBranchService,
     private branchData: LegalentityBranchDataService,
-    private authService: AuthService
+    private authService: AuthService,
+    private complaintRptServiceAPI: LegalentityComplaintRptService
   ) { 
 
     iconRegistry.addSvgIcon(
       "refresh-panel",
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
+    );
+
+    iconRegistry.addSvgIcon(
+      'deleteIcon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-delete-24px.svg')
     );
 
   }
@@ -322,6 +337,94 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     }
 
     
+  }
+
+  openTakeActionDilaog(complaintId: number){
+   
+    let complaintDetailsData: IactionTakenReqData={
+      actionTaken: null,
+      branchId: this.branchId,
+      complaintClosedRemark: null,
+      complaintId: complaintId,
+      complaintMenuName: this.complaintMenuName,
+      complaintStageCount: this.complaintStageCount,
+      complaintStatus: null,
+      complaintStatusDocument: null,
+      equipmentMenuName: this.equipmentMenuName,
+      failureReason: null,
+      legalEntityId: this.legalEntityId,
+      legalEntityUserId: this.userId,
+      technicianMenuName: this.technicianMenuName,
+      userFullName: this.userFullName,
+      userId: this.userId,
+      userRole: this.userRole,
+      technicianId: null,
+      statusRemark: null,
+      reqComptStatus: "assigned",
+      complaintAssignStatus: true
+    }
+
+    const dialogRef = this.dialog.open(LegalentityComplaintActionComponent,{
+      width: '500px',
+      data: complaintDetailsData
+    }); 
+
+    dialogRef.afterClosed().subscribe(result => {
+
+      if (complaintDetailsData.complaintStatus == "inprogress" || complaintDetailsData.complaintStatus == "closed"){
+
+        let selComplaintStatus: string = '';
+
+        if (complaintDetailsData.complaintStatus == "inprogress"){
+          selComplaintStatus="in progress";
+        }
+
+        if (complaintDetailsData.complaintStatus == "closed"){
+          selComplaintStatus="closed";
+        }
+        
+        let confirmAlertData:IConfirmAlertStruct = {
+
+          alertMessage: "Are you sure you want to change " + this.complaintMenuName + " status to " + selComplaintStatus,
+          confirmBit:false
+         };
+ 
+         const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
+           data:confirmAlertData,
+           panelClass: 'custom-dialog-container'
+         });
+
+         alertDialogRef.afterClosed().subscribe(result => {
+           if (confirmAlertData.confirmBit){
+             console.log(complaintDetailsData);
+             
+             try {
+              this.complaintRptServiceAPI.changeComptStatusLeUser(complaintDetailsData)
+              .subscribe(data => {
+               
+                if (data['complaintStatusExisits']){
+                  this.toastService.error("" + this.complaintMenuName + " already closed.");
+                  this.enableProgressBar=false;
+                  return false;
+                }
+ 
+                this.toastService.success("" + this.complaintMenuName + " closed successfully");
+                this.popComplaintAssingRptGrid(false);
+                this.enableProgressBar=false;
+ 
+              }, error => {this.enableProgressBar=false;});  
+             } catch (error) {
+               this.toastService.error("Something went wrong while closing "+ this.complaintMenuName);
+               this.enableProgressBar=false;
+             }
+
+           }
+         });
+
+      }
+
+    }); 
+
   }
 
   ngOnInit() {

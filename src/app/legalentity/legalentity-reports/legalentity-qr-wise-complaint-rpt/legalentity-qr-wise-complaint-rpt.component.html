@@ -194,19 +194,19 @@
                         </td>
                       </ng-container>
   
-                      <ng-container matColumnDef="statusChangedBy">
+                      <ng-container matColumnDef="compalintStatusChangeUserName">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status Changed By</th>
                         <td mat-cell *matCellDef="let element" 
                         [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
-                          {{element.statusChangedBy }}
+                          {{element.compalintStatusChangeUserName }}
                         </td>
                       </ng-container>
   
-                      <ng-container matColumnDef="statusRemark">
+                      <ng-container matColumnDef="complaintStatusRemark">
                         <th mat-header-cell *matHeaderCellDef mat-sort-header>Status Remark</th>
                         <td mat-cell *matCellDef="let element" 
                         [ngClass]="{'row-cell-inactive': element.complaintTrash == true}">
-                          {{element.statusRemark }}
+                          {{element.complaintStatusRemark}}
                         </td>
                       </ng-container>
         

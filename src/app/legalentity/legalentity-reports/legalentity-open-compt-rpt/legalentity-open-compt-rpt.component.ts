@@ -434,23 +434,24 @@ export class LegalentityOpenComptRptComponent implements OnInit {
              alertDialogRef.afterClosed().subscribe(result =>{
               //console.log(complaintDetailsData);
               this.openComplaintProgressBar=true;
-  
-              try {
-                this.complaintRptServiceAPI.assignTechnicianToComplaint(complaintDetailsData)
-              .subscribe(data => {
-                this.openComplaintProgressBar=false;
-                this.toastService.success("" + this.complaintMenuName + " assigned to " + this.technicianMenuName + " successfully.");
-                this.popOpenComplaintGrid(false);
-              }, error => {
-                this.openComplaintProgressBar=false;
-              });
-  
-              } catch (error) {
-                this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName);
-                this.openComplaintProgressBar=false;
+
+              if (confirmAlertData.confirmBit){
+                try {
+                  this.complaintRptServiceAPI.assignTechnicianToComplaint(complaintDetailsData)
+                .subscribe(data => {
+                  this.openComplaintProgressBar=false;
+                  this.toastService.success("" + this.complaintMenuName + " assigned to " + this.technicianMenuName + " successfully.");
+                  this.popOpenComplaintGrid(false);
+                }, error => {
+                  this.openComplaintProgressBar=false;
+                });
+    
+                } catch (error) {
+                  this.toastService.error("Something went wrong while assigning " + this.technicianMenuName + " to " + this.complaintMenuName);
+                  this.openComplaintProgressBar=false;
+                }
               }
-  
-  
+
              });
           }
 
@@ -469,29 +470,32 @@ export class LegalentityOpenComptRptComponent implements OnInit {
              panelClass: 'custom-dialog-container'
            });
    
-           alertDialogRef.afterClosed().subscribe(result =>{
-             this.openComplaintProgressBar = true;
+            alertDialogRef.afterClosed().subscribe(result =>{
+            this.openComplaintProgressBar = true;
 
-             try {
-              this.complaintRptServiceAPI.changeComptStatusLeUser(complaintDetailsData)
-              .subscribe(data => {
-               
-                if (data['complaintStatusExisits']){
-                  this.toastService.error("" + this.complaintMenuName + " already closed.");
+            if (confirmAlertData.confirmBit){
+              try {
+                this.complaintRptServiceAPI.changeComptStatusLeUser(complaintDetailsData)
+                .subscribe(data => {
+                 
+                  if (data['complaintStatusExisits']){
+                    this.toastService.error("" + this.complaintMenuName + " already closed.");
+                    this.openComplaintProgressBar=false;
+                    return false;
+                  }
+   
+                  this.toastService.success("" + this.complaintMenuName + " closed successfully");
+                  this.popOpenComplaintGrid(false);
                   this.openComplaintProgressBar=false;
-                  return false;
-                }
- 
-                this.toastService.success("" + this.complaintMenuName + " closed successfully");
+   
+                }, error => {this.openComplaintProgressBar=false;});  
+               } catch (error) {
+                 this.toastService.error("Something went wrong while closing "+ this.complaintMenuName);
                 this.openComplaintProgressBar=false;
- 
-              }, error => {this.openComplaintProgressBar=false;});  
-             } catch (error) {
-               this.toastService.error("Something went wrong while closing "+ this.complaintMenuName);
-              this.openComplaintProgressBar=false;
-             }
+               }
+            }
 
-             
+                   
            });
 
           

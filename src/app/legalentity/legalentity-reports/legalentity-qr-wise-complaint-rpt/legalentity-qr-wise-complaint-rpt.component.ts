@@ -68,8 +68,8 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
     "actionTaken",
     "failureReason",
     "currentComplaintStatus",
-    "statusChangedBy",
-    "statusRemark"
+    "compalintStatusChangeUserName",
+    "complaintStatusRemark"
   ];
 
   qrIdComplaintRecords: IqrIdAllcomplaintDetailsResponse[];
@@ -154,6 +154,8 @@ export class LegalentityQrWiseComplaintRptComponent implements OnInit {
      try {
       this.complaintService.getQrIdAllComplaintsRpt(qrIdComplaintReqObj)
      .subscribe((data: IqrIdAllcomplaintRptResponse) => {
+
+      console.log(data.complaintList);
         this.qrIdComplaintRecords = data.complaintList;
         this.qrIdComplaintRecords = this.getFilteredComplaintsRecords();
 
