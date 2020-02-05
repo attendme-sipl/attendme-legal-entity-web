@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { MatIconRegistry, MatPaginator, MatSort, MatTableDataSource, MatDialog, Sort } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
-import { LegalentityComplaintRptService, IComplaintBodyStruct, IinprogressComptListResponse, IinprogressComptRptResponse, IcomplaintIndivReqStruct } from '../../services/legalentity-complaint-rpt.service';
+import { LegalentityComplaintRptService, IComplaintBodyStruct, IinprogressComptListResponse, IinprogressComptRptResponse, IcomplaintIndivReqStruct, IactionTakenReqData } from '../../services/legalentity-complaint-rpt.service';
 import { LegalentityMenuPrefNames } from '../../model/legalentity-menu-pref-names';
 import { LegalentityIndivComplaintRptComponent } from '../legalentity-indiv-complaint-rpt/legalentity-indiv-complaint-rpt.component';
 import {saveAs} from 'file-saver';
@@ -14,6 +14,8 @@ import { IbranchListDetailsResponse, IbranchRptReqStruct, LegalentityBranchServi
 import { LegalentityBranchDataService } from '../../services/legalentity-branch-data.service';
 import { AuthService } from 'src/app/Auth/auth.service';
 import { TokenModel } from 'src/app/Common_Model/token-model';
+import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../legalentity-confirm-alert/legalentity-confirm-alert.component';
+import { LegalentityComplaintActionComponent } from '../../legalentity-complaint-action/legalentity-complaint-action.component';
 
 @Component({
   selector: 'app-legalentity-inprogress-compt-rpt',
@@ -29,6 +31,9 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
   branchId: number;
   userId: number;
   userRole: string;
+  userFullName: string;
+
+  complaintStageCount: number;
 
   complaintMenuName: string;
   technicianMenuName: string;
@@ -47,7 +52,9 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     "complaintNumber",
     "qrId",
     "regsiteredByName",
-    "inprogressDateTime"
+    "inprogressDateTime",
+    "actionTaken",
+    "trashComplaint"
   ];
 
   inprogressComptListObj:IinprogressComptListResponse[];
@@ -70,11 +77,17 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     private dialog:MatDialog,
     private branchData: LegalentityBranchDataService,
     private branchServiceAPI: LegalentityBranchService,
-    private authService: AuthService
+    private authService: AuthService,
+    private complaintRptServiceAPI: LegalentityComplaintRptService
   ) { 
     iconRegistry.addSvgIcon(
       'refresh-icon',
       sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-refresh-24px.svg')
+    );
+
+    iconRegistry.addSvgIcon(
+      'deleteIcon',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/svg_icons/baseline-delete-24px.svg')
     );
   }
 
@@ -136,7 +149,7 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
       }*/
 
       this.inprogressComptListObj=data.complaintList.map((value,index) => value ? {
-        complaintId: value['complaintId'],
+        complaintId: parseInt(value['complaintId']),
         complaintNumber: value['complaintNumber'],
         qrCodeId: value['qrCodeId'],
         qrId: value['qrId'],
@@ -240,6 +253,167 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     
   }
 
+  openTakeActionDilaog(complaintId: number){
+   
+    let complaintDetailsData: IactionTakenReqData={
+      actionTaken: null,
+      branchId: this.branchId,
+      complaintClosedRemark: null,
+      complaintId: complaintId,
+      complaintMenuName: this.complaintMenuName,
+      complaintStageCount: this.complaintStageCount,
+      complaintStatus: null,
+      complaintStatusDocument: null,
+      equipmentMenuName: this.equptMenuName,
+      failureReason: null,
+      legalEntityId: this.legalEntityId,
+      legalEntityUserId: this.userId,
+      technicianMenuName: this.technicianMenuName,
+      userFullName: this.userFullName,
+      userId: this.userId,
+      userRole: this.userRole,
+      technicianId: null,
+      statusRemark: null,
+      reqComptStatus: "inprogress",
+      complaintAssignStatus: true
+    }
+
+    const dialogRef = this.dialog.open(LegalentityComplaintActionComponent,{
+      width: '500px',
+      data: complaintDetailsData
+    }); 
+
+    dialogRef.afterClosed().subscribe(result => {
+
+      if (complaintDetailsData.complaintStatus == "inprogress" || complaintDetailsData.complaintStatus == "closed"){
+
+        let selComplaintStatus: string = '';
+
+        if (complaintDetailsData.complaintStatus == "inprogress"){
+          selComplaintStatus="in progress";
+        }
+
+        if (complaintDetailsData.complaintStatus == "closed"){
+          selComplaintStatus="closed";
+        }
+        
+        let confirmAlertData:IConfirmAlertStruct = {
+
+          alertMessage: "Are you sure you want to change " + this.complaintMenuName + " status to " + selComplaintStatus,
+          confirmBit:false
+         };
+ 
+         const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
+           data:confirmAlertData,
+           panelClass: 'custom-dialog-container'
+         });
+
+         alertDialogRef.afterClosed().subscribe(result => {
+           if (confirmAlertData.confirmBit){
+             this.enableProgressBar=true;
+             try {
+              this.complaintRptServiceAPI.changeComptStatusLeUser(complaintDetailsData)
+              .subscribe(data => {
+               
+                if (data['complaintStatusExisits']){
+                  this.toastService.error("" + this.complaintMenuName + " already closed.");
+                  this.enableProgressBar=false;
+                  return false;
+                }
+
+                if (complaintDetailsData.complaintStatus == "inprogress"){
+                  this.toastService.success("" + this.complaintMenuName + " status changed to in progress successfully");
+                }
+                
+                if (complaintDetailsData.complaintStatus == "closed"){
+                  this.toastService.success("" + this.complaintMenuName + " closed successfully");
+                }
+
+                this.popInprogressComplaintsRpt(false);
+                this.enableProgressBar=false;
+ 
+              }, error => {this.enableProgressBar=false;});  
+             } catch (error) {
+               console.log(error);
+               if (complaintDetailsData.complaintStatus == "inprogress"){
+                this.toastService.error("Something went wrong while changing " + this.complaintMenuName +" status to in progress");
+               }
+
+               if (complaintDetailsData.complaintStatus == "closed"){
+                this.toastService.error("Something went wrong while closing "+ this.complaintMenuName);
+               }
+               
+               this.enableProgressBar=false;
+             }
+
+           }
+         });
+
+      }
+
+    }); 
+
+  }
+
+  trashComplaint(complaintId: number){
+
+    try {
+
+      const complaintNumberObj = this.inprogressComptListObj.map((value,index) => value ? {
+        complaintId: value['complaintId'],
+        complaintNumber: value['complaintNumber']
+      } : null)
+      .filter(value => value.complaintId == complaintId);
+  
+      let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
+  
+      let confirmAlertData:IConfirmAlertStruct = {
+        alertMessage: "Are you sure you want to trash the " + this.complaintMenuName + " (" + complaintNumber + ")",
+        confirmBit:false
+       };
+  
+       const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
+        data:confirmAlertData,
+        panelClass: 'custom-dialog-container'
+      });
+  
+      alertDialogRef.afterClosed().subscribe(result => {
+        //console.log(confirmAlertData.confirmBit);
+  
+        if (confirmAlertData.confirmBit){
+          this.enableProgressBar=true;
+  
+          this.complaintRptServiceAPI.trashComplaint(
+            complaintId, 
+            true,
+            this.legalEntityId,
+            this.branchId,
+            this.userId,
+            this.userRole
+            )
+          .subscribe(data => {
+            /*if (data['errorOccured']){
+              this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+              this.openComplaintProgressBar=false;
+              return false;
+            }*/
+  
+            this.enableProgressBar = false;
+            this.toastService.success("" + this.complaintMenuName + " added to trash successfully");
+            this.popInprogressComplaintsRpt(false);
+          }, error => {
+           // this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+            this.enableProgressBar=false;
+          });
+        }
+  
+      });
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+    }
+  }
+
   ngOnInit() {
 
     const tokenModel: TokenModel = this.authService.getTokenDetails();
@@ -248,6 +422,8 @@ export class LegalentityInprogressComptRptComponent implements OnInit {
     this.branchHeadOffice=tokenModel.branchHeadOffice;
     this.userId=tokenModel.userId;
     this.userRole=tokenModel.userRole;
+    this.userFullName=tokenModel.userFullName;
+    this.complaintStageCount=tokenModel.complaintStageCount;
 
     /*if(localStorage.getItem('legalEntityUserDetails') != null){
       this.userModel=JSON.parse(localStorage.getItem('legalEntityUserDetails'));

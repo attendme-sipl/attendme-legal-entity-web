@@ -600,9 +600,6 @@ export class LegalentityOpenComptRptComponent implements OnInit {
     } catch (error) {
       this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
     }
-
-    
-
   }
 
   popBranchList(){

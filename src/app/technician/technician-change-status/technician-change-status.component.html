@@ -50,6 +50,12 @@
                   [(ngModel)] = "complaintDocUploadControl" name="complaintDocUpload" 
                   #complaintDocUploadModel="ngModel" (change)="onFileChange($event)"/>
 
+                  <small>
+                    <i>*Supported file format image and PDF</i>
+                    <br>
+                    <i>*Supported file size upto 15 MB</i>
+                  </small>
+
                   <mat-card>
                     <mat-card-content *ngFor="let indivFileObj of updatedFileObject; let i=index">
 

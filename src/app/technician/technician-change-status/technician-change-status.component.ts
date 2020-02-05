@@ -83,7 +83,7 @@ export class TechnicianChangeStatusComponent implements OnInit {
 
         let totFileSize: number = this.fileObject[0].size + PreviousAddedFileSize;
 
-        if (totFileSize < 10485760){
+        if (totFileSize < 15728640){
           this.updatedFileObject.push(this.fileObject[i]);
         }
         else{

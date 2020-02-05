@@ -160,7 +160,7 @@ export interface IinprogressComptRptResponse{
 };
 
 export interface IinprogressComptListResponse{
-  complaintId: string,
+  complaintId: number,
      complaintNumber: string,
      qrCodeId: string,
      qrId: string,

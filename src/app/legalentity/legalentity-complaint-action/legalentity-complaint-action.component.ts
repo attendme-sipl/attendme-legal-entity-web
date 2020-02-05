@@ -104,7 +104,7 @@ export class LegalentityComplaintActionComponent implements OnInit {
 
         let totFileSize: number = this.fileObject[0].size + PreviousAddedFileSize;
 
-        if (totFileSize < 10485760){
+        if (totFileSize < 15728640){
           this.updatedFileObject.push(this.fileObject[i]);
         }
         else{
@@ -119,8 +119,11 @@ export class LegalentityComplaintActionComponent implements OnInit {
      
     }
 
-    
+  
+  }
 
+  removeFileFromList(fileIndex: number){
+    this.updatedFileObject.splice(fileIndex,1);
   }
 
   popActionTakenList(action: string){
@@ -355,8 +358,6 @@ export class LegalentityComplaintActionComponent implements OnInit {
       }
     }
 
-   
-    
   }
 
   setCustomValidators(){
@@ -364,7 +365,7 @@ export class LegalentityComplaintActionComponent implements OnInit {
     const actionControlChange = this.actionTakenForm.get('complaintActionCnt').valueChanges;
 
     actionControlChange.subscribe(actionValue => {
-      console.log("in custom validator " + actionValue);
+      //console.log("in custom validator " + actionValue);
       switch(actionValue){
 
         case "inprogress":
@@ -372,10 +373,10 @@ export class LegalentityComplaintActionComponent implements OnInit {
           this.actionTakenForm['controls']['failureReasonCnt'].updateValueAndValidity({emitEvent: false});
         
         case "closed":
-          console.log("in closed custom validator");
+          //console.log("in closed custom validator");
           this.actionTakenForm.controls['failureReasonCnt'].setValidators([Validators.required]);
           this.actionTakenForm.controls['failureReasonCnt'].updateValueAndValidity();
-          console.log(this.actionTakenForm.controls['failureReasonCnt']);
+          //console.log(this.actionTakenForm.controls['failureReasonCnt']);
           //this.actionTakenForm.get('failureReasonCnt').setValidators([Validators.required]);
           //this.actionTakenForm.get('failureReasonCnt').updateValueAndValidity({emitEvent: false});
           

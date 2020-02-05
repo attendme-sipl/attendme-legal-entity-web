@@ -396,8 +396,7 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
          alertDialogRef.afterClosed().subscribe(result => {
            if (confirmAlertData.confirmBit){
-             console.log(complaintDetailsData);
-             
+             this.enableProgressBar=true;
              try {
               this.complaintRptServiceAPI.changeComptStatusLeUser(complaintDetailsData)
               .subscribe(data => {
@@ -407,14 +406,29 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
                   this.enableProgressBar=false;
                   return false;
                 }
- 
-                this.toastService.success("" + this.complaintMenuName + " closed successfully");
+
+                if (complaintDetailsData.complaintStatus == "inprogress"){
+                  this.toastService.success("" + this.complaintMenuName + " status changed to in progress successfully");
+                }
+                
+                if (complaintDetailsData.complaintStatus == "closed"){
+                  this.toastService.success("" + this.complaintMenuName + " closed successfully");
+                }
+
                 this.popComplaintAssingRptGrid(false);
                 this.enableProgressBar=false;
  
               }, error => {this.enableProgressBar=false;});  
              } catch (error) {
-               this.toastService.error("Something went wrong while closing "+ this.complaintMenuName);
+               console.log(error);
+               if (complaintDetailsData.complaintStatus == "inprogress"){
+                this.toastService.error("Something went wrong while changing " + this.complaintMenuName +" status to in progress");
+               }
+
+               if (complaintDetailsData.complaintStatus == "closed"){
+                this.toastService.error("Something went wrong while closing "+ this.complaintMenuName);
+               }
+               
                this.enableProgressBar=false;
              }
 
@@ -425,6 +439,65 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
 
     }); 
 
+  }
+
+  trashComplaint(complaintId: number){
+
+    try {
+
+      const complaintNumberObj = this.complaintResponseData.map((value,index) => value ? {
+        complaintId: value['complaintId'],
+        complaintNumber: value['complaintNumber']
+      } : null)
+      .filter(value => value.complaintId == complaintId);
+  
+      let complaintNumber: string = complaintNumberObj[0]['complaintNumber'];
+  
+      let confirmAlertData:IConfirmAlertStruct = {
+        alertMessage: "Are you sure you want to trash the " + this.complaintMenuName + " (" + complaintNumber + ")",
+        confirmBit:false
+       };
+  
+       const alertDialogRef = this.dialog.open(LegalentityConfirmAlertComponent,{
+        data:confirmAlertData,
+        panelClass: 'custom-dialog-container'
+      });
+  
+      alertDialogRef.afterClosed().subscribe(result => {
+        //console.log(confirmAlertData.confirmBit);
+  
+        if (confirmAlertData.confirmBit){
+          this.enableProgressBar=true;
+  
+          this.complaintRptServiceAPI.trashComplaint(
+            complaintId, 
+            true,
+            this.legalEntityId,
+            this.branchId,
+            this.userId,
+            this.userRole
+            )
+          .subscribe(data => {
+            /*if (data['errorOccured']){
+              this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+              this.openComplaintProgressBar=false;
+              return false;
+            }*/
+  
+            this.enableProgressBar = false;
+            this.toastService.success("" + this.complaintMenuName + " added to trash successfully");
+            this.popComplaintAssingRptGrid(false);
+          }, error => {
+           // this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+            this.enableProgressBar=false;
+          });
+        }
+  
+      });
+      
+    } catch (error) {
+      this.toastService.error("Something went wrong while adding " + this.complaintMenuName + " to trash.");
+    }
   }
 
   ngOnInit() {
@@ -447,6 +520,9 @@ export class LegalentityAssingedComplaintRptComponent implements OnInit {
     this.legalEntityId=jwtTokenModel.legalEntityId;
     this.userId=jwtTokenModel.userId;
     this.userRole=jwtTokenModel.userRole;
+    this.userFullName=jwtTokenModel.userFullName;
+
+    this.complaintStageCount=jwtTokenModel.complaintStageCount;
 
     this.branchHeadOffice=jwtTokenModel.branchHeadOffice;
  
