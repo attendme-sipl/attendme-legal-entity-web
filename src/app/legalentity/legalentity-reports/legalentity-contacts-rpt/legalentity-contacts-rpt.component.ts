@@ -39,7 +39,9 @@ export interface IaddContactReqUpdatedStruct{
     contactActiveStatus: boolean,
     countryCallingCode: number
   }[],
-  cancelClick: boolean;
+  cancelClick: boolean,
+  contactId: number,
+  contactInsertOption: boolean
 };
 
 @Component({
@@ -218,7 +220,9 @@ export class LegalentityContactsRptComponent implements OnInit {
         branchId: this.branchId,
         userId: this.userId,
         userRole: this.userRole,
-        cancelClick: false
+        cancelClick: false,
+        contactInsertOption: true,
+        contactId: 0
       };
   
       const dialogRef = this.dialog.open(LegalentityAddContactComponent,{
@@ -328,6 +332,33 @@ export class LegalentityContactsRptComponent implements OnInit {
       this.toastService.error("Something went wrong while deleting contact from the list","");
     }
 
+  }
+
+  onEditClick(
+    contactId: number, 
+    contactPersonName: string, 
+    contactMobNumber: string, 
+    contactEmailId: string
+    ){
+
+      console.log(contactMobNumber);
+
+    let addContatReqDataObj: IaddContactReqUpdatedStruct = {
+      contactList: [{
+        contactActiveStatus: null,
+        contactMobileNumber: null,
+        contactEmailId: null,
+        contactPersonName: null,
+        countryCallingCode: null
+      }],
+      legalEntityId: this.legalEntityId,
+      branchId: this.branchId,
+      userId: this.userId,
+      userRole: this.userRole,
+      cancelClick: false,
+      contactInsertOption: true,
+      contactId: 0
+    };
   }
 
   ngOnInit() {

@@ -227,6 +227,8 @@ export class LegalentityAddContactComponent implements OnInit {
       ])
     });
 
+    console.log(this.data);
+
     } catch (error) {
         this.toastService.error("Something went wrong while loading contact form details","");
     }

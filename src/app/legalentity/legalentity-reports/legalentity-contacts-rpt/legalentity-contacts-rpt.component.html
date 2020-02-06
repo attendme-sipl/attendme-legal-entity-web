@@ -79,7 +79,7 @@
                     <ng-container matColumnDef="updateContact">
                         <th mat-header-cell *matHeaderCellDef>Update Contact</th>
                         <td mat-cell *matCellDef="let element">
-                          <button type="button" mat-button color="primary" disabled>
+                          <button type="button" mat-button color="primary" (click)="onEditClick(element.contactId, element.contactPersonName, element.contactMobileNumber, element.contactEmailId);">
                             <!--<mat-icon svgIcon="edit-icon"></mat-icon>-->
                             Edit
                           </button>
