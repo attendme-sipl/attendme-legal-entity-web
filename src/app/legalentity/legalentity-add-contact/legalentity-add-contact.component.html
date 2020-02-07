@@ -79,7 +79,9 @@
                      </mat-card-content>
                  
                      <mat-card-actions align="left">
-                         <button type="button" mat-raised-button (click)="addContactToFormArray()">Add Another Contact</button>      
+                         <button type="button" *ngIf="addContactBtnVisisble" mat-raised-button (click)="addContactToFormArray()">
+                           Add Another Contact
+                          </button>      
                      </mat-card-actions>
                  
                    </mat-card>

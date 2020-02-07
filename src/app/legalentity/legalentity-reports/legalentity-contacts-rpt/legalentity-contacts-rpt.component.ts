@@ -338,27 +338,46 @@ export class LegalentityContactsRptComponent implements OnInit {
     contactId: number, 
     contactPersonName: string, 
     contactMobNumber: string, 
-    contactEmailId: string
+    contactEmailId: string,
+    countryCallingCode: number
     ){
 
-      console.log(contactMobNumber);
+      let mobileNumber: string ='';
+      let countryCode: number = null; 
+      
+     if (contactMobNumber != '' || contactMobNumber != null){
+      
+      let contactMobileObj: string[] = contactMobNumber.split("-");
+
+      mobileNumber=contactMobileObj[1];
+      countryCode= parseInt(contactMobileObj[0]);
+      
+     }
 
     let addContatReqDataObj: IaddContactReqUpdatedStruct = {
       contactList: [{
-        contactActiveStatus: null,
-        contactMobileNumber: null,
-        contactEmailId: null,
-        contactPersonName: null,
-        countryCallingCode: null
+        contactActiveStatus: true,
+        contactMobileNumber: mobileNumber != ''? mobileNumber : null,
+        contactEmailId: contactEmailId,
+        contactPersonName: contactPersonName,
+        countryCallingCode: countryCode
       }],
       legalEntityId: this.legalEntityId,
       branchId: this.branchId,
       userId: this.userId,
       userRole: this.userRole,
       cancelClick: false,
-      contactInsertOption: true,
-      contactId: 0
+      contactInsertOption: false,
+      contactId: contactId
     };
+
+
+    const dialogRef = this.dialog.open(LegalentityAddContactComponent,{
+      panelClass: 'custom-dialog-container',
+      width: '800px',
+      data: addContatReqDataObj
+    });
+
   }
 
   ngOnInit() {

@@ -45,6 +45,8 @@ export class LegalentityAddContactComponent implements OnInit {
   userId: number;
   userRole: string;
 
+  addContactBtnVisisble: boolean;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: IaddContactReqUpdatedStruct,
     public dialogRef: MatDialogRef<LegalentityAddContactComponent>,
@@ -185,7 +187,7 @@ export class LegalentityAddContactComponent implements OnInit {
           this.data.legalEntityId=this.legalEntityId;
           this.data.cancelClick=false;
   
-       // console.log(this.data)
+        //console.log(this.data)
   
         this.dialogRef.close();
   
@@ -220,14 +222,46 @@ export class LegalentityAddContactComponent implements OnInit {
 
     this.defaultCountryCallingCode=91;
 
-    this.addContactForm=this.addContactFb.group({
-      legalEntityId: this.legalEntityId,
-      contactList: this.addContactFb.array([
-        this.getContactFormGroup()
-      ])
-    });
+    if (this.data.contactInsertOption){
+      
+      this.addContactBtnVisisble=true;
+      this.addContactForm=this.addContactFb.group({
+        legalEntityId: this.legalEntityId,
+        contactList: this.addContactFb.array([
+          this.getContactFormGroup()
+        ])
+      });
 
-    console.log(this.data);
+    }
+    else{
+
+      this.addContactBtnVisisble=false;
+
+      console.log( isNaN(this.data.contactList[0].countryCallingCode));
+
+      this.addContactForm=this.addContactFb.group({
+
+        legalEntityId: this.legalEntityId,
+        contactList: this.addContactFb.array([
+          this.addContactFb.group({
+            contactPersonName: this.data.contactList[0].contactPersonName,
+            countryCallingCode: isNaN(this.data.contactList[0].countryCallingCode) == false ? this.data.contactList[0].countryCallingCode : 91,
+            contactMobileNumber: [this.data.contactList[0].contactMobileNumber, Validators.compose([
+              Validators.minLength(10),
+              Validators.maxLength(10)
+            ])
+          ],
+          contactEmailId: [this.data.contactList[0].contactEmailId, Validators.email],
+          contactActiveStatus: true
+          })
+        ])
+
+      });
+
+      
+    }
+
+    //console.log(this.data);
 
     } catch (error) {
         this.toastService.error("Something went wrong while loading contact form details","");
