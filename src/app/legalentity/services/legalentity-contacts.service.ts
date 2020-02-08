@@ -42,6 +42,18 @@ export interface IcontactRptReqStruct{
    branchMenuName: string
 };
 
+export interface IcontactUpdateReqStruct{
+  legalEntityId: number,
+  contactId: number,
+  contactPersonName: string,
+  contactMobileNumber: string,
+  contactEmailId: string,
+  contactActiveStatus: boolean,
+  branchId: number,
+  userId: number,
+  userRole: string
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -74,6 +86,10 @@ export class LegalentityContactsService {
         return blob;
       }
     );
+  }
+
+  updateNotificationContacts(updateContactObj: IcontactUpdateReqStruct): Observable<any>{
+    return this.httpClient.post(this.utilServicesAPI.legalEntityRestApuURL + "/updateNotificationContact", updateContactObj);
   }
 
 }

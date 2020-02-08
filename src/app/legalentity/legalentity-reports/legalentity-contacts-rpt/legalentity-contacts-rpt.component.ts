@@ -6,7 +6,7 @@ import { MatIconRegistry, MatDialog, MatTableDataSource, MatPaginator, MatSort }
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { LegalentityAddContactComponent } from '../../legalentity-add-contact/legalentity-add-contact.component';
-import { LegalentityContactsService, IcontactResponseStruct, IdeactivateContactReqStruct, IcontactRptReqStruct } from '../../services/legalentity-contacts.service';
+import { LegalentityContactsService, IcontactResponseStruct, IdeactivateContactReqStruct, IcontactRptReqStruct, IcontactUpdateReqStruct } from '../../services/legalentity-contacts.service';
 import { IConfirmAlertStruct, LegalentityConfirmAlertComponent } from '../../legalentity-confirm-alert/legalentity-confirm-alert.component';
 import {saveAs} from 'file-saver';
 import *as moment from 'moment';
@@ -377,6 +377,46 @@ export class LegalentityContactsRptComponent implements OnInit {
       width: '800px',
       data: addContatReqDataObj
     });
+
+    dialogRef.afterClosed().subscribe(response => {
+
+      this.enableProgressBar=true;
+
+      if (!addContatReqDataObj.cancelClick){
+        //console.log(addContatReqDataObj);
+
+        try {
+          const updateContactObj: IcontactUpdateReqStruct = {
+            branchId: this.branchId,
+            contactActiveStatus: true,
+            contactEmailId: addContatReqDataObj.contactList[0].contactEmailId,
+            contactId: addContatReqDataObj.contactId,
+            contactMobileNumber: addContatReqDataObj.contactList[0].contactMobileNumber,
+            contactPersonName: addContatReqDataObj.contactList[0].contactPersonName,
+            legalEntityId: this.legalEntityId,
+            userId: this.userId,
+            userRole: this.userRole
+          };
+  
+          this.contactServiceAPI.updateNotificationContacts(updateContactObj)
+          .subscribe(data => {
+  
+            this.enableProgressBar=false;
+            this.toastService.success("Contact updated successfuly");
+            this.popLegalEntityContactRpt(false);
+  
+          }, error => {
+            this.enableProgressBar=false;
+          });
+        } catch (error) {
+          this.enableProgressBar=false;
+          this.toastService.error("Something went wrong while updating contact details");
+        }
+
+      }
+      else{this.enableProgressBar=false;}
+    });
+
 
   }
 
