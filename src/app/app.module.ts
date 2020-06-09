@@ -98,6 +98,8 @@ import {CookieService} from 'ngx-cookie-service';
 import {ErrorHandlerService} from './Auth/error-handler.service';
 import {TokenModel} from './Common_Model/token-model';
 import {JwtHelperService} from '@auth0/angular-jwt';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 
 @NgModule({
   declarations: [
@@ -179,7 +181,8 @@ import {JwtHelperService} from '@auth0/angular-jwt';
     MatAutocompleteModule,
     MatExpansionModule,
     MatTabsModule,
-    TechnicianModule
+    TechnicianModule,
+    FontAwesomeModule
   ],
   providers: [
     LegalentityUser,

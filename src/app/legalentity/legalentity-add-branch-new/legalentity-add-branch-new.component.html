@@ -1,3 +1,171 @@
 <div class="container-fluid">
-  
+  <div class="row">
+      <div class="col-sm-12">
+
+        <div class="row">
+            <div class="col-sm-12">
+
+                <div class="alert alert-danger" *ngIf="exceedAlert" role="alert">
+                    <div class="row">
+                        <div class="col-auto mr-auto">
+                            <h4 class="alert-heading">{{branchMenuName}} Exceed</h4>
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="close" aria-label="Close" (click)="onBackClick()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <p>Total number of {{branchMenuName}} added has exceeded as per your rule book. 
+                        To uprgade. Please contact administrator.
+                    </p>
+                    
+                </div>
+
+                <div class="row" *ngIf="dispAddBranchForm">
+                    <div class="col-sm-12">
+                        <div class="row">
+                   
+                            <div class="col-sm-auto">
+                                <button class="btn btn-default" (click)="onBackClick()">
+                                    <fa-icon [icon]="faArrowLeft"></fa-icon>
+                                </button>
+                            </div>
+                    
+                            <div class="col-sm-auto mr-auto">
+                                <h3>Add {{branchMenuName}}</h3>
+                            </div>
+                        </div>
+ 
+                        <div class="row">
+                            <div class="col-sm-12">
+                                
+                                <form [formGroup]="addBranchFormGroup" (ngSubmit)="onSubmitClick()">
+
+                                    <div class="form-group">
+                                        
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="card-title">{{branchMenuName}} Details</h5>
+                                            </div>
+
+                                            <div class="card-body">
+
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" placeholder="{{branchMenuName}} Name"
+                                                    formControlName="branchName"
+                                                    data-toggle="tooltip" data-placement="top" title="{{branchMenuName}} Name"
+                                                    [ngClass]="{'is-invalid': (addBranchSubmit || addBranchFormGroup.controls['branchName'].touched) && addBranchFormGroup.controls['branchName'].errors?.required}"/>
+
+                                                    <div class="invalid-feedback"
+                                                    *ngIf="(addBranchSubmit || addBranchFormGroup.controls['branchName'].touched) && addBranchFormGroup.controls['branchName'].errors?.required">
+                                                        Please Enter {{branchMenuName}} Name
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-sm-4">
+                                                        <input type="text" class="form-control" placeholder="Contact Person Name" 
+                                                        formControlName="contactPersonName" 
+                                                        data-toggle="tooltip" data-placement="top" title="Contact Person Name"/>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <select class="custom-select"
+                                                                formControlName="contactCountryCallingCode"
+                                                                data-toggle="tooltip" data-placement="top" title="Country Calling Code">
+                                                                    <option *ngFor="let indivCountryCallingCode of countryCallingCodeObj"
+                                                                    [value]="indivCountryCallingCode.countryCallingCode">{{indivCountryCallingCode.countryShortName}} - {{indivCountryCallingCode.countryCallingCode}}</option>
+                                                                </select>
+                                                            </div>
+                                                            <input type="text" class="form-control" placeholder="Mobile Number" 
+                                                            formControlName="contactMobileNumber"
+                                                            data-toggle="tooltip" data-placement="top" title="Mobile Number"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <input type="text" class="form-control" placeholder="Email ID" 
+                                                        formControlName="contactEmailId"
+                                                        data-toggle="tooltip" data-placement="top" title="Email ID"/>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group" style="margin-top: 15px;">
+                                                    <textarea class="form-control" placeholder="Location Address"
+                                                    required
+                                                    formControlName="branchAddress"
+                                                    data-toggle="tooltip" data-placement="top" title="Location Address"></textarea>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="card-title">{{branchMenuName}} User Account Details</h5>
+                                            </div>
+                    
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-sm-4">
+                                                        <input type="text" class="form-control" placeholder="User Full Name" 
+                                                        formControlName="branchUserName"
+                                                        data-toggle="tooltip" data-placement="top" title="{{branchMenuName}} User Name" />
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div class="input-group">
+                                                            <div class="input-group-prepend">
+                                                                <select class="custom-select"
+                                                                formControlName="branchUserCountryCallingCode"
+                                                                data-toggle="tooltip" data-placement="top" title="Country Calling Code">
+                                                                    <option *ngFor="let indivCountryCallingCode of countryCallingCodeObj"
+                                                                    [value]="indivCountryCallingCode.countryCallingCode">{{indivCountryCallingCode.countryShortName}} - {{indivCountryCallingCode.countryCallingCode}}</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <input type="text" class="form-control" placeholder="User Mobile Number" 
+                                                            formControlName="branchUserMobileNumber"
+                                                            data-toggle="tooltip" data-placement="top" title="User Mobile Number"/>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <input type="text" class="form-control" placeholder="User Email ID" 
+                                                        formControlName="branchUserEmail"
+                                                        data-toggle="tooltip" data-placement="top" title="User Email ID"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-footer">
+                                                <div class="row justify-content-end">
+                                                    <div class="col-sm-1">
+                                                        <button type="button" class="btn btn-default">Reset</button>
+                                                    </div>
+
+                                                    <div class="col-sm-1">
+                                                        <button type="submit" class="btn btn-primary">Submit</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                
+                
+            </div>
+        </div>
+
+      </div>
+  </div>
 </div>

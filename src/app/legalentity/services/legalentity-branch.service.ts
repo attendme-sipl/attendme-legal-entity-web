@@ -46,6 +46,19 @@ export interface IbranchRptReqStruct{
   branchMenuName: string
 };
 
+export interface IbranchRuleBookReq{
+  legalEntityId: number,
+  branchHeadOffice:boolean,
+  branchId: number,
+  userId: number,
+  userRole: string
+};
+
+export interface IbranchRuleBookRes{
+  addedBranchCount: number,
+  ruleBookBranchCount: number
+};
+
 @Injectable({
   providedIn: 'root'
 })
@@ -108,6 +121,10 @@ getBranchListExportToExcel(branchListRptReqObj: IbranchRptReqStruct):Observable<
       return blob;
     }
   );
+}
+
+getBranchRuleBookNew(branchRuleBookReq: IbranchRuleBookReq): Observable<IbranchRuleBookRes>{
+  return this.httpClient.post<IbranchRuleBookRes>(this.util.legalEntityRestApuURL + "/checkBranchCount", branchRuleBookReq);
 }
 
 }
