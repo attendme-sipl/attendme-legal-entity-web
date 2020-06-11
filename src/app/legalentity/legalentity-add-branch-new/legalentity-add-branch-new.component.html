@@ -82,13 +82,24 @@
                                                             </div>
                                                             <input type="text" class="form-control" placeholder="Mobile Number" 
                                                             formControlName="contactMobileNumber"
-                                                            data-toggle="tooltip" data-placement="top" title="Mobile Number"/>
+                                                            data-toggle="tooltip" data-placement="top" title="Mobile Number"
+                                                            [ngClass]="{'is-invalid': (addBranchSubmit || addBranchFormGroup.controls['contactMobileNumber'].touched) && addBranchFormGroup.get('contactMobileNumber').hasError('pattern')}"/>
+                                                            
+                                                            <div class="invalid-feedback" *ngIf="(addBranchSubmit || addBranchFormGroup.controls['contactMobileNumber'].touched) && addBranchFormGroup.get('contactMobileNumber').hasError('pattern')">
+                                                                Please enter numeric values of mobile number
+                                                            </div>
+
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-4">
                                                         <input type="text" class="form-control" placeholder="Email ID" 
                                                         formControlName="contactEmailId"
-                                                        data-toggle="tooltip" data-placement="top" title="Email ID"/>
+                                                        data-toggle="tooltip" data-placement="top" title="Email ID"
+                                                        [ngClass]="{'is-invalid': (addBranchSubmit || addBranchFormGroup.controls['contactEmailId'].touched) && addBranchFormGroup.get('contactEmailId').hasError('email')}"/>
+
+                                                        <div class="invalid-feedback" *ngIf="(addBranchSubmit || addBranchFormGroup.controls['contactEmailId'].touched) && addBranchFormGroup.get('contactEmailId').hasError('email')">
+                                                            Please enter valid contact Email ID
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -112,7 +123,12 @@
                                                     <div class="col-sm-4">
                                                         <input type="text" class="form-control" placeholder="User Full Name" 
                                                         formControlName="branchUserName"
-                                                        data-toggle="tooltip" data-placement="top" title="{{branchMenuName}} User Name" />
+                                                        data-toggle="tooltip" data-placement="top" title="{{branchMenuName}} User Name" 
+                                                        [ngClass]="{'is-invalid': (addBranchSubmit || addBranchFormGroup.controls['branchUserName'].touched) && addBranchFormGroup.controls['branchUserName'].errors?.required}" />
+
+                                                        <div class="invalid-feedback" *ngIf="(addBranchSubmit || addBranchFormGroup.controls['branchUserName'].touched) && addBranchFormGroup.controls['branchUserName'].errors?.required">
+                                                            Please enter {{branchMenuName}} user full name
+                                                        </div>
                                                     </div>
                                                     <div class="col-sm-4">
                                                         <div class="input-group">
@@ -127,13 +143,32 @@
 
                                                             <input type="text" class="form-control" placeholder="User Mobile Number" 
                                                             formControlName="branchUserMobileNumber"
-                                                            data-toggle="tooltip" data-placement="top" title="User Mobile Number"/>
+                                                            data-toggle="tooltip" data-placement="top" title="User Mobile Number"
+                                                            [ngClass]="{'is-invalid': (addBranchSubmit || addBranchFormGroup.controls['branchUserMobileNumber'].touched) && (addBranchFormGroup.controls['branchUserMobileNumber'].errors?.required || addBranchFormGroup.get('branchUserMobileNumber').hasError('pattern'))}"/>
+                                                              
+                                                            <div class="invalid-feedback" *ngIf="(addBranchSubmit || addBranchFormGroup.controls['branchUserMobileNumber'].touched) && addBranchFormGroup.controls['branchUserMobileNumber'].errors?.required">
+                                                                Please enter user mobile number
+                                                            </div>
+
+                                                            <div class="invalid-feedback" *ngIf="(addBranchSubmit || addBranchFormGroup.controls['branchUserMobileNumber'].touched) && addBranchFormGroup.get('branchUserMobileNumber').hasError('pattern')">
+                                                                Please enter numeric value of mobile number
+                                                            </div>
+                                                            
                                                         </div>
                                                     </div>
                                                     <div class="col-sm-4">
                                                         <input type="text" class="form-control" placeholder="User Email ID" 
                                                         formControlName="branchUserEmail"
-                                                        data-toggle="tooltip" data-placement="top" title="User Email ID"/>
+                                                        data-toggle="tooltip" data-placement="top" title="User Email ID"
+                                                        [ngClass]="{'is-invalid': (addBranchSubmit || addBranchFormGroup.get('branchUserEmail').touched) && (addBranchFormGroup.get('branchUserEmail').hasError('required') || addBranchFormGroup.get('branchUserEmail').hasError('email'))}"/>
+
+                                                        <div class="invalid-feedback" *ngIf="(addBranchSubmit || addBranchFormGroup.get('branchUserEmail').touched) && addBranchFormGroup.get('branchUserEmail').hasError('required')">
+                                                            Please enter Email ID
+                                                        </div>
+
+                                                        <div class="invalid-feedback" *ngIf="(addBranchSubmit || addBranchFormGroup.get('branchUserEmail').touched) && addBranchFormGroup.get('branchUserEmail').hasError('email')">
+                                                            Please enter valid Email ID
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

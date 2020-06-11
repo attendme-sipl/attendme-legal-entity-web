@@ -8,7 +8,7 @@ import { AuthService } from 'src/app/Auth/auth.service';
 import { LegalentityMenuPrefNames } from '../model/legalentity-menu-pref-names';
 import { LegalentityBranchService, IbranchRuleBookReq, IbranchRuleBookRes } from '../services/legalentity-branch.service';
 import {faArrowLeft} from '@fortawesome/free-solid-svg-icons/faArrowLeft';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, PatternValidator } from '@angular/forms';
 import { LegalentityCountryCallingCode } from '../model/legalentity-country-calling-code';
 
 @Component({
@@ -39,6 +39,7 @@ export class LegalentityAddBranchNewComponent implements OnInit {
   countryCallingCodeObj: IcountryCallingCodeResponse;
 
   addBranchSubmit: boolean;
+  numericValidatorPattern: string = "^[0-9]*$";
 
   constructor(
     private router: Router,
@@ -80,9 +81,9 @@ export class LegalentityAddBranchNewComponent implements OnInit {
       branchName: ['', [Validators.required]],
       branchAddress: ['', [Validators.required]],
       contactPersonName: [''],
-      contactMobileNumber: [''],
+      contactMobileNumber: ['', [Validators.pattern(this.numericValidatorPattern)]],
       contactCountryCallingCode: 91,
-      contactEmailId: [''],
+      contactEmailId: ['', [Validators.email]],
       adminApprove: true,
       addedByUserId : this.userId,
       branchUserActiveStatus: true,
@@ -95,6 +96,8 @@ export class LegalentityAddBranchNewComponent implements OnInit {
       branchUserPasswordChange: false,
       branchMenuName: this.branchMenuName
     });
+
+    this.setCustomValidators();
 
     this.popCountryCallingCode();
   }
@@ -144,6 +147,52 @@ export class LegalentityAddBranchNewComponent implements OnInit {
     
     this.router.navigate(['legalentity','portal','branch']);
   }
+
+  setCustomValidators(){
+    const contactPersonNameChange$=this.addBranchFormGroup.get('branchUserName').valueChanges;
     
+
+    contactPersonNameChange$.subscribe(contactPersonNameTxt => {
+      let contactMobileNumber: string = this.addBranchFormGroup.controls['branchUserMobileNumber'].value;
+      let contactEmailId: string = this.addBranchFormGroup.controls['branchUserEmail'].value;
+      
+      if (contactPersonNameTxt != ''){
+
+        if (contactMobileNumber == ''){
+         
+          this.addBranchFormGroup.get('branchUserMobileNumber').setValidators([Validators.required, Validators.pattern(this.numericValidatorPattern)]);
+          this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false});
+        }
+        
+        if (contactEmailId == ''){
+         
+          this.addBranchFormGroup.get('branchUserEmail').setValidators([Validators.required, Validators.email]);
+          this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false});
+        }
+
+      }
+      else{
+        
+        if (contactMobileNumber == '' || contactEmailId == ''){
+          
+          this.addBranchFormGroup.get('branchUserName').clearValidators();
+          this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+
+          this.addBranchFormGroup.get('branchUserEmail').clearValidators();
+          this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false});
+
+          this.addBranchFormGroup.get('branchUserMobileNumber').clearValidators();
+          this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false});
+        }
+        else{
+          
+          if (contactMobileNumber != '' && contactEmailId != ''){
+            this.addBranchFormGroup.get('branchUserName').setValidators([Validators.required]);
+            this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+          }
+        }
+      }
+    });
+  }
 
 }
