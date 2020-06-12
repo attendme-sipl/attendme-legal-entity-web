@@ -10,6 +10,8 @@ import { LegalentityBranchService, IbranchRuleBookReq, IbranchRuleBookRes } from
 import {faArrowLeft} from '@fortawesome/free-solid-svg-icons/faArrowLeft';
 import { FormGroup, FormBuilder, Validators, PatternValidator } from '@angular/forms';
 import { LegalentityCountryCallingCode } from '../model/legalentity-country-calling-code';
+import { LegalentityBranch } from '../model/legalentity-branch';
+import { LegalentityAddBranch } from '../model/legalentity-add-branch';
 
 @Component({
   selector: 'app-legalentity-add-branch-new',
@@ -41,6 +43,7 @@ export class LegalentityAddBranchNewComponent implements OnInit {
   addBranchSubmit: boolean;
   numericValidatorPattern: string = "^[0-9]*$";
 
+  addBranchProgressBar: boolean;
   constructor(
     private router: Router,
     private toastService: ToastrService,
@@ -79,7 +82,7 @@ export class LegalentityAddBranchNewComponent implements OnInit {
       userRole: this.userRole,
       branchHeadOffice: this.branchHeadOffice,
       branchName: ['', [Validators.required]],
-      branchAddress: ['', [Validators.required]],
+      branchAddress: [''],
       contactPersonName: [''],
       contactMobileNumber: ['', [Validators.pattern(this.numericValidatorPattern)]],
       contactCountryCallingCode: 91,
@@ -103,7 +106,70 @@ export class LegalentityAddBranchNewComponent implements OnInit {
   }
 
   onSubmitClick(){
+    
     this.addBranchSubmit=true;
+
+    if (this.addBranchFormGroup.valid){
+
+
+      let contactCountryCallingCode: number = this.addBranchFormGroup.get('contactCountryCallingCode').value;
+      let contactMobileNumber: string = this.addBranchFormGroup.get('contactMobileNumber').value;
+
+      let updateContactMobileNumber: string = '';
+
+      if (contactMobileNumber != '' || contactMobileNumber != null){
+        updateContactMobileNumber=contactCountryCallingCode + '-' + contactMobileNumber;
+      }
+
+      let branchUserCountryCallingCode: number = this.addBranchFormGroup.get('branchUserCountryCallingCode').value;
+      let branchUserMobileNumber: string = this.addBranchFormGroup.get('branchUserMobileNumber').value;
+      let updatedBranchUserMobileNumber: string = '';
+
+      if (branchUserMobileNumber != '' && branchUserMobileNumber != null){
+        updatedBranchUserMobileNumber=branchUserCountryCallingCode + '-' + branchUserMobileNumber;
+      }
+
+      let addBranchObj: LegalentityAddBranch = this.addBranchFormGroup.value;
+
+      addBranchObj.contactMobileNumber=updateContactMobileNumber;
+      addBranchObj.branchUserMobileNumber = updatedBranchUserMobileNumber;
+
+      let branchUserName: string = this.addBranchFormGroup.get('branchUserName').value;
+      let branchUserMobileNumberWcCC: string = this.addBranchFormGroup.get('branchUserMobileNumber').value;
+      let branchUserEmailId: string = this.addBranchFormGroup.get('branchUserEmail').value;
+
+      if (branchUserName != '' && branchUserMobileNumberWcCC != '' && branchUserEmailId != ''){
+
+        this.addBranchProgressBar=true;
+
+        this.branchAPIService.addNewBranchDetails(addBranchObj)
+        .subscribe((data: LegalentityAddBranch) => {
+         
+
+          if (data.branchExceed == true){
+            this.toastService.error("Total number of" + this.branchMenuName + " added has exceeded as per your rule book. To uprgade. Please contact administrator.");
+            this.addBranchProgressBar=false;
+            return false;
+          }
+
+          if (data.userEmailMobileExisits){
+            this.toastService.error("Entered email id already exists. Please try another email id.");
+            this.addBranchProgressBar=false;
+            return false;
+          }
+
+          if (data.branchId == 0 || data.branchAdded ==false){
+            this.toastService.error("Something went wrong while adding new " + this.branchMenuName);
+            this.addBranchProgressBar=false;
+            return false;
+          }
+            this.toastService.success(this.branchMenuName + " added sucessfully !!!");
+            this.addBranchProgressBar=false;
+            this.resetForm();
+        }, error => {this.addBranchProgressBar=false;});
+      }
+      
+    }
   }
 
   verifyBranchRuleBook(){
@@ -148,14 +214,28 @@ export class LegalentityAddBranchNewComponent implements OnInit {
     this.router.navigate(['legalentity','portal','branch']);
   }
 
+  resetForm(){
+    this.addBranchFormGroup.reset({
+      contactCountryCallingCode: 91,
+      branchUserCountryCallingCode: 91,
+      branchUserName: '',
+      branchUserMobileNumber: '',
+      branchUserEmail: ''
+    });
+
+    this.addBranchSubmit=false;
+
+    //this.setCustomValidators();
+  }
+
   setCustomValidators(){
+
     const contactPersonNameChange$=this.addBranchFormGroup.get('branchUserName').valueChanges;
-    
 
     contactPersonNameChange$.subscribe(contactPersonNameTxt => {
       let contactMobileNumber: string = this.addBranchFormGroup.controls['branchUserMobileNumber'].value;
       let contactEmailId: string = this.addBranchFormGroup.controls['branchUserEmail'].value;
-      
+
       if (contactPersonNameTxt != ''){
 
         if (contactMobileNumber == ''){
@@ -173,7 +253,7 @@ export class LegalentityAddBranchNewComponent implements OnInit {
       }
       else{
         
-        if (contactMobileNumber == '' || contactEmailId == ''){
+        if (contactMobileNumber == '' && contactEmailId == ''){
           
           this.addBranchFormGroup.get('branchUserName').clearValidators();
           this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
@@ -189,6 +269,133 @@ export class LegalentityAddBranchNewComponent implements OnInit {
           if (contactMobileNumber != '' && contactEmailId != ''){
             this.addBranchFormGroup.get('branchUserName').setValidators([Validators.required]);
             this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+          }
+
+
+          if (contactMobileNumber != '' && contactEmailId == ''){
+            this.addBranchFormGroup.get('branchUserName').setValidators([Validators.required]);
+            this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+
+            this.addBranchFormGroup.get('branchUserEmail').setValidators([Validators.required, Validators.email]);
+            this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false});
+          }
+
+          if (contactMobileNumber == '' && contactEmailId != ''){
+            this.addBranchFormGroup.get('branchUserName').setValidators([Validators.required]);
+            this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+
+            this.addBranchFormGroup.get('branchUserMobileNumber').setValidators([Validators.required, Validators.email]);
+            this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false});
+          }
+        }
+      }
+    });
+
+    const branchUserMobileNumberChange$ = this.addBranchFormGroup.get('branchUserMobileNumber').valueChanges;
+
+    branchUserMobileNumberChange$.subscribe(branchUserMobileNumberTxt => {
+
+      let branchUserName: string = this.addBranchFormGroup.get('branchUserName').value;
+      let branchUserEmailId: string = this.addBranchFormGroup.get('branchUserEmail').value;
+
+      if (branchUserMobileNumberTxt != ''){
+
+        if (branchUserName ==''){
+          this.addBranchFormGroup.get('branchUserName').setValidators([Validators.required]);
+          this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+        }
+
+        if (branchUserEmailId ==''){
+          this.addBranchFormGroup.get('branchUserEmail').setValidators([Validators.required, Validators.email]);
+          this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false});
+        }
+
+      }
+      else{
+        if (branchUserName =='' && branchUserEmailId == ''){
+          this.addBranchFormGroup.get('branchUserName').clearValidators();
+          this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+
+          this.addBranchFormGroup.get('branchUserMobileNumber').clearValidators();
+          this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false});
+
+          this.addBranchFormGroup.get('branchUserEmail').clearValidators();
+          this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false});
+        }
+        else{
+          if(branchUserName != '' && branchUserEmailId != ''){
+            this.addBranchFormGroup.get('branchUserMobileNumber').setValidators([Validators.required, Validators.pattern(this.numericValidatorPattern)]);
+            this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false});
+          }
+
+          if (branchUserName != '' && branchUserEmailId == ''){
+            this.addBranchFormGroup.get('branchUserMobileNumber').setValidators([Validators.required, Validators.pattern(this.numericValidatorPattern)]);
+            this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false});
+
+            this.addBranchFormGroup.get('branchUserEmail').setValidators([Validators.required, Validators.email]);
+            this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false});
+          }
+
+          if (branchUserName == '' && branchUserEmailId != ''){
+            this.addBranchFormGroup.get('branchUserMobileNumber').setValidators([Validators.required, Validators.pattern(this.numericValidatorPattern)]);
+            this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false});
+
+            this.addBranchFormGroup.get('branchUserName').setValidators([Validators.required]);
+            this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+          }
+        }
+      }
+    });
+
+    const branchUserEmailIdChange$ = this.addBranchFormGroup.get('branchUserEmail').valueChanges;
+
+    branchUserEmailIdChange$.subscribe(branchUserEmailTxt => {
+      let branchUserName: string = this.addBranchFormGroup.get('branchUserName').value;
+      let branchUserMobileNumber: string = this.addBranchFormGroup.get('branchUserMobileNumber').value;
+
+      if (branchUserEmailTxt != ''){
+        if (branchUserName == ''){
+          this.addBranchFormGroup.get('branchUserName').setValidators([Validators.required]);
+          this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+        }
+
+        if (branchUserMobileNumber == ''){
+          this.addBranchFormGroup.get('branchUserMobileNumber').setValidators([Validators.required, Validators.pattern(this.numericValidatorPattern)]);
+          this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false});
+        }
+      }
+      else{
+        if (branchUserName == '' && branchUserMobileNumber == ''){
+          this.addBranchFormGroup.get('branchUserName').clearValidators();
+          this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+
+          this.addBranchFormGroup.get('branchUserEmail').clearValidators();
+          this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false});
+
+          this.addBranchFormGroup.get('branchUserMobileNumber').clearValidators();
+          this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false});
+        }
+        else{
+          if (branchUserName != '' && branchUserMobileNumber != ''){
+            this.addBranchFormGroup.get('branchUserEmail').setValidators([Validators.required, Validators.email]);
+            this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false});            
+          }
+
+          if (branchUserName != '' && branchUserMobileNumber == ''){
+            this.addBranchFormGroup.get('branchUserEmail').setValidators([Validators.required, Validators.email]);
+            this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false}); 
+
+            this.addBranchFormGroup.get('branchUserMobileNumber').setValidators([Validators.required, Validators.pattern(this.numericValidatorPattern)]);
+            this.addBranchFormGroup.get('branchUserMobileNumber').updateValueAndValidity({emitEvent: false}); 
+          }
+
+          if (branchUserName == '' && branchUserMobileNumber != ''){
+            this.addBranchFormGroup.get('branchUserEmail').setValidators([Validators.required, Validators.email]);
+            this.addBranchFormGroup.get('branchUserEmail').updateValueAndValidity({emitEvent: false}); 
+
+            this.addBranchFormGroup.get('branchUserName').setValidators([Validators.required]);
+            this.addBranchFormGroup.get('branchUserName').updateValueAndValidity({emitEvent: false});
+
           }
         }
       }
