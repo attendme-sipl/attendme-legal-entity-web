@@ -22,6 +22,7 @@ import {RequireMatch as RequireMatch} from '../requireMatch';
 import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IlegalEntityDocumentRptDetails, IlegalEntityDocumentRptWithSelect } from '../services/legalentity-document-service.service';
 import { AuthService } from 'src/app/Auth/auth.service';
 import { TokenModel } from 'src/app/Common_Model/token-model';
+import { IbranchRptReqStruct, LegalentityBranchService, IbranchListReportResponse, IbranchListDetailsResponse } from '../services/legalentity-branch.service';
 
 
 export interface IalottedQRIDList{
@@ -141,6 +142,8 @@ export class LegalentityEquipmentComponent implements OnInit {
   panelOpenState: boolean;
 
   mobileNumberPattern: string = "^[0-9]*$";
+
+  branchListObj: IbranchListDetailsResponse[];
   
   constructor(
     private utilService: LegalentityUtilService,
@@ -158,7 +161,8 @@ export class LegalentityEquipmentComponent implements OnInit {
     private contactServiceAPI: LegalentityContactsService,
     private qrIdServiceAPI: LegalentityQrService,
     private documentServiceAPI: LegalentityDocumentServiceService,
-    private authService: AuthService
+    private authService: AuthService,
+    private branchServiceAPI: LegalentityBranchService
   ) { 
     iconRegistry.addSvgIcon(
       "addRecordIcon",
@@ -868,11 +872,21 @@ export class LegalentityEquipmentComponent implements OnInit {
           .filter(value => value.docSelected == true);
         
       //console.log(this.equptForm.value);
+
+      let updateBranchId: number;
+
+      if (this.headOffice){
+        updateBranchId = this.equptForm.value['branchId'];
+      }
+      else{
+        updateBranchId = this.branchId;
+      }
+
       
         this.addEquipmentFormObj = {
           addedByUserId: this.equptForm.value['addedByUserId'],
           adminApprove: true,
-          branchId: this.branchId,
+          branchId: updateBranchId,//this.branchId,
           equptActiveStatus: true,
           formFieldData: newQrIdFormFieldDataObj,
           qrCodeId: this.equptForm.get('qrCodeData').value['qrCodeId'],
@@ -1342,6 +1356,7 @@ export class LegalentityEquipmentComponent implements OnInit {
 
     this.popCountryCallingCode();
     this.popNotificationContactList();
+    this.popBranch();
 
     this.setCustomValidators();
 
@@ -1357,8 +1372,28 @@ export class LegalentityEquipmentComponent implements OnInit {
     }
 
     
-  
 
+  }
+
+  popBranch(){
+    const branchListReqObj: IbranchRptReqStruct = {
+      branchId: this.branchId,
+      branchMenuName: this.menuPrefNameModel.branchMenuName,
+      complaintMenuName: this.menuPrefNameModel.complaintMenuName,
+      equptMenuName: this.menuPrefNameModel.equipmentMenuName,
+      exportToExcel: false,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.menuPrefNameModel.technicianMenuName,
+      userId: this.userId,
+      userRole: this.userRole
+    };
+     
+    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    .subscribe((data: IbranchListReportResponse) => {
+      this.branchListObj = data.branchDetailsList;
+      //console.log(this.branchListObj);
+    });
+    
   }
 
   displayFn(qrIdData: IalottedQRIDList) {

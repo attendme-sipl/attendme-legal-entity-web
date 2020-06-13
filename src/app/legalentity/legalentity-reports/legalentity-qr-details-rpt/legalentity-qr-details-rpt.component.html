@@ -35,7 +35,7 @@
               <div class="col-auto" *ngIf="branchHeadOffice">
                   <mat-form-field>
                     <mat-label>{{branchMenuName}}</mat-label>
-                    <mat-select [(value)] ="branchId" (selectionChange)="popQrIdDetailsRpt(5,false)">
+                    <mat-select [(ngModel)]="drpBranchId" [(value)] ="branchId" (selectionChange)="popQrIdDetailsRpt(5,false)">
                       <mat-option *ngFor="let indivBranchObj of branchListArr" [value]="indivBranchObj.branchId">
                         {{indivBranchObj.branchName}}
                       </mat-option>
@@ -88,7 +88,7 @@
                           <!--<button mat-button color="primary" (click)="editLinkClick(element.qrCodeId)">
                             Edit
                           </button>-->
-                          <a href="javascript: void(0);" (click)="editLinkClick(element.qrCodeId)">
+                          <a href="javascript: void(0);" (click)="editLinkClick(element.qrCodeId, element.branchId)">
                             Edit
                           </a>
                         </td>

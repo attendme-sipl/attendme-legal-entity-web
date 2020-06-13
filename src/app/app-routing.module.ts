@@ -67,7 +67,7 @@ const routes: Routes = [
         {path:"rpt/complaints/qr/:qrId", component: LegalentityQrWiseComplaintRptComponent},
         {path:"technician-add", component:LegalentityAddTechnicianNewComponent},
         {path:"qr-assinged/rpt", component: LegalentityAssignedQrRptComponent },
-        {path:"edit/qr-details/:id", component: LegalentityUpdateQrDetailsComponent},
+        {path:"edit/qr-details/:id/:branchId", component: LegalentityUpdateQrDetailsComponent},
         {path:"edit/technician/:id", component: LegalentityEditTechnicianComponent},
         {path:"assign/qr-branch", component: LegalentityAllotQrBranchComponent},
         {path:"info/qr", component: LegalentityQrDetailsComponent},

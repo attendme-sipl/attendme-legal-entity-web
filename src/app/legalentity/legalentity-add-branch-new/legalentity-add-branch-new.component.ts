@@ -108,7 +108,7 @@ export class LegalentityAddBranchNewComponent implements OnInit {
   onSubmitClick(){
     
     this.addBranchSubmit=true;
-console.log(this.addBranchFormGroup.valid);
+//console.log(this.addBranchFormGroup.valid);
     if (this.addBranchFormGroup.valid){
 
 
@@ -133,6 +133,8 @@ console.log(this.addBranchFormGroup.valid);
 
       addBranchObj.contactMobileNumber=updateContactMobileNumber;
       addBranchObj.branchUserMobileNumber = updatedBranchUserMobileNumber;
+
+      addBranchObj.branchHeadOffice=false;
 
       let branchUserName: string = this.addBranchFormGroup.get('branchUserName').value;
       let branchUserMobileNumberWcCC: string = this.addBranchFormGroup.get('branchUserMobileNumber').value;

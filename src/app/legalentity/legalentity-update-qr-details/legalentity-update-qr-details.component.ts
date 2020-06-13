@@ -16,6 +16,8 @@ import { flattenStyles } from '@angular/platform-browser/src/dom/dom_renderer';
 import { LegalentityDocumentServiceService, IlegalEntityDocumentRptResponse, IlegalEntityDocumentRptDetails, IlegalEntityDocumentRptWithSelect } from '../services/legalentity-document-service.service';
 import { AuthService } from 'src/app/Auth/auth.service';
 import { TokenModel } from 'src/app/Common_Model/token-model';
+import { IbranchListDetailsResponse, IbranchRptReqStruct, LegalentityBranchService, IbranchListReportResponse } from '../services/legalentity-branch.service';
+
 
 @Component({
   selector: 'app-legalentity-update-qr-details',
@@ -31,6 +33,9 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
   qrCodeId: number;
 
   equptMenuName: string;
+  branchMenuName: string;
+  technicianMenuName: string;
+  complaintMenuName: string;
 
   qrCodeArrayObj: string[];
 
@@ -71,6 +76,9 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
 
   panelOpenState: boolean;
 
+  branchListObj: IbranchListDetailsResponse[];
+  requestedBranchId: number;
+
   constructor(
     private router: Router,
     private utilServiceAPI: LegalentityUtilService,
@@ -84,7 +92,8 @@ export class LegalentityUpdateQrDetailsComponent implements OnInit {
     private equptService: LegalentityEquipmentService,
     private contatServiceAPI: LegalentityContactsService,
     private documentServiceAPI: LegalentityDocumentServiceService,
-    private authService: AuthService
+    private authService: AuthService,
+    private branchServiceAPI: LegalentityBranchService
   ) { 
     iconRegistry.addSvgIcon(
       "addRecordIcon",
@@ -1104,6 +1113,27 @@ get qrIdDocumentListFormArray()
    
   }
 
+  popBranch(){
+    const branchListReqObj: IbranchRptReqStruct = {
+      branchId: this.branchId,
+      branchMenuName: this.branchMenuName,
+      complaintMenuName: this.complaintMenuName,
+      equptMenuName: this.equptMenuName,
+      exportToExcel: false,
+      legalEntityId: this.legalEntityId,
+      technicianMenuName: this.technicianMenuName,
+      userId: this.userId,
+      userRole: this.userRole
+    };
+     
+    this.branchServiceAPI.getBranchListReport(branchListReqObj)
+    .subscribe((data: IbranchListReportResponse) => {
+      this.branchListObj = data.branchDetailsList;
+      //console.log(this.branchListObj);
+    });
+    
+  }
+
   ngOnInit() {
 
     const tokenModel: TokenModel = this.authService.getTokenDetails();
@@ -1130,6 +1160,7 @@ get qrIdDocumentListFormArray()
     }*/
 
     this.qrCodeId = parseInt(this.route.snapshot.paramMap.get('id'));
+    this.requestedBranchId=parseInt(this.route.snapshot.paramMap.get('branchId'));
 
     this.defaultCountryCode = 91;
     this.defaultSMSEnable =  true;
@@ -1137,11 +1168,14 @@ get qrIdDocumentListFormArray()
   
     this.menuModel = this.utilServiceAPI.getLegalEntityMenuPrefNames();
     this.equptMenuName = this.menuModel.equipmentMenuName;
+    this.branchMenuName=this.menuModel.branchMenuName;
+    this.technicianMenuName=this.menuModel.technicianMenuName;
+    this.complaintMenuName=this.menuModel.complaintMenuName;
 
     this.utilServiceAPI.setTitle('Legalentity - Edit ' + this.equptMenuName + ' Details | Attendme');
 
     this.editEquptForm = this.equptEditFb.group({
-      branchId: this.branchId,
+      branchId: this.requestedBranchId,
       legalEntityId: this.legalEntityId,
       adminApprove: true,
       equptActiveStatus: true,
@@ -1159,7 +1193,7 @@ get qrIdDocumentListFormArray()
     this.editEquptForm.controls['qrCodeData'].disable();
 
     this.getQrIdDetails();
-
+    this.popBranch();
     this.popQrIdList();
 
     this.spcificQrIdContactCount=1;

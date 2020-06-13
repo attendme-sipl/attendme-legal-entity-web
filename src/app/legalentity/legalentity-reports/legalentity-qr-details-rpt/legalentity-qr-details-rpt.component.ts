@@ -61,6 +61,7 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
   branchListArr: IbranchListDetailsResponse[];
 
   complaintCountColName: string;
+  drpBranchId: number;
 
   constructor(
     private utileServiceAPI: LegalentityUtilService,
@@ -327,6 +328,7 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
       return false;
     }*/
 
+    this.drpBranchId=this.branchId;
 
     this.menuModel=this.utileServiceAPI.getLegalEntityMenuPrefNames();
 
@@ -371,7 +373,8 @@ export class LegalentityQrDetailsRptComponent implements OnInit {
 
   editLinkClick(qrCodeId: number){
     try {
-      this.router.navigate(['legalentity','portal','edit','qr-details',qrCodeId]);  
+     
+      this.router.navigate(['legalentity','portal','edit','qr-details',qrCodeId, this.drpBranchId]);  
     } catch (error) {
       this.toastService.error("Something went wrong while redirecting to edit " + this.equipmentMenuName + " page.","");
     }  

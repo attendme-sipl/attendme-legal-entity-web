@@ -22,6 +22,15 @@
                 <mat-form-field style="width: 30%; margin-left: 15px;">
                   <input type="text" matInput formControlName="qrCodeData" />
                 </mat-form-field>
+
+                <mat-form-field *ngIf="headOffice" style="width: 40%; margin-left: 15px;">
+                    <mat-label>Select {{branchMenuName}}</mat-label>
+                    <mat-select formControlName="branchId">
+                        <mat-option *ngFor="let indivBranchObj of branchListObj" [value]="indivBranchObj.branchId">
+                          {{indivBranchObj.branchName}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
               </mat-card-header>
 
               <mat-card-content style="font-size: 15px;">
