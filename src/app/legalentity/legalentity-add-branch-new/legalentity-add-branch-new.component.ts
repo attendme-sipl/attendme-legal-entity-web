@@ -108,7 +108,7 @@ export class LegalentityAddBranchNewComponent implements OnInit {
   onSubmitClick(){
     
     this.addBranchSubmit=true;
-
+console.log(this.addBranchFormGroup.valid);
     if (this.addBranchFormGroup.valid){
 
 
@@ -168,7 +168,35 @@ export class LegalentityAddBranchNewComponent implements OnInit {
             this.resetForm();
         }, error => {this.addBranchProgressBar=false;});
       }
-      
+      else{
+        this.addBranchProgressBar=true;
+
+        this.branchAPIService.addBranchWoUserAccount(addBranchObj)
+        .subscribe((data: LegalentityAddBranch) => {
+
+          if (data.branchExceed == true){
+            this.toastService.error("Total number of" + this.branchMenuName + " added has exceeded as per your rule book. To uprgade. Please contact administrator.");
+            this.addBranchProgressBar=false;
+            return false;
+          }
+
+          if (data.userEmailMobileExisits){
+            this.toastService.error("Entered email id already exists. Please try another email id.");
+            this.addBranchProgressBar=false;
+            return false;
+          }
+
+          if (data.branchId == 0 || data.branchAdded ==false){
+            this.toastService.error("Something went wrong while adding new " + this.branchMenuName);
+            this.addBranchProgressBar=false;
+            return false;
+          }
+            this.toastService.success(this.branchMenuName + " added sucessfully !!!");
+            this.addBranchProgressBar=false;
+            this.resetForm();
+
+        }, error => {this.addBranchProgressBar=false;});
+      }
     }
   }
 

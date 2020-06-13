@@ -102,6 +102,10 @@ addNewBranchDetails(addBranchModel: LegalentityAddBranch):Observable<Legalentity
   return this.httpClient.post<LegalentityAddBranch>(this.util.legalEntityRestApuURL + "/addOrCreateBranch", addBranchModel);
 }
 
+addBranchWoUserAccount(addBranchModel: LegalentityAddBranch): Observable<LegalentityAddBranch>{
+  return this.httpClient.post<LegalentityAddBranch>(this.util.legalEntityRestApuURL + "/addBranchWithoutBranchUser", addBranchModel);
+}
+
 getBranchRuleBook(brachRuleBookModel: LegalentityBranchRulebook):Observable<LegalentityBranchRulebook>
 {
   return this.httpClient.post<LegalentityBranchRulebook>(this.util.legalEntityRestApuURL + "/checkBranchCount", this.branchRuleBookModel);
