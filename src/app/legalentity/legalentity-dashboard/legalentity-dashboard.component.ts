@@ -100,7 +100,7 @@ export class LegalentityDashboardComponent implements OnInit {
   popQrIdConciseUsageRpt():void{
     this.enableQrIdUsageRptProgressBar = true;
 
-    if(this.headOffice){
+    if(this.userRole=='admin'){
 
       try {
 
@@ -260,7 +260,7 @@ export class LegalentityDashboardComponent implements OnInit {
         this.userRole
         )
       .subscribe((data:IallottedBranchQrIdListRptResponse) => {
-  
+
         /*if (data.errorOccurred){
           this.toastService.error("Something went wrong while loading QR ID details");
           this.enableBranchQrIdRtpProgressBar=false;

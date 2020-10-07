@@ -36,6 +36,7 @@ export class LegalentityMainComponent implements OnInit {
 
   branchName: string;
   userId: number;
+  userRole: string;
 
   constructor(
     private utilAPI: LegalentityUtilService,
@@ -127,15 +128,16 @@ export class LegalentityMainComponent implements OnInit {
     this.headOffice = tokenModel.branchHeadOffice;
     this.branchName = tokenModel.branchName;
     this.userId = tokenModel.userId;
+    this.userRole=tokenModel.userRole;
 
     if (this.cookieService.get(this.utilAPI.userDefMenuCookieName) != ''){
       const menuModel: LegalentityMenuPref[] = JSON.parse(this.cookieService.get(this.utilAPI.userDefMenuCookieName));
 
-      if (this.headOffice){
+      if (this.userRole=='admin'){
         this.updatedLegalEntityMenuPrefObj = menuModel;
       }
-      else{
-        
+
+      if (this.userRole=='branch'){
         this.updatedLegalEntityMenuPrefObj=menuModel.map((value,index) => value? {
           enableToBranch: value['enableToBranch'],
           legalEntityId: value['legalEntityId'],
@@ -150,6 +152,23 @@ export class LegalentityMainComponent implements OnInit {
         }:null)
         .filter(value => value.enableToBranch == true)
       }
+
+      /*else{
+        
+        this.updatedLegalEntityMenuPrefObj=menuModel.map((value,index) => value? {
+          enableToBranch: value['enableToBranch'],
+          legalEntityId: value['legalEntityId'],
+          legalEntityMenuId: value['legalEntityMenuId'],
+          menuName: value['menuName'],
+          menuParamId: value['menuParamId'],
+          menuParameterName: value['menuParameterName'],
+          menuParameterPath: value['menuParameterPath'],
+          menuPlaceholder: value['menuPlaceholder'],
+          ngModelPropName: value['ngModelPropName'],
+          ngmodelProp: value['ngmodelProp']
+        }:null)
+        .filter(value => value.enableToBranch == true)
+      }*/
       
 
     }
